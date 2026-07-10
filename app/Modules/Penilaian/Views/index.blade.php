@@ -121,14 +121,14 @@
                                                                                 $fieldName = $isGuru ? "nilai_guru[{$ind->id}]" : "nilai_industri[{$ind->id}]";
                                                                                 
                                                                                 // Get existing value
-                                                                                $existingVal = 80;
+                                                                                $existingVal = '';
                                                                                 if ($p->penilaianPkl) {
                                                                                     if ($isGuru && isset($p->penilaianPkl->nilai_guru_json[$ind->id])) {
                                                                                         $item = $p->penilaianPkl->nilai_guru_json[$ind->id];
-                                                                                        $existingVal = is_array($item) ? ($item['nilai'] ?? 80) : $item;
+                                                                                        $existingVal = is_array($item) ? ($item['nilai'] ?? '') : $item;
                                                                                     } elseif (!$isGuru && isset($p->penilaianPkl->nilai_industri_json[$ind->id])) {
                                                                                         $item = $p->penilaianPkl->nilai_industri_json[$ind->id];
-                                                                                        $existingVal = is_array($item) ? ($item['nilai'] ?? 80) : $item;
+                                                                                        $existingVal = is_array($item) ? ($item['nilai'] ?? '') : $item;
                                                                                     }
                                                                                 }
                                                                             @endphp
