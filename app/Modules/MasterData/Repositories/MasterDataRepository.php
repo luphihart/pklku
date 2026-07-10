@@ -40,23 +40,58 @@ class MasterDataRepository implements MasterDataRepositoryInterface
     public function createMurid(array $data)
     {
         return DB::transaction(function() use ($data) {
-            // Create user first
-            $user = User::create([
-                'name' => $data['nama'],
-                'email' => $data['email'],
-                'tanggal_lahir' => $data['tanggal_lahir'] ?? null,
-                'password' => Hash::make($data['password'] ?? 'siswa123'),
-                'role' => 'murid',
-                'phone' => $data['phone'] ?? null,
-            ]);
+            // 1. Check if there is a soft-deleted user with this email
+            $user = User::withTrashed()->where('email', $data['email'])->first();
+            if ($user) {
+                if ($user->trashed()) {
+                    $user->restore();
+                }
+                $user->update([
+                    'name' => $data['nama'],
+                    'tanggal_lahir' => $data['tanggal_lahir'] ?? null,
+                    'password' => Hash::make($data['password'] ?? 'siswa123'),
+                    'role' => 'murid',
+                    'phone' => $data['phone'] ?? null,
+                ]);
+            } else {
+                // Create user first
+                $user = User::create([
+                    'name' => $data['nama'],
+                    'email' => $data['email'],
+                    'tanggal_lahir' => $data['tanggal_lahir'] ?? null,
+                    'password' => Hash::make($data['password'] ?? 'siswa123'),
+                    'role' => 'murid',
+                    'phone' => $data['phone'] ?? null,
+                ]);
+            }
 
-            // Create murid profile
-            return Murid::create([
-                'user_id' => $user->id,
-                'nis' => $data['nis'],
-                'nama' => $data['nama'],
-                'kelas_id' => $data['kelas_id'],
-            ]);
+            // 2. Check if there is a soft-deleted murid with this NIS or user_id
+            $murid = Murid::withTrashed()
+                ->where(function($q) use ($data, $user) {
+                    $q->where('nis', $data['nis'])
+                      ->orWhere('user_id', $user->id);
+                })
+                ->first();
+
+            if ($murid) {
+                if ($murid->trashed()) {
+                    $murid->restore();
+                }
+                $murid->update([
+                    'user_id' => $user->id,
+                    'nis' => $data['nis'],
+                    'nama' => $data['nama'],
+                    'kelas_id' => $data['kelas_id'],
+                ]);
+                return $murid;
+            } else {
+                return Murid::create([
+                    'user_id' => $user->id,
+                    'nis' => $data['nis'],
+                    'nama' => $data['nama'],
+                    'kelas_id' => $data['kelas_id'],
+                ]);
+            }
         });
     }
 
@@ -119,22 +154,60 @@ class MasterDataRepository implements MasterDataRepositoryInterface
     public function createGuru(array $data)
     {
         return DB::transaction(function() use ($data) {
-            // Create user first
-            $user = User::create([
-                'name' => $data['nama'],
-                'email' => $data['email'],
-                'tanggal_lahir' => $data['tanggal_lahir'] ?? null,
-                'password' => Hash::make($data['password'] ?? 'guru123'),
-                'role' => 'guru',
-                'phone' => $data['phone'] ?? null,
-            ]);
+            // 1. Check if there is a soft-deleted user with this email
+            $user = User::withTrashed()->where('email', $data['email'])->first();
+            if ($user) {
+                if ($user->trashed()) {
+                    $user->restore();
+                }
+                $user->update([
+                    'name' => $data['nama'],
+                    'tanggal_lahir' => $data['tanggal_lahir'] ?? null,
+                    'password' => Hash::make($data['password'] ?? 'guru123'),
+                    'role' => 'guru',
+                    'phone' => $data['phone'] ?? null,
+                ]);
+            } else {
+                // Create user first
+                $user = User::create([
+                    'name' => $data['nama'],
+                    'email' => $data['email'],
+                    'tanggal_lahir' => $data['tanggal_lahir'] ?? null,
+                    'password' => Hash::make($data['password'] ?? 'guru123'),
+                    'role' => 'guru',
+                    'phone' => $data['phone'] ?? null,
+                ]);
+            }
 
-            // Create guru profile
-            return Guru::create([
-                'user_id' => $user->id,
-                'nip' => $data['nip'] ?? null,
-                'nama' => $data['nama'],
-            ]);
+            // 2. Check if there is a soft-deleted guru with this NIP or user_id
+            $guru = Guru::withTrashed()
+                ->where(function($q) use ($data, $user) {
+                    if (!empty($data['nip'])) {
+                        $q->where('nip', $data['nip'])
+                          ->orWhere('user_id', $user->id);
+                    } else {
+                        $q->where('user_id', $user->id);
+                    }
+                })
+                ->first();
+
+            if ($guru) {
+                if ($guru->trashed()) {
+                    $guru->restore();
+                }
+                $guru->update([
+                    'user_id' => $user->id,
+                    'nip' => $data['nip'] ?? null,
+                    'nama' => $data['nama'],
+                ]);
+                return $guru;
+            } else {
+                return Guru::create([
+                    'user_id' => $user->id,
+                    'nip' => $data['nip'] ?? null,
+                    'nama' => $data['nama'],
+                ]);
+            }
         });
     }
 
