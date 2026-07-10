@@ -308,6 +308,17 @@
                     </div>
                 @endif
 
+                @if($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" role="alert" style="background-color: rgba(225, 29, 72, 0.1); color: var(--danger); border-left: 4px solid var(--danger) !important;">
+                        <ul class="mb-0 ps-3" style="font-size: 13px;">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
                 @yield('content')
             </main>
         </div>
