@@ -50,6 +50,7 @@
                     </a>
                 </li>
 
+                @if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
                 <!-- Master Data Collapsible Section -->
                 <li class="sidebar-header-text d-flex justify-content-between align-items-center px-4 pt-3 pb-1 text-uppercase font-heading" style="font-size: 10px; font-weight: 700; color: var(--text-secondary); cursor: pointer; user-select: none;" @click="masterOpen = !masterOpen">
                     <span>Master Data</span>
@@ -117,7 +118,6 @@
                 </li>
                 @endif
 
-                @if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
                 <li x-show="masterOpen" class="{{ Request::is('master/tujuan-pembelajaran*') ? 'active' : '' }}">
                     <a href="{{ route('tujuan-pembelajaran.index') }}">
                         <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
