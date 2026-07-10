@@ -168,12 +168,13 @@
                     </div>
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <label for="jam_masuk" class="form-label small fw-semibold">Jam Masuk</label>
-                            <input type="time" name="jam_masuk" id="jam_masuk" class="form-control form-control-sm" value="07:00" required>
+                            <label for="jam_masuk" class="form-label small fw-semibold">Jam Masuk (Opsional)</label>
+                            <input type="time" name="jam_masuk" id="jam_masuk" class="form-control form-control-sm">
                         </div>
                         <div class="col-md-6">
-                            <label for="status_masuk" class="form-label small fw-semibold">Status Masuk</label>
-                            <select name="status_masuk" id="status_masuk" class="form-select form-select-sm" required>
+                            <label for="status_masuk" class="form-label small fw-semibold">Status Masuk (Opsional)</label>
+                            <select name="status_masuk" id="status_masuk" class="form-select form-select-sm">
+                                <option value="">-- Tanpa Status Masuk --</option>
                                 <option value="tepat_waktu">Tepat Waktu</option>
                                 <option value="terlambat">Terlambat</option>
                             </select>
@@ -182,7 +183,7 @@
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label for="jam_pulang" class="form-label small fw-semibold">Jam Pulang (Opsional)</label>
-                            <input type="time" name="jam_pulang" id="jam_pulang" class="form-control form-control-sm" value="16:00">
+                            <input type="time" name="jam_pulang" id="jam_pulang" class="form-control form-control-sm">
                         </div>
                         <div class="col-md-6">
                             <label for="status_pulang" class="form-label small fw-semibold">Status Pulang (Opsional)</label>
@@ -192,6 +193,9 @@
                                 <option value="pulang_cepat">Pulang Cepat</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="text-muted small" style="font-size: 11px;">
+                        * Isikan salah satu (Jam Masuk saja / Jam Pulang saja) atau isi keduanya.
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -225,12 +229,13 @@
                     </div>
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <label for="edit_jam_masuk" class="form-label small fw-semibold">Jam Masuk</label>
-                            <input type="time" name="jam_masuk" id="edit_jam_masuk" class="form-control form-control-sm" required>
+                            <label for="edit_jam_masuk" class="form-label small fw-semibold">Jam Masuk (Opsional)</label>
+                            <input type="time" name="jam_masuk" id="edit_jam_masuk" class="form-control form-control-sm">
                         </div>
                         <div class="col-md-6">
-                            <label for="edit_status_masuk" class="form-label small fw-semibold">Status Masuk</label>
-                            <select name="status_masuk" id="edit_status_masuk" class="form-select form-select-sm" required>
+                            <label for="edit_status_masuk" class="form-label small fw-semibold">Status Masuk (Opsional)</label>
+                            <select name="status_masuk" id="edit_status_masuk" class="form-select form-select-sm">
+                                <option value="">-- Tanpa Status Masuk --</option>
                                 <option value="tepat_waktu">Tepat Waktu</option>
                                 <option value="terlambat">Terlambat</option>
                             </select>
@@ -249,6 +254,9 @@
                                 <option value="pulang_cepat">Pulang Cepat</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="text-muted small" style="font-size: 11px;">
+                        * Isikan salah satu (Jam Masuk saja / Jam Pulang saja) atau isi keduanya.
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -271,7 +279,7 @@
         document.getElementById('edit_nama_murid').value = p.penempatan_pkl.murid.nama;
         document.getElementById('edit_tanggal').value = p.tanggal;
         document.getElementById('edit_jam_masuk').value = p.jam_masuk ? p.jam_masuk.substring(0, 5) : '';
-        document.getElementById('edit_status_masuk').value = p.status_masuk;
+        document.getElementById('edit_status_masuk').value = p.status_masuk || '';
         document.getElementById('edit_jam_pulang').value = p.jam_pulang ? p.jam_pulang.substring(0, 5) : '';
         document.getElementById('edit_status_pulang').value = p.status_pulang || '';
     }

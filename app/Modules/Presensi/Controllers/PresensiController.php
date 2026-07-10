@@ -146,10 +146,13 @@ class PresensiController extends Controller
         $request->validate([
             'penempatan_pkl_id' => 'required|exists:penempatan_pkl,id',
             'tanggal' => 'required|date',
-            'jam_masuk' => 'required|string',
-            'status_masuk' => 'required|in:tepat_waktu,terlambat',
-            'jam_pulang' => 'nullable|string',
-            'status_pulang' => 'nullable|in:tepat_waktu,pulang_cepat',
+            'jam_masuk' => 'nullable|required_without:jam_pulang|string',
+            'status_masuk' => 'nullable|required_with:jam_masuk|in:tepat_waktu,terlambat',
+            'jam_pulang' => 'nullable|required_without:jam_masuk|string',
+            'status_pulang' => 'nullable|required_with:jam_pulang|in:tepat_waktu,pulang_cepat',
+        ], [
+            'jam_masuk.required_without' => 'Jam Masuk atau Jam Pulang harus diisi.',
+            'jam_pulang.required_without' => 'Jam Masuk atau Jam Pulang harus diisi.',
         ]);
 
         // Check if attendance already exists for this student on this day
@@ -162,16 +165,18 @@ class PresensiController extends Controller
         }
 
         // Standardise time format to HH:MM:SS
-        $jamMasuk = $request->jam_masuk ? date('H:i:s', strtotime($request->jam_masuk)) : null;
-        $jamPulang = $request->jam_pulang ? date('H:i:s', strtotime($request->jam_pulang)) : null;
+        $jamMasuk = $request->filled('jam_masuk') ? date('H:i:s', strtotime($request->jam_masuk)) : null;
+        $statusMasuk = $request->filled('jam_masuk') ? $request->status_masuk : null;
+        $jamPulang = $request->filled('jam_pulang') ? date('H:i:s', strtotime($request->jam_pulang)) : null;
+        $statusPulang = $request->filled('jam_pulang') ? $request->status_pulang : null;
 
         Presensi::create([
             'penempatan_pkl_id' => $request->penempatan_pkl_id,
             'tanggal' => $request->tanggal,
             'jam_masuk' => $jamMasuk,
-            'status_masuk' => $request->status_masuk,
+            'status_masuk' => $statusMasuk,
             'jam_pulang' => $jamPulang,
-            'status_pulang' => $request->status_pulang,
+            'status_pulang' => $statusPulang,
             'lat_masuk' => null,
             'lng_masuk' => null,
             'lat_pulang' => null,
@@ -189,22 +194,27 @@ class PresensiController extends Controller
     public function updateManual(Request $request, int $id)
     {
         $request->validate([
-            'jam_masuk' => 'required|string',
-            'status_masuk' => 'required|in:tepat_waktu,terlambat',
-            'jam_pulang' => 'nullable|string',
-            'status_pulang' => 'nullable|in:tepat_waktu,pulang_cepat',
+            'jam_masuk' => 'nullable|required_without:jam_pulang|string',
+            'status_masuk' => 'nullable|required_with:jam_masuk|in:tepat_waktu,terlambat',
+            'jam_pulang' => 'nullable|required_without:jam_masuk|string',
+            'status_pulang' => 'nullable|required_with:jam_pulang|in:tepat_waktu,pulang_cepat',
+        ], [
+            'jam_masuk.required_without' => 'Jam Masuk atau Jam Pulang harus diisi.',
+            'jam_pulang.required_without' => 'Jam Masuk atau Jam Pulang harus diisi.',
         ]);
 
         $presensi = Presensi::findOrFail($id);
 
-        $jamMasuk = $request->jam_masuk ? date('H:i:s', strtotime($request->jam_masuk)) : null;
-        $jamPulang = $request->jam_pulang ? date('H:i:s', strtotime($request->jam_pulang)) : null;
+        $jamMasuk = $request->filled('jam_masuk') ? date('H:i:s', strtotime($request->jam_masuk)) : null;
+        $statusMasuk = $request->filled('jam_masuk') ? $request->status_masuk : null;
+        $jamPulang = $request->filled('jam_pulang') ? date('H:i:s', strtotime($request->jam_pulang)) : null;
+        $statusPulang = $request->filled('jam_pulang') ? $request->status_pulang : null;
 
         $presensi->update([
             'jam_masuk' => $jamMasuk,
-            'status_masuk' => $request->status_masuk,
+            'status_masuk' => $statusMasuk,
             'jam_pulang' => $jamPulang,
-            'status_pulang' => $request->status_pulang,
+            'status_pulang' => $statusPulang,
         ]);
 
         return redirect()->back()->with('success', 'Koreksi presensi manual berhasil diperbarui.');

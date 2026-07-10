@@ -413,4 +413,120 @@ class NilaiExcelTest extends TestCase
 
         $response1->assertStatus(403); // Forbidden
     }
+
+    public function test_manual_attendance_checkin_only()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $tahun = TahunAjaran::create(['tahun' => '2025/2026', 'semester' => 'ganjil', 'status' => 'aktif']);
+        $jurusan = Jurusan::create(['kode' => 'RPL', 'nama' => 'Rekayasa Perangkat Lunak']);
+        $kelas = Kelas::create(['nama' => 'XII RPL 1', 'jurusan_id' => $jurusan->id]);
+        
+        $muridUser = User::factory()->create(['role' => 'murid']);
+        $murid = Murid::create(['nis' => '17561', 'nama' => 'Manual Murid 3', 'kelas_id' => $kelas->id, 'user_id' => $muridUser->id]);
+        
+        $guruUser = User::factory()->create(['role' => 'guru']);
+        $guru = Guru::create(['user_id' => $guruUser->id, 'nip' => '8890', 'nama' => 'Manual Guru 3']);
+        
+        $dudi = Dudi::create([
+            'nama' => 'PT. Manual Tech 3', 'alamat' => 'City', 'latitude' => 0.0, 'longitude' => 0.0, 'radius_meter' => 50,
+            'pic_nama' => 'PIC Tech', 'pic_phone' => '0812'
+        ]);
+
+        $placement = PenempatanPkl::create([
+            'murid_id' => $murid->id,
+            'dudi_id' => $dudi->id,
+            'guru_id' => $guru->id,
+            'tahun_ajaran_id' => $tahun->id,
+            'tanggal_mulai' => '2025-07-01',
+            'tanggal_selesai' => '2025-12-31',
+            'status' => 'aktif'
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->post(route('presensi.store_manual'), [
+                'penempatan_pkl_id' => $placement->id,
+                'tanggal' => '2025-07-10',
+                'jam_masuk' => '07:15',
+                'status_masuk' => 'tepat_waktu',
+                'jam_pulang' => '',
+                'status_pulang' => '',
+            ]);
+
+        $response->assertStatus(302);
+        $this->assertDatabaseHas('presensi', [
+            'penempatan_pkl_id' => $placement->id,
+            'tanggal' => '2025-07-10',
+            'jam_masuk' => '07:15:00',
+            'jam_pulang' => null,
+            'status_masuk' => 'tepat_waktu',
+            'status_pulang' => null,
+        ]);
+    }
+
+    public function test_manual_attendance_checkout_only()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $tahun = TahunAjaran::create(['tahun' => '2025/2026', 'semester' => 'ganjil', 'status' => 'aktif']);
+        $jurusan = Jurusan::create(['kode' => 'RPL', 'nama' => 'Rekayasa Perangkat Lunak']);
+        $kelas = Kelas::create(['nama' => 'XII RPL 1', 'jurusan_id' => $jurusan->id]);
+        
+        $muridUser = User::factory()->create(['role' => 'murid']);
+        $murid = Murid::create(['nis' => '17562', 'nama' => 'Manual Murid 4', 'kelas_id' => $kelas->id, 'user_id' => $muridUser->id]);
+        
+        $guruUser = User::factory()->create(['role' => 'guru']);
+        $guru = Guru::create(['user_id' => $guruUser->id, 'nip' => '8891', 'nama' => 'Manual Guru 4']);
+        
+        $dudi = Dudi::create([
+            'nama' => 'PT. Manual Tech 4', 'alamat' => 'City', 'latitude' => 0.0, 'longitude' => 0.0, 'radius_meter' => 50,
+            'pic_nama' => 'PIC Tech', 'pic_phone' => '0812'
+        ]);
+
+        $placement = PenempatanPkl::create([
+            'murid_id' => $murid->id,
+            'dudi_id' => $dudi->id,
+            'guru_id' => $guru->id,
+            'tahun_ajaran_id' => $tahun->id,
+            'tanggal_mulai' => '2025-07-01',
+            'tanggal_selesai' => '2025-12-31',
+            'status' => 'aktif'
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->post(route('presensi.store_manual'), [
+                'penempatan_pkl_id' => $placement->id,
+                'tanggal' => '2025-07-10',
+                'jam_masuk' => '',
+                'status_masuk' => '',
+                'jam_pulang' => '16:00',
+                'status_pulang' => 'tepat_waktu',
+            ]);
+
+        $response->assertStatus(302);
+        $this->assertDatabaseHas('presensi', [
+            'penempatan_pkl_id' => $placement->id,
+            'tanggal' => '2025-07-10',
+            'jam_masuk' => null,
+            'jam_pulang' => '16:00:00',
+            'status_masuk' => null,
+            'status_pulang' => 'tepat_waktu',
+        ]);
+    }
+
+    public function test_manual_attendance_fails_if_both_empty()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $response = $this->actingAs($admin)
+            ->from(route('presensi.index'))
+            ->post(route('presensi.store_manual'), [
+                'penempatan_pkl_id' => 1,
+                'tanggal' => '2025-07-10',
+                'jam_masuk' => '',
+                'status_masuk' => '',
+                'jam_pulang' => '',
+                'status_pulang' => '',
+            ]);
+
+        $response->assertRedirect(route('presensi.index'));
+        $response->assertSessionHasErrors(['jam_masuk', 'jam_pulang']);
+    }
 }
