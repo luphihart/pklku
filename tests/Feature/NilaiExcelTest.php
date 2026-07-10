@@ -297,7 +297,7 @@ class NilaiExcelTest extends TestCase
         ]);
     }
 
-    public function test_admin_and_guru_can_create_manual_attendance()
+    public function test_admin_can_create_manual_attendance()
     {
         $admin = User::factory()->create(['role' => 'admin']);
         $tahun = TahunAjaran::create(['tahun' => '2025/2026', 'semester' => 'ganjil', 'status' => 'aktif']);
@@ -346,7 +346,7 @@ class NilaiExcelTest extends TestCase
         ]);
     }
 
-    public function test_admin_and_guru_can_update_manual_attendance()
+    public function test_admin_can_update_manual_attendance()
     {
         $admin = User::factory()->create(['role' => 'admin']);
         $tahun = TahunAjaran::create(['tahun' => '2025/2026', 'semester' => 'ganjil', 'status' => 'aktif']);
@@ -399,9 +399,10 @@ class NilaiExcelTest extends TestCase
         ]);
     }
 
-    public function test_student_cannot_create_or_update_manual_attendance()
+    public function test_student_and_guru_cannot_create_or_update_manual_attendance()
     {
         $student = User::factory()->create(['role' => 'murid']);
+        $guru = User::factory()->create(['role' => 'guru']);
         
         $response1 = $this->actingAs($student)
             ->post(route('presensi.store_manual'), [
@@ -412,6 +413,16 @@ class NilaiExcelTest extends TestCase
             ]);
 
         $response1->assertStatus(403); // Forbidden
+
+        $response2 = $this->actingAs($guru)
+            ->post(route('presensi.store_manual'), [
+                'penempatan_pkl_id' => 1,
+                'tanggal' => '2025-07-10',
+                'jam_masuk' => '07:15',
+                'status_masuk' => 'tepat_waktu',
+            ]);
+
+        $response2->assertStatus(403); // Forbidden
     }
 
     public function test_manual_attendance_checkin_only()

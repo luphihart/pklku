@@ -7,7 +7,7 @@
 <div class="container-fluid p-0">
     <div class="row">
         <!-- Excel Export Column -->
-        <div class="col-md-5 mb-4">
+        <div class="col-md-6 mx-auto mb-4">
             <div class="card-premium" x-data="{ type: 'harian' }">
                 <h5 class="fw-bold font-heading mb-3 text-dark">Ekspor Rekap Presensi</h5>
                 <p class="small text-secondary mb-3">Unduh data kehadiran siswa dalam format Excel Spreadsheet.</p>
@@ -71,51 +71,6 @@
 
                     <button type="submit" class="btn btn-sm btn-primary w-100 mt-2">Ekspor ke Excel</button>
                 </form>
-            </div>
-        </div>
-
-        <!-- PDF Grades Sheet Column -->
-        <div class="col-md-7 mb-4">
-            <div class="card-premium p-0 overflow-hidden">
-                <div class="p-3 border-bottom" style="border-bottom-color: var(--border-color) !important;">
-                    <h6 class="fw-bold m-0 text-dark dark-text-light">Unduh Lembar Nilai PDF Kop Sekolah</h6>
-                </div>
-
-                <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
-                    <table class="table table-hover align-middle mb-0" style="color: var(--text-primary); font-size: 13px;">
-                        <thead>
-                            <tr class="text-muted">
-                                <th class="ps-4">Siswa (NIS)</th>
-                                <th>DUDI PKL</th>
-                                <th class="text-center">Nilai Akhir</th>
-                                <th class="text-center pe-4" style="width: 100px;">Unduh</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($placements as $p)
-                                <tr>
-                                    <td class="ps-4">
-                                        <div class="fw-semibold">{{ $p->murid->nama }}</div>
-                                        <small class="text-muted">{{ $p->murid->kelas->nama }}</small>
-                                    </td>
-                                    <td>{{ $p->dudi->nama }}</td>
-                                    <td class="text-center fw-bold text-primary">{{ number_format($p->penilaianPkl->nilai_akhir, 2) }}</td>
-                                    <td class="text-center pe-4">
-                                        <a href="{{ route('laporan.nilai_pdf', $p->id) }}" class="btn btn-sm btn-outline-danger p-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                            </svg>
-                                        </a>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center py-4 text-muted">Belum ada murid yang selesai dinilai.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
             </div>
         </div>
     </div>

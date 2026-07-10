@@ -9,8 +9,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/presensi', [PresensiController::class, 'index'])->name('presensi.index');
     Route::post('/presensi/checkin', [PresensiController::class, 'checkIn'])->name('presensi.checkin');
     Route::post('/presensi/checkout', [PresensiController::class, 'checkOut'])->name('presensi.checkout');
-    Route::post('/presensi/manual', [PresensiController::class, 'storeManual'])->name('presensi.store_manual')->middleware('role:admin,guru');
-    Route::put('/presensi/{id}/manual', [PresensiController::class, 'updateManual'])->name('presensi.update_manual')->middleware('role:admin,guru');
+    Route::post('/presensi/manual', [PresensiController::class, 'storeManual'])->name('presensi.store_manual')->middleware('role:admin');
+    Route::put('/presensi/{id}/manual', [PresensiController::class, 'updateManual'])->name('presensi.update_manual')->middleware('role:admin');
     Route::delete('/presensi/{id}', [PresensiController::class, 'destroy'])->name('presensi.destroy')->middleware('role:admin');
 
     // Leave permission routes

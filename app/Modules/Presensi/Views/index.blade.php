@@ -7,7 +7,7 @@
 <div class="container-fluid p-0">
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
         <h5 class="fw-bold font-heading m-0 text-dark dark-text-light">Jurnal Kehadiran Harian Murid</h5>
-        @if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
+        @if(auth()->user()->role === 'admin')
             <button class="btn btn-sm btn-primary font-heading fw-bold" data-bs-toggle="modal" data-bs-target="#modalTambahManual">
                 <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: inline-block; vertical-align: middle;">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -42,7 +42,7 @@
                         <th class="text-center">Foto Check In</th>
                         <th class="text-center">Jam Check Out</th>
                         <th class="text-center">Foto Check Out</th>
-                        <th class="text-center pe-4" style="width: 150px;">Status @if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru') / Aksi @endif</th>
+                        <th class="text-center pe-4" style="width: 150px;">Status @if(auth()->user()->role === 'admin') / Aksi @endif</th>
                     </tr>
                 </thead>
                 <tbody style="font-size: 13px;">
@@ -92,7 +92,7 @@
                                         <span class="badge bg-success">Pulang Tepat Waktu</span>
                                     </div>
                                 @endif
-                                @if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
+                                @if(auth()->user()->role === 'admin')
                                     <div class="mt-2 d-flex justify-content-center gap-1">
                                         <button type="button" class="btn btn-sm btn-outline-warning p-1" title="Koreksi Presensi" data-bs-toggle="modal" data-bs-target="#modalEditManual" onclick="editPresensi({{ json_encode([
                                             'id' => $p->id,
@@ -109,7 +109,6 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                             </svg>
                                         </button>
-                                        @if(auth()->user()->role === 'admin')
                                         <form action="{{ route('presensi.destroy', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data presensi ini?');" style="display: inline-block;">
                                             @csrf
                                             @method('DELETE')
@@ -119,7 +118,6 @@
                                                 </svg>
                                             </button>
                                         </form>
-                                        @endif
                                     </div>
                                 @endif
                             </td>
@@ -141,7 +139,7 @@
     </div>
 </div>
 
-@if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
+@if(auth()->user()->role === 'admin')
 <!-- Modal Tambah Manual -->
 <div class="modal fade" id="modalTambahManual" tabindex="-1" aria-labelledby="modalTambahManualLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -272,7 +270,7 @@
 @endsection
 
 @section('scripts')
-@if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
+@if(auth()->user()->role === 'admin')
 <script>
     function editPresensi(p) {
         document.getElementById('formEditManual').action = `/presensi/${p.id}/manual`;
