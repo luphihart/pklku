@@ -36,6 +36,14 @@
         font-size: 14px;
     }
 
+    @media (max-width: 768px) {
+        .form-control-premium {
+            font-size: 16px !important;
+            padding-top: 0.7rem !important;
+            padding-bottom: 0.7rem !important;
+        }
+    }
+
     .form-control-premium:focus {
         border-color: var(--accent-primary);
         box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);

@@ -16,13 +16,22 @@
     #camera-preview {
         width: 100%;
         max-width: 320px;
-        height: 240px;
+        aspect-ratio: 4/3;
+        height: auto;
         border-radius: 0.5rem;
         background-color: #000;
         object-fit: cover;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
     }
     #selfie-canvas {
         display: none;
+    }
+    @media (max-width: 576px) {
+        .btn-attendance {
+            font-size: 12px !important;
+            padding-left: 0.25rem !important;
+            padding-right: 0.25rem !important;
+        }
     }
 </style>
 @endsection
@@ -64,14 +73,14 @@
                     <!-- Actions -->
                     <div class="row g-2">
                         <div class="col-6">
-                            <button class="btn btn-success w-100 py-3 font-heading fw-bold" 
+                            <button class="btn btn-success w-100 py-3 font-heading fw-bold btn-attendance" 
                                     :disabled="!inRadius || todayHasCheckIn || submitting" 
                                     @click="submitAttendance('checkin')">
                                 <span x-text="todayHasCheckIn ? 'Sudah Check In' : 'CHECK IN PAGI'"></span>
                             </button>
                         </div>
                         <div class="col-6">
-                            <button class="btn btn-warning w-100 py-3 font-heading fw-bold" 
+                            <button class="btn btn-warning w-100 py-3 font-heading fw-bold btn-attendance" 
                                     :disabled="!inRadius || !todayHasCheckIn || todayHasCheckOut || submitting" 
                                     @click="submitAttendance('checkout')">
                                 <span x-text="todayHasCheckOut ? 'Sudah Check Out' : 'CHECK OUT SORE'"></span>

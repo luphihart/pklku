@@ -35,7 +35,7 @@
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0" style="color: var(--text-primary);">
                 <thead class="table-light">
-                    <tr class="font-heading" style="font-size: 13px; font-weight: 600;">
+                    <tr class="font-heading text-nowrap" style="font-size: 13px; font-weight: 600;">
                         <th class="ps-4">Murid (Kelas)</th>
                         <th>DUDI Tempat PKL</th>
                         <th class="text-center">Jam Check In</th>

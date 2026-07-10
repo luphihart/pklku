@@ -68,13 +68,13 @@
         @if(auth()->user()->role === 'guru')
             <div class="row mb-4">
                 <!-- Count 1: Murid Bimbingan -->
-                <div class="col-md-4 col-sm-6 mb-3">
-                    <div class="card-premium d-flex align-items-center justify-content-between">
+                <div class="col-6 col-md-4 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between h-100">
                         <div>
                             <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Murid Bimbingan</span>
                             <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['murid'] ?? 0 }}</h3>
                         </div>
-                        <div class="p-3 rounded bg-light" style="color: var(--accent-primary); background-color: rgba(79, 70, 229, 0.1) !important;">
+                        <div class="p-3 rounded bg-light d-none d-sm-block" style="color: var(--accent-primary); background-color: rgba(79, 70, 229, 0.1) !important;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z"/>
                             </svg>
@@ -82,13 +82,13 @@
                     </div>
                 </div>
                 <!-- Count 2: Mitra DUDI Plotted -->
-                <div class="col-md-4 col-sm-6 mb-3">
-                    <div class="card-premium d-flex align-items-center justify-content-between">
+                <div class="col-6 col-md-4 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between h-100">
                         <div>
-                            <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Mitra DUDI Tempat Plotting</span>
+                            <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Mitra DUDI</span>
                             <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['dudi'] ?? 0 }}</h3>
                         </div>
-                        <div class="p-3 rounded bg-light" style="color: var(--warning); background-color: rgba(245, 158, 11, 0.1) !important;">
+                        <div class="p-3 rounded bg-light d-none d-sm-block" style="color: var(--warning); background-color: rgba(245, 158, 11, 0.1) !important;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                             </svg>
@@ -96,13 +96,13 @@
                     </div>
                 </div>
                 <!-- Count 3: Penempatan Aktif -->
-                <div class="col-md-4 col-sm-12 mb-3">
-                    <div class="card-premium d-flex align-items-center justify-content-between">
+                <div class="col-12 col-md-4 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between h-100">
                         <div>
                             <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Penempatan Aktif</span>
                             <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['penempatan_aktif'] ?? 0 }}</h3>
                         </div>
-                        <div class="p-3 rounded bg-light" style="color: var(--danger); background-color: rgba(225, 29, 72, 0.1) !important;">
+                        <div class="p-3 rounded bg-light d-none d-sm-block" style="color: var(--danger); background-color: rgba(225, 29, 72, 0.1) !important;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
                             </svg>
@@ -113,13 +113,13 @@
         @else
             <div class="row mb-4">
                 <!-- Count 1 -->
-                <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="card-premium d-flex align-items-center justify-content-between">
+                <div class="col-6 col-md-3 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between h-100">
                         <div>
                             <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Total Murid</span>
                             <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['murid'] ?? 0 }}</h3>
                         </div>
-                        <div class="p-3 rounded bg-light" style="color: var(--accent-primary); background-color: rgba(79, 70, 229, 0.1) !important;">
+                        <div class="p-3 rounded bg-light d-none d-sm-block" style="color: var(--accent-primary); background-color: rgba(79, 70, 229, 0.1) !important;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z"/>
                             </svg>
@@ -127,13 +127,13 @@
                     </div>
                 </div>
                 <!-- Count 2 -->
-                <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="card-premium d-flex align-items-center justify-content-between">
+                <div class="col-6 col-md-3 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between h-100">
                         <div>
                             <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Total Guru</span>
                             <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['guru'] ?? 0 }}</h3>
                         </div>
-                        <div class="p-3 rounded bg-light" style="color: var(--success); background-color: rgba(16, 185, 129, 0.1) !important;">
+                        <div class="p-3 rounded bg-light d-none d-sm-block" style="color: var(--success); background-color: rgba(16, 185, 129, 0.1) !important;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6m-6 4h6"/>
                             </svg>
@@ -141,13 +141,13 @@
                     </div>
                 </div>
                 <!-- Count 3 -->
-                <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="card-premium d-flex align-items-center justify-content-between">
+                <div class="col-6 col-md-3 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between h-100">
                         <div>
                             <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Mitra DUDI</span>
                             <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['dudi'] ?? 0 }}</h3>
                         </div>
-                        <div class="p-3 rounded bg-light" style="color: var(--warning); background-color: rgba(245, 158, 11, 0.1) !important;">
+                        <div class="p-3 rounded bg-light d-none d-sm-block" style="color: var(--warning); background-color: rgba(245, 158, 11, 0.1) !important;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                             </svg>
@@ -155,13 +155,13 @@
                     </div>
                 </div>
                 <!-- Count 4 -->
-                <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="card-premium d-flex align-items-center justify-content-between">
+                <div class="col-6 col-md-3 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between h-100">
                         <div>
                             <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Penempatan Aktif</span>
                             <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['penempatan_aktif'] ?? 0 }}</h3>
                         </div>
-                        <div class="p-3 rounded bg-light" style="color: var(--danger); background-color: rgba(225, 29, 72, 0.1) !important;">
+                        <div class="p-3 rounded bg-light d-none d-sm-block" style="color: var(--danger); background-color: rgba(225, 29, 72, 0.1) !important;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
                             </svg>
