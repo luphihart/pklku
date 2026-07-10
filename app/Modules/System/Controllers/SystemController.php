@@ -74,4 +74,31 @@ class SystemController extends Controller
         $this->service->wipeLogs();
         return redirect()->route('system.index')->with('success', 'Log audit berhasil dibersihkan.');
     }
+
+    /**
+     * Wipe entire database (fresh state).
+     */
+    public function wipeDatabase(Request $request)
+    {
+        $request->validate([
+            'confirmation_word' => 'required|string',
+        ]);
+
+        if (strtoupper($request->confirmation_word) !== 'KOSONGKAN') {
+            return back()->with('error', 'Konfirmasi kata salah. Anda harus mengetik kata KOSONGKAN.');
+        }
+
+        try {
+            $this->service->wipeDatabase();
+
+            // Clear session and log out
+            auth()->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')->with('success', 'Seluruh database berhasil dikosongkan! Silakan masuk kembali menggunakan akun Administrator default (admin@pklsmk.sch.id / admin123).');
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Gagal mengosongkan database: ' . $e->getMessage());
+        }
+    }
 }

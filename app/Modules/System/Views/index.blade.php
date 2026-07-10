@@ -150,6 +150,25 @@ if (!function_exists('parseUserAgent')) {
                     </button>
                 </form>
             </div>
+
+            <div class="card-premium mt-4">
+                <h5 class="fw-bold font-heading mb-3 text-danger dark-text-danger">Kosongkan Database</h5>
+                <p class="small text-secondary mb-3">Wipe seluruh tabel database dan kembalikan ke keadaan kosong awal. Semua data murid, guru, DUDI, presensi, jurnal, dan penilaian akan terhapus.</p>
+                <div class="alert alert-danger border-0 small mb-3" style="background-color: rgba(220, 38, 38, 0.1); color: #dc2626;">
+                    ⚠️ Tindakan ini bersifat PERMANEN dan tidak dapat dibatalkan. Hanya akun Administrator utama (admin@pklsmk.sch.id / admin123) dan parameter dasar yang akan dipertahankan.
+                </div>
+                
+                <form action="{{ route('system.wipe_db') }}" method="POST" onsubmit="return confirm('APAKAH ANDA BENAR-BENAR YAKIN? Semua data operasional PKL (murid, guru, DUDI, nilai, jurnal, absen) akan terhapus secara permanen!');">
+                    @csrf
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-muted">Ketik kata konfirmasi "KOSONGKAN" untuk melanjutkan:</label>
+                        <input type="text" name="confirmation_word" class="form-control form-control-sm border-danger" placeholder="KOSONGKAN" required>
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-danger w-100 py-2 font-heading fw-bold">
+                        Wipe & Kosongkan Database
+                    </button>
+                </form>
+            </div>
         </div>
 
         <!-- Audit logs -->

@@ -87,4 +87,28 @@ class SystemService
             DB::statement('SET FOREIGN_KEY_CHECKS=1');
         });
     }
+
+    /**
+     * Wipe entire database and seed basic configurations and admin account (fresh start).
+     */
+    public function wipeDatabase(): void
+    {
+        // 1. Wipe and re-migrate all tables
+        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
+
+        // 2. Seed basic settings configuration
+        \Illuminate\Support\Facades\Artisan::call('db:seed', [
+            '--class' => 'Database\\Seeders\\SettingSeeder',
+            '--force' => true
+        ]);
+
+        // 3. Create default Administrator account
+        \App\Models\User::create([
+            'name' => 'Administrator PKL',
+            'email' => 'admin@pklsmk.sch.id',
+            'password' => \Illuminate\Support\Facades\Hash::make('admin123'),
+            'role' => 'admin',
+            'phone' => '081234567890',
+        ]);
+    }
 }

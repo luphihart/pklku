@@ -529,4 +529,49 @@ class NilaiExcelTest extends TestCase
         $response->assertRedirect(route('presensi.index'));
         $response->assertSessionHasErrors(['jam_masuk', 'jam_pulang']);
     }
+
+    public function test_admin_can_wipe_database_with_correct_confirmation()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Mock SystemService to bypass SQLite in-transaction migrate:fresh limits
+        $this->mock(\App\Modules\System\Services\SystemService::class, function ($mock) {
+            $mock->shouldReceive('wipeDatabase')->once()->andReturnNull();
+        });
+
+        $response = $this->actingAs($admin)
+            ->post(route('system.wipe_db'), [
+                'confirmation_word' => 'KOSONGKAN',
+            ]);
+
+        $response->assertRedirect(route('login'));
+        $response->assertSessionHas('success');
+    }
+
+    public function test_admin_cannot_wipe_database_with_incorrect_confirmation()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $tahun = TahunAjaran::create(['tahun' => '2025/2026', 'semester' => 'ganjil', 'status' => 'aktif']);
+        $jurusan = Jurusan::create(['kode' => 'RPL', 'nama' => 'Rekayasa Perangkat Lunak']);
+
+        $response = $this->actingAs($admin)
+            ->post(route('system.wipe_db'), [
+                'confirmation_word' => 'WRONG_WORD',
+            ]);
+
+        $response->assertStatus(302);
+        $response->assertSessionHas('error');
+        $this->assertDatabaseHas('jurusan', ['kode' => 'RPL']);
+    }
+
+    public function test_guru_and_student_cannot_wipe_database()
+    {
+        $guru = User::factory()->create(['role' => 'guru']);
+        $response = $this->actingAs($guru)
+            ->post(route('system.wipe_db'), [
+                'confirmation_word' => 'KOSONGKAN',
+            ]);
+
+        $response->assertStatus(403);
+    }
 }
