@@ -1,0 +1,299 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\User;
+use App\Modules\MasterData\Models\Murid;
+use App\Modules\MasterData\Models\Guru;
+use App\Modules\MasterData\Models\Dudi;
+use App\Modules\MasterData\Models\Kelas;
+use App\Modules\MasterData\Models\Jurusan;
+use App\Modules\MasterData\Models\TahunAjaran;
+use App\Modules\Penilaian\Models\IndikatorPenilaian;
+use App\Modules\PKL\Models\PenempatanPkl;
+use App\Modules\Setting\Models\Setting;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class NilaiExcelTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Ensure settings exist
+        Setting::updateOrCreate(['key' => 'bobot_nilai_guru'], ['value' => '50']);
+        Setting::updateOrCreate(['key' => 'bobot_nilai_industri'], ['value' => '50']);
+
+        // Seed Tujuan Pembelajaran
+        $tp = \App\Modules\Penilaian\Models\TujuanPembelajaran::updateOrCreate(
+            ['id' => 1],
+            ['nomor' => '1', 'nama' => 'Menerapkan soft skills']
+        );
+
+        // Ensure indicators exist
+        IndikatorPenilaian::updateOrCreate(['id' => 1], [
+            'nama' => 'Disiplin',
+            'tipe' => 'guru',
+            'tujuan_pembelajaran_id' => $tp->id,
+            'nomor_urut' => '1.1'
+        ]);
+        IndikatorPenilaian::updateOrCreate(['id' => 2], [
+            'nama' => 'Kerja Sama',
+            'tipe' => 'industri',
+            'tujuan_pembelajaran_id' => $tp->id,
+            'nomor_urut' => '1.2'
+        ]);
+    }
+
+    public function test_admin_can_download_template()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)
+            ->get(route('penilaian.template'));
+
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    }
+
+    public function test_guru_can_download_template()
+    {
+        $user = User::factory()->create(['role' => 'guru']);
+        $guru = Guru::create([
+            'user_id' => $user->id,
+            'nip' => '123456789',
+            'nama' => 'Guru Test',
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get(route('penilaian.template'));
+
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    }
+
+    public function test_import_nilai()
+    {
+        // 1. Setup mock data
+        $tahun = TahunAjaran::create(['tahun' => '2025/2026', 'semester' => 'ganjil', 'status' => 'aktif']);
+        $jurusan = Jurusan::create(['kode' => 'RPL', 'nama' => 'Rekayasa Perangkat Lunak']);
+        $kelas = Kelas::create(['nama' => 'XII RPL 1', 'jurusan_id' => $jurusan->id]);
+        
+        $muridUser = User::factory()->create(['role' => 'murid']);
+        $murid = Murid::create([
+            'nis' => '17553',
+            'nama' => 'Abdul Test',
+            'kelas_id' => $kelas->id,
+            'user_id' => $muridUser->id
+        ]);
+
+        $dudi = Dudi::create([
+            'nama' => 'PT. Coding Indonesia',
+            'alamat' => 'Yogyakarta',
+            'latitude' => 0.0,
+            'longitude' => 0.0,
+            'radius_meter' => 50,
+            'pic_nama' => 'PIC Budi',
+            'pic_phone' => '08123456789',
+        ]);
+
+        $guruUser = User::factory()->create(['role' => 'guru']);
+        $guru = Guru::create([
+            'nip' => '12345',
+            'nama' => 'Budi Guru',
+            'user_id' => $guruUser->id
+        ]);
+
+        $placement = PenempatanPkl::create([
+            'murid_id' => $murid->id,
+            'dudi_id' => $dudi->id,
+            'guru_id' => $guru->id,
+            'tahun_ajaran_id' => $tahun->id,
+            'tanggal_mulai' => '2026-07-01',
+            'tanggal_selesai' => '2026-12-31',
+            'status' => 'aktif'
+        ]);
+
+        // 2. Create Excel file programmatically
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Data Nilai');
+
+        // Headers
+        $sheet->setCellValue('A1', 'NIS');
+        $sheet->setCellValue('B1', 'Nama Murid');
+        $sheet->setCellValue('C1', 'Kelas');
+        $sheet->setCellValue('D1', 'DUDI');
+        $sheet->setCellValue('E1', 'Guru: Disiplin');
+        $sheet->setCellValue('F1', 'DUDI: Kerja Sama');
+        $sheet->setCellValue('G1', 'Keterangan TP 1: Menerapkan soft skills');
+        $sheet->setCellValue('H1', 'Catatan');
+
+        // Student row
+        $sheet->setCellValue('A2', '17553');
+        $sheet->setCellValue('B2', 'Abdul Test');
+        $sheet->setCellValue('C2', 'XII RPL 1');
+        $sheet->setCellValue('D2', 'PT. Coding Indonesia');
+        $sheet->setCellValue('E2', '90');
+        $sheet->setCellValue('F2', '85');
+        $sheet->setCellValue('G2', 'Kinerja sangat baik');
+        $sheet->setCellValue('H2', 'Sangat baik');
+
+        // Hidden metadata sheet
+        $metaSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'metadata');
+        $spreadsheet->addSheet($metaSheet);
+        $metaSheet->setCellValue('A1', '1'); // Guru indicator ID
+        $metaSheet->setCellValue('A2', '2'); // Industri indicator ID
+        $metaSheet->setCellValue('A3', '1'); // Tujuan Pembelajaran ID
+
+        $tempPath = tempnam(sys_get_temp_dir(), 'test_nilai_import');
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save($tempPath);
+
+        // 3. Perform import via NilaiImportService
+        $importService = app(\App\Modules\Penilaian\Services\NilaiImportService::class);
+        $result = $importService->importNilai($tempPath, 'guru', $guru->id);
+
+        unlink($tempPath);
+
+        // 4. Assertions
+        $this->assertEquals(1, $result['success']);
+        $this->assertEmpty($result['errors']);
+
+        // Verify database records
+        $this->assertDatabaseHas('penilaian_pkl', [
+            'penempatan_pkl_id' => $placement->id,
+            'rata_nilai_guru' => 90.0,
+            'rata_nilai_industri' => 85.0,
+            'nilai_akhir' => 87.5,
+            'predikat' => 'B',
+            'catatan' => 'Sangat baik',
+        ]);
+
+        $evaluation = \App\Modules\Penilaian\Models\PenilaianPkl::where('penempatan_pkl_id', $placement->id)->first();
+        $this->assertEquals(['1' => 'Kinerja sangat baik'], $evaluation->keterangan_tp_json);
+    }
+
+    public function test_profile_update_and_birthday_banner()
+    {
+        $user = User::factory()->create([
+            'role' => 'admin',
+            'phone' => '111',
+            'tanggal_lahir' => null,
+        ]);
+
+        // 1. Test updating phone and tanggal_lahir
+        $response = $this->actingAs($user)
+            ->post(route('profile.update'), [
+                'phone' => '081234567890',
+                'tanggal_lahir' => '2000-07-10',
+            ]);
+
+        $response->assertSessionHas('success');
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'phone' => '081234567890',
+            'tanggal_lahir' => '2000-07-10 00:00:00', // SQLite casted as datetime/date
+        ]);
+
+        // 2. Set the birthday to exactly today (day and month)
+        $user->refresh();
+        $user->update([
+            'tanggal_lahir' => \Carbon\Carbon::now()->format('Y-m-d')
+        ]);
+
+        // 3. Visit dashboard and assert birthday banner is present
+        $response = $this->actingAs($user)
+            ->get(route('dashboard'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Selamat Ulang Tahun');
+        $response->assertSee('Semoga panjang umur, sehat selalu');
+    }
+
+    public function test_master_data_birthday_fields()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $jurusan = Jurusan::create(['kode' => 'TJKT', 'nama' => 'Teknik Jaringan Komputer']);
+        $kelas = Kelas::create(['nama' => 'XII TJKT 1', 'jurusan_id' => $jurusan->id]);
+
+        // 1. Create student with tanggal_lahir
+        $response = $this->actingAs($admin)
+            ->post(route('murid.store'), [
+                'nama' => 'Student Birthday Test',
+                'email' => 'studentbday@school.id',
+                'nis' => '99988877',
+                'kelas_id' => $kelas->id,
+                'phone' => '08122334455',
+                'tanggal_lahir' => '2008-05-15',
+                'password' => 'password123',
+            ]);
+
+        $response->assertRedirect(route('murid.index'));
+        $this->assertDatabaseHas('users', [
+            'email' => 'studentbday@school.id',
+            'tanggal_lahir' => '2008-05-15 00:00:00',
+        ]);
+
+        // 2. Create teacher with tanggal_lahir
+        $response = $this->actingAs($admin)
+            ->post(route('guru.store'), [
+                'nama' => 'Teacher Birthday Test',
+                'email' => 'teacherbday@school.id',
+                'nip' => '198005152010011002',
+                'phone' => '08122334466',
+                'tanggal_lahir' => '1980-05-15',
+                'password' => 'password123',
+            ]);
+
+        $response->assertRedirect(route('guru.index'));
+        $this->assertDatabaseHas('users', [
+            'email' => 'teacherbday@school.id',
+            'tanggal_lahir' => '1980-05-15 00:00:00',
+        ]);
+    }
+
+    public function test_master_data_excel_import_with_birthday()
+    {
+        $jurusan = Jurusan::create(['kode' => 'TJKT2', 'nama' => 'Teknik Jaringan Komputer 2']);
+        $kelas = Kelas::create(['nama' => 'XII TJKT 2', 'jurusan_id' => $jurusan->id]);
+
+        // 1. Mock a student Excel file
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setCellValue('A1', 'Nama Lengkap');
+        $sheet->setCellValue('B1', 'Email');
+        $sheet->setCellValue('C1', 'No. Telp (WhatsApp)');
+        $sheet->setCellValue('D1', 'NIS (Nomor Induk Siswa)');
+        $sheet->setCellValue('E1', 'Nama Kelas');
+        $sheet->setCellValue('F1', 'Password Default (Opsional)');
+        $sheet->setCellValue('G1', 'Tanggal Lahir (YYYY-MM-DD)');
+
+        $sheet->setCellValue('A2', 'Excel Student');
+        $sheet->setCellValue('B2', 'excelstudent@school.id');
+        $sheet->setCellValue('C2', '08123456789');
+        $sheet->setCellValue('D2', '99988811');
+        $sheet->setCellValue('E2', 'XII TJKT 2');
+        $sheet->setCellValue('F2', 'siswa123');
+        $sheet->setCellValue('G2', '2008-11-20');
+
+        $tempPath = tempnam(sys_get_temp_dir(), 'test_import_murid');
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save($tempPath);
+
+        // Run Import
+        $importService = new \App\Modules\MasterData\Services\ExcelImportService();
+        $importService->importMurid($tempPath);
+
+        unlink($tempPath);
+
+        // Assert student was imported with tanggal_lahir
+        $this->assertDatabaseHas('users', [
+            'email' => 'excelstudent@school.id',
+            'tanggal_lahir' => '2008-11-20 00:00:00',
+        ]);
+    }
+}

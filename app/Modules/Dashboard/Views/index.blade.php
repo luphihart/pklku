@@ -1,0 +1,352 @@
+@extends('layouts.admin')
+
+@section('title', 'Dashboard - PKLku')
+@section('page_title', 'Dashboard Utama')
+
+@section('content')
+<div class="container-fluid p-0">
+    <!-- Birthday Greeting (If applicable) -->
+    @if(auth()->user()->tanggal_lahir && auth()->user()->tanggal_lahir->isBirthday())
+    <div class="card-premium mb-4 text-white position-relative overflow-hidden" style="background: linear-gradient(135deg, #f43f5e 0%, #d946ef 100%); border: none;">
+        <div class="position-absolute" style="right: -20px; top: -20px; opacity: 0.15; transform: rotate(15deg);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M3 2.5a2.5 2.5 0 0 1 5 0 2.5 2.5 0 0 1 5 0v.006c0 .07 0 .27-.038.494H15a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5V7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h2.038A2.968 2.968 0 0 1 3 2.506zm1.068.5H7v-.5a1.5 1.5 0 1 0-3 0c0 .085.002.274.045.43a.522.522 0 0 0 .023.07zM9 3h2.932a.56.56 0 0 0 .023-.07c.043-.156.045-.345.045-.43a1.5 1.5 0 0 0-3 0v.5zM1 4v2h14V4H1zm1.5 3v7.5a.5.5 0 0 0 .5.5h4V7h-4.5zm5.5 8h4a.5.5 0 0 0 .5-.5V7H7v8z"/>
+            </svg>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <div class="p-3 bg-white rounded-circle text-danger" style="box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4); font-size: 24px; line-height: 1;">
+                🎉
+            </div>
+            <div>
+                <h4 class="fw-bold font-heading m-0">Selamat Ulang Tahun, {{ auth()->user()->name }}! 🎂</h4>
+                <p class="m-0 mt-1" style="font-size: 13px; opacity: 0.9;">Semoga panjang umur, sehat selalu, dilancarkan segala urusannya, serta sukses dalam belajar dan berkarya!</p>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <!-- Welcome Header -->
+    <div class="card-premium mb-4" style="border-left: 4px solid var(--accent-primary) !important;">
+        <h4 class="fw-bold font-heading m-0 text-dark dark-text-light">Selamat Datang Kembali, {{ auth()->user()->name }}!</h4>
+        <p class="text-muted m-0 mt-1" style="font-size: 14px;">
+            @php
+                $dayName = \Carbon\Carbon::now()->translatedFormat('l, d F Y');
+                
+                $muridQuotes = [
+                    "Tetap semangat belajar dan jalani kegiatan PKL hari ini dengan penuh tanggung jawab serta kedisiplinan!",
+                    "Setiap tantangan di tempat PKL adalah kesempatan emas untuk tumbuh menjadi profesional hebat. Tetap semangat!",
+                    "Jaga selalu nama baik sekolah, tunjukkan integritas tinggi, dan serap ilmu sebanyak-banyaknya hari ini!",
+                    "Kesuksesan masa depan dibangun dari kedisiplinan dan kerja keras hari ini. Selamat menjalani aktivitas PKL!",
+                    "Fokus, tekun, dan jangan ragu untuk bertanya. Jadikan hari ini langkah maju menuju cita-citamu!",
+                    "PKL adalah jembatan emas menuju dunia kerja nyata. Lakukan yang terbaik dan nikmati proses belajarmu hari ini!",
+                    "Karakter unggul dibentuk dari kebiasaan baik setiap hari. Tetap disiplin, sopan, dan berikan performa terbaikmu!"
+                ];
+                
+                $staffQuotes = [
+                    "Semoga hari Anda menyenangkan dalam membimbing dan memfasilitasi masa depan generasi emas bangsa!",
+                    "Dedikasi Anda adalah pelita bagi kesuksesan siswa. Selamat bertugas membimbing para calon pemimpin bangsa!",
+                    "Terima kasih atas segala komitmen dan ketulusan dalam mengawal masa depan generasi penentu bangsa!",
+                    "Semoga setiap langkah bimbingan Anda hari ini membawa keberkahan dan kemajuan bagi anak-anak didik kita!",
+                    "Selamat beraktivitas! Semoga kelancaran dan kemudahan menyertai setiap tugas administratif dan bimbingan Anda hari ini.",
+                    "Pekerjaan mulia Anda adalah fondasi kesuksesan masa depan mereka. Tetap semangat menginspirasi!",
+                    "Mari kita terus bersinergi membangun ekosistem PKL yang berkualitas demi masa depan cerah siswa-siswi kita."
+                ];
+                
+                $dayOfMonth = (int) \Carbon\Carbon::now()->day;
+                if (auth()->user()->role === 'murid') {
+                    $quote = $muridQuotes[$dayOfMonth % count($muridQuotes)];
+                } else {
+                    $quote = $staffQuotes[$dayOfMonth % count($staffQuotes)];
+                }
+            @endphp
+            Hari ini, {{ $dayName }}. {{ $quote }}
+        </p>
+    </div>
+
+    <!-- Statistics Grid (For Admin and Guru) -->
+    @if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
+        @if(auth()->user()->role === 'guru')
+            <div class="row mb-4">
+                <!-- Count 1: Murid Bimbingan -->
+                <div class="col-md-4 col-sm-6 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Murid Bimbingan</span>
+                            <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['murid'] ?? 0 }}</h3>
+                        </div>
+                        <div class="p-3 rounded bg-light" style="color: var(--accent-primary); background-color: rgba(79, 70, 229, 0.1) !important;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <!-- Count 2: Mitra DUDI Plotted -->
+                <div class="col-md-4 col-sm-6 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Mitra DUDI Tempat Plotting</span>
+                            <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['dudi'] ?? 0 }}</h3>
+                        </div>
+                        <div class="p-3 rounded bg-light" style="color: var(--warning); background-color: rgba(245, 158, 11, 0.1) !important;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <!-- Count 3: Penempatan Aktif -->
+                <div class="col-md-4 col-sm-12 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Penempatan Aktif</span>
+                            <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['penempatan_aktif'] ?? 0 }}</h3>
+                        </div>
+                        <div class="p-3 rounded bg-light" style="color: var(--danger); background-color: rgba(225, 29, 72, 0.1) !important;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @else
+            <div class="row mb-4">
+                <!-- Count 1 -->
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Total Murid</span>
+                            <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['murid'] ?? 0 }}</h3>
+                        </div>
+                        <div class="p-3 rounded bg-light" style="color: var(--accent-primary); background-color: rgba(79, 70, 229, 0.1) !important;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <!-- Count 2 -->
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Total Guru</span>
+                            <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['guru'] ?? 0 }}</h3>
+                        </div>
+                        <div class="p-3 rounded bg-light" style="color: var(--success); background-color: rgba(16, 185, 129, 0.1) !important;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6m-6 4h6"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <!-- Count 3 -->
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Mitra DUDI</span>
+                            <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['dudi'] ?? 0 }}</h3>
+                        </div>
+                        <div class="p-3 rounded bg-light" style="color: var(--warning); background-color: rgba(245, 158, 11, 0.1) !important;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <!-- Count 4 -->
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Penempatan Aktif</span>
+                            <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['penempatan_aktif'] ?? 0 }}</h3>
+                        </div>
+                        <div class="p-3 rounded bg-light" style="color: var(--danger); background-color: rgba(225, 29, 72, 0.1) !important;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+    @endif
+
+    <!-- Attendance Stats Today (Admin/Guru) -->
+    @if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
+    <div class="row">
+        <!-- Kehadiran Hari Ini -->
+        <div class="col-md-8 mb-4">
+            <div class="card-premium">
+                <h5 class="fw-bold font-heading mb-3 text-dark dark-text-light">Kehadiran Hari Ini</h5>
+                <div class="row mt-4">
+                    <div class="col-4 d-flex flex-column align-items-center text-center">
+                        <span class="text-muted small d-flex align-items-center justify-content-center" style="min-height: 40px; line-height: 1.2;">Sudah Hadir</span>
+                        <h2 class="fw-bold text-success mt-2 mb-0 font-heading">{{ $attendance['hadir'] ?? 0 }}</h2>
+                    </div>
+                    <div class="col-4 d-flex flex-column align-items-center text-center">
+                        <span class="text-muted small d-flex align-items-center justify-content-center" style="min-height: 40px; line-height: 1.2;">Terlambat</span>
+                        <h2 class="fw-bold text-warning mt-2 mb-0 font-heading">{{ $attendance['terlambat'] ?? 0 }}</h2>
+                    </div>
+                    <div class="col-4 d-flex flex-column align-items-center text-center">
+                        <span class="text-muted small d-flex align-items-center justify-content-center" style="min-height: 40px; line-height: 1.2;">Belum Absen</span>
+                        <h2 class="fw-bold text-danger mt-2 mb-0 font-heading">{{ $attendance['belum_hadir'] ?? 0 }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Action / Menu Links -->
+        <div class="col-md-4 mb-4">
+            <div class="card-premium">
+                <h5 class="fw-bold font-heading mb-3 text-dark dark-text-light">Aksi Cepat</h5>
+                <div class="list-group list-group-flush">
+                    @if(auth()->user()->role === 'admin')
+                    <a href="{{ route('murid.index') }}" class="list-group-item list-group-item-action border-0 px-0 d-flex align-items-center py-2" style="background-color: transparent; color: var(--text-primary);">
+                        <span class="p-1 rounded bg-light me-2 d-flex align-items-center" style="background-color: rgba(79, 70, 229, 0.1) !important; color: var(--accent-primary);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                        </span>
+                        Tambah Data Murid
+                    </a>
+                    <a href="{{ route('penempatan.index') }}" class="list-group-item list-group-item-action border-0 px-0 d-flex align-items-center py-2" style="background-color: transparent; color: var(--text-primary);">
+                        <span class="p-1 rounded bg-light me-2 d-flex align-items-center" style="background-color: rgba(16, 185, 129, 0.1) !important; color: var(--success);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                            </svg>
+                        </span>
+                        Lakukan Plotting PKL
+                    </a>
+                    @else
+                    <a href="{{ route('jurnal.index') }}" class="list-group-item list-group-item-action border-0 px-0 d-flex align-items-center py-2" style="background-color: transparent; color: var(--text-primary);">
+                        <span class="p-1 rounded bg-light me-2 d-flex align-items-center" style="background-color: rgba(245, 158, 11, 0.1) !important; color: var(--warning);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </span>
+                        Verifikasi Jurnal Bimbingan
+                    </a>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <!-- Student Dashboard (Murid) -->
+    @if(auth()->user()->role === 'murid')
+    <div class="row">
+        <!-- Murid PKL Info -->
+        <div class="col-md-6 mb-4">
+            <div class="card-premium">
+                <h5 class="fw-bold font-heading mb-3 text-dark dark-text-light">Status Penempatan PKL</h5>
+                @php
+                    $murid = auth()->user()->murid;
+                    $penempatan = $murid ? $murid->penempatanAktif : null;
+                @endphp
+
+                @if($penempatan)
+                    <table class="table table-borderless m-0 mt-3" style="color: var(--text-primary);">
+                        <tr>
+                            <td class="text-muted p-1" style="width: 150px; font-size: 13px;">Tempat DUDI</td>
+                            <td class="p-1 font-heading fw-semibold">: {{ $penempatan->dudi->nama }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted p-1" style="font-size: 13px;">Guru Pembimbing</td>
+                            <td class="p-1">: {{ $penempatan->guru->nama }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted p-1" style="font-size: 13px;">Pembimbing Industri</td>
+                            <td class="p-1">: {{ $penempatan->pembimbingIndustri ? $penempatan->pembimbingIndustri->nama : ($penempatan->dudi->pic_nama ? $penempatan->dudi->pic_nama . ' (' . $penempatan->dudi->pic_phone . ')' : 'Belum di-assign') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted p-1" style="font-size: 13px;">Tanggal PKL</td>
+                            <td class="p-1">: {{ \Carbon\Carbon::parse($penempatan->tanggal_mulai)->translatedFormat('d F Y') }} s/d {{ \Carbon\Carbon::parse($penempatan->tanggal_selesai)->translatedFormat('d F Y') }}</td>
+                        </tr>
+                    </table>
+                @else
+                    <div class="text-center py-4">
+                        <span class="text-muted d-block mb-2">Anda belum ditempatkan di DUDI manapun.</span>
+                        <small class="text-muted">Hubungi Admin Hubungan Industri untuk informasi plotting.</small>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Presensi Harian Cepat -->
+        <div class="col-md-6 mb-4">
+            <div class="card-premium">
+                <h5 class="fw-bold font-heading mb-3 text-dark dark-text-light">Presensi Hari Ini</h5>
+                @if($penempatan)
+                    <p class="text-muted mb-4" style="font-size: 13px;">Lakukan presensi langsung dari area kerja DUDI.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ route('presensi.index') }}" class="btn btn-primary py-3 fw-bold font-heading">
+                            Buka Menu Presensi Harian
+                        </a>
+                    </div>
+                @else
+                    <div class="text-center py-4">
+                        <span class="text-muted">Fitur presensi tidak aktif (Belum ditempatkan).</span>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <!-- Announcements Feed (Visible to all users) -->
+    <div class="row mt-2">
+        <div class="col-12 mb-4">
+            <div class="card-premium">
+                <h5 class="fw-bold font-heading mb-3 text-dark">Informasi & Pengumuman Terbaru</h5>
+                <div class="row">
+                    @forelse($announcements as $announce)
+                        <div class="col-md-6 mb-3">
+                            <div class="p-3 border rounded h-100" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="fw-bold m-0 font-heading text-primary" style="font-size: 14px;">{{ $announce->judul }}</h6>
+                                    <small class="text-muted" style="font-size: 10px;">{{ $announce->created_at->diffForHumans() }}</small>
+                                </div>
+                                <p class="text-secondary small m-0" style="line-height: 1.5;">
+                                    {!! nl2br(e(Str::limit($announce->isi, 200))) !!}
+                                    @if(strlen($announce->isi) > 200)
+                                        <a href="javascript:void(0);" class="text-primary fw-semibold ms-1" data-bs-toggle="modal" data-bs-target="#readDashboardAnnounceModal_{{ $announce->id }}">Baca Selengkapnya</a>
+                                    @endif
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Read Dashboard Modal -->
+                        <div class="modal fade text-start" id="readDashboardAnnounceModal_{{ $announce->id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                <div class="modal-content" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color);">
+                                    <div class="modal-header border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                                        <h5 class="modal-title font-heading fw-bold" style="font-size: 15px;">{{ $announce->judul }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="text-muted small mb-3">
+                                            Dipublikasikan pada: {{ $announce->created_at->translatedFormat('l, d F Y') }}
+                                        </div>
+                                        <div style="white-space: pre-line; font-size: 13px; line-height: 1.6; color: var(--text-primary);">
+                                            {!! e($announce->isi) !!}
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer border-top" style="border-top-color: var(--border-color) !important;">
+                                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-12 text-center py-4 text-muted small">
+                            Tidak ada pengumuman terbaru saat ini.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
