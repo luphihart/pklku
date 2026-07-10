@@ -50,12 +50,20 @@
     <div class="card-premium p-0 overflow-hidden">
         <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="border-bottom-color: var(--border-color) !important;">
             <h6 class="fw-bold m-0 text-dark">Data Murid Aktif</h6>
-            <button type="submit" form="bulkDeleteForm" id="btnDeleteSelected" class="btn btn-xs btn-danger font-heading fw-bold" style="display: none; font-size: 11px; padding: 4px 8px;" onclick="return confirm('Apakah Anda yakin ingin menghapus murid yang terpilih? Akun login terkait juga akan ikut dihapus.');">
-                <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: inline-block; vertical-align: middle;">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                </svg>
-                Hapus Terpilih
-            </button>
+            <div class="d-flex gap-2">
+                <button type="submit" form="bulkDeleteForm" id="btnResetSelected" formaction="{{ route('murid.reset_password_bulk') }}" class="btn btn-xs btn-info text-white font-heading fw-bold" style="display: none; font-size: 11px; padding: 4px 8px;" onclick="return confirm('Apakah Anda yakin ingin mereset password murid yang terpilih menjadi default (siswa123)?');">
+                    <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: inline-block; vertical-align: middle;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m-2-2a2 2 0 11-2-2m2 2a2 2 0 002 2m0 0a2 2 0 002-2v3a2 2 0 01-2 2h-1a2 2 0 01-2-2v-5a2 2 0 00-2-2H9m0 0l-2 2m2-2l-2-2M7 9v1H6v1H5v1H4v1H3v1h1"/>
+                    </svg>
+                    Reset Password Terpilih
+                </button>
+                <button type="submit" form="bulkDeleteForm" id="btnDeleteSelected" class="btn btn-xs btn-danger font-heading fw-bold" style="display: none; font-size: 11px; padding: 4px 8px;" onclick="return confirm('Apakah Anda yakin ingin menghapus murid yang terpilih? Akun login terkait juga akan ikut dihapus.');">
+                    <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: inline-block; vertical-align: middle;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Hapus Terpilih
+                </button>
+            </div>
         </div>
 
         <form action="{{ route('murid.destroy_bulk') }}" method="POST" id="bulkDeleteForm">
@@ -302,10 +310,14 @@
         const selectAll = document.getElementById('selectAll');
         const rowCheckboxes = document.querySelectorAll('.row-checkbox');
         const btnDeleteSelected = document.getElementById('btnDeleteSelected');
+        const btnResetSelected = document.getElementById('btnResetSelected');
 
-        function toggleDeleteButton() {
+        function toggleActionButtons() {
             const anyChecked = Array.from(rowCheckboxes).some(cb => cb.checked);
             btnDeleteSelected.style.display = anyChecked ? 'inline-block' : 'none';
+            if (btnResetSelected) {
+                btnResetSelected.style.display = anyChecked ? 'inline-block' : 'none';
+            }
         }
 
         if (selectAll) {
@@ -313,7 +325,7 @@
                 rowCheckboxes.forEach(cb => {
                     cb.checked = selectAll.checked;
                 });
-                toggleDeleteButton();
+                toggleActionButtons();
             });
         }
 
@@ -321,7 +333,7 @@
             cb.addEventListener('change', function() {
                 const allChecked = Array.from(rowCheckboxes).every(c => c.checked);
                 if (selectAll) selectAll.checked = allChecked;
-                toggleDeleteButton();
+                toggleActionButtons();
             });
         });
     });

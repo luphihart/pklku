@@ -16,6 +16,8 @@ Route::middleware(['web', 'auth', 'role:admin'])->group(function () {
     // Reset Password Routes
     Route::post('/master/murid/{id}/reset-password', [MuridController::class, 'resetPassword'])->name('murid.reset_password');
     Route::post('/master/guru/{id}/reset-password', [GuruController::class, 'resetPassword'])->name('guru.reset_password');
+    Route::post('/master/murid/bulk-reset-password', [MuridController::class, 'resetPasswordBulk'])->name('murid.reset_password_bulk');
+    Route::post('/master/guru/bulk-reset-password', [GuruController::class, 'resetPasswordBulk'])->name('guru.reset_password_bulk');
 
     // CRUD Resources
     Route::resource('/master/murid', MuridController::class);

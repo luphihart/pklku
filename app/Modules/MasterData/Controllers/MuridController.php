@@ -111,4 +111,29 @@ class MuridController extends Controller
         }
         return redirect()->route('murid.index')->with('success', 'Password murid ' . $murid->nama . ' berhasil direset menjadi "siswa123".');
     }
+
+    public function resetPasswordBulk(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if (empty($ids)) {
+            return redirect()->back()->with('error', 'Pilih minimal satu murid untuk direset password.');
+        }
+
+        $count = 0;
+        foreach ($ids as $id) {
+            try {
+                $murid = \App\Modules\MasterData\Models\Murid::find($id);
+                if ($murid && $murid->user) {
+                    $murid->user->update([
+                        'password' => \Illuminate\Support\Facades\Hash::make('siswa123')
+                    ]);
+                    $count++;
+                }
+            } catch (\Throwable $e) {
+                // Ignore
+            }
+        }
+
+        return redirect()->route('murid.index')->with('success', $count . ' password murid berhasil direset menjadi "siswa123".');
+    }
 }

@@ -103,4 +103,29 @@ class GuruController extends Controller
         }
         return redirect()->route('guru.index')->with('success', 'Password guru ' . $guru->nama . ' berhasil direset menjadi "guru123".');
     }
+
+    public function resetPasswordBulk(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if (empty($ids)) {
+            return redirect()->back()->with('error', 'Pilih minimal satu guru untuk direset password.');
+        }
+
+        $count = 0;
+        foreach ($ids as $id) {
+            try {
+                $guru = \App\Modules\MasterData\Models\Guru::find($id);
+                if ($guru && $guru->user) {
+                    $guru->user->update([
+                        'password' => \Illuminate\Support\Facades\Hash::make('guru123')
+                    ]);
+                    $count++;
+                }
+            } catch (\Throwable $e) {
+                // Ignore
+            }
+        }
+
+        return redirect()->route('guru.index')->with('success', $count . ' password guru berhasil direset menjadi "guru123".');
+    }
 }
