@@ -9,7 +9,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::get('/penempatan', [PenempatanController::class, 'index'])->name('penempatan.index');
         Route::post('/penempatan/massal', [PenempatanController::class, 'storeMassal'])->name('penempatan.store_massal');
+        Route::put('/penempatan/{id}', [PenempatanController::class, 'update'])->name('penempatan.update');
         Route::delete('/penempatan/{id}', [PenempatanController::class, 'destroy'])->name('penempatan.destroy');
+        Route::post('/penempatan/bulk-delete', [PenempatanController::class, 'destroyBulk'])->name('penempatan.destroy_bulk');
         Route::get('/penempatan/pembimbing-industri/{dudiId}', [PenempatanController::class, 'getPembimbingIndustri']);
     });
 

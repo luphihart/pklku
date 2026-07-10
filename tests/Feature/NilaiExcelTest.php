@@ -631,4 +631,80 @@ class NilaiExcelTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    public function test_admin_can_update_placement()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $tahun = TahunAjaran::create(['tahun' => '2025/2026', 'semester' => 'ganjil', 'status' => 'aktif']);
+        $jurusan = Jurusan::create(['kode' => 'RPL', 'nama' => 'Rekayasa Perangkat Lunak']);
+        $kelas = Kelas::create(['nama' => 'XII RPL 1', 'jurusan_id' => $jurusan->id]);
+        
+        $muridUser = User::factory()->create(['role' => 'murid']);
+        $murid = Murid::create(['nis' => '17553', 'nama' => 'Abdul Test', 'kelas_id' => $kelas->id, 'user_id' => $muridUser->id]);
+
+        $dudi1 = Dudi::create(['nama' => 'PT. Coding Indonesia', 'alamat' => 'Yogyakarta', 'latitude' => 0.0, 'longitude' => 0.0, 'radius_meter' => 50, 'pic_nama' => 'PIC Budi', 'pic_phone' => '08123456789']);
+        $dudi2 = Dudi::create(['nama' => 'PT. Baru Indonesia', 'alamat' => 'Jakarta', 'latitude' => 0.0, 'longitude' => 0.0, 'radius_meter' => 50, 'pic_nama' => 'PIC Candra', 'pic_phone' => '08987654321']);
+
+        $guruUser = User::factory()->create(['role' => 'guru']);
+        $guru1 = Guru::create(['user_id' => $guruUser->id, 'nip' => '9999', 'nama' => 'Guru Lama']);
+        $guruUser2 = User::factory()->create(['role' => 'guru']);
+        $guru2 = Guru::create(['user_id' => $guruUser2->id, 'nip' => '8888', 'nama' => 'Guru Baru']);
+
+        $placement = PenempatanPkl::create([
+            'murid_id' => $murid->id,
+            'dudi_id' => $dudi1->id,
+            'guru_id' => $guru1->id,
+            'tahun_ajaran_id' => $tahun->id,
+            'tanggal_mulai' => '2025-07-01',
+            'tanggal_selesai' => '2025-12-31',
+            'status' => 'aktif'
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->put(route('penempatan.update', $placement->id), [
+                'dudi_id' => $dudi2->id,
+                'guru_id' => $guru2->id,
+                'tanggal_mulai' => '2025-08-01',
+                'tanggal_selesai' => '2025-11-30',
+            ]);
+
+        $response->assertRedirect(route('penempatan.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('penempatan_pkl', [
+            'id' => $placement->id,
+            'dudi_id' => $dudi2->id,
+            'guru_id' => $guru2->id,
+            'tanggal_mulai' => '2025-08-01',
+            'tanggal_selesai' => '2025-11-30',
+        ]);
+    }
+
+    public function test_admin_can_bulk_delete_placements()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $tahun = TahunAjaran::create(['tahun' => '2025/2026', 'semester' => 'ganjil', 'status' => 'aktif']);
+        $jurusan = Jurusan::create(['kode' => 'RPL', 'nama' => 'Rekayasa Perangkat Lunak']);
+        $kelas = Kelas::create(['nama' => 'XII RPL 1', 'jurusan_id' => $jurusan->id]);
+        
+        $m1 = Murid::create(['nis' => '1', 'nama' => 'M1', 'kelas_id' => $kelas->id, 'user_id' => User::factory()->create(['role' => 'murid'])->id]);
+        $m2 = Murid::create(['nis' => '2', 'nama' => 'M2', 'kelas_id' => $kelas->id, 'user_id' => User::factory()->create(['role' => 'murid'])->id]);
+
+        $dudi = Dudi::create(['nama' => 'PT. Code', 'alamat' => 'City', 'latitude' => 0.0, 'longitude' => 0.0, 'radius_meter' => 50, 'pic_nama' => 'B', 'pic_phone' => '1']);
+        $guru = Guru::create(['user_id' => User::factory()->create(['role' => 'guru'])->id, 'nip' => '1', 'nama' => 'G']);
+
+        $p1 = PenempatanPkl::create(['murid_id' => $m1->id, 'dudi_id' => $dudi->id, 'guru_id' => $guru->id, 'tahun_ajaran_id' => $tahun->id, 'tanggal_mulai' => '2025-07-01', 'tanggal_selesai' => '2025-12-31', 'status' => 'aktif']);
+        $p2 = PenempatanPkl::create(['murid_id' => $m2->id, 'dudi_id' => $dudi->id, 'guru_id' => $guru->id, 'tahun_ajaran_id' => $tahun->id, 'tanggal_mulai' => '2025-07-01', 'tanggal_selesai' => '2025-12-31', 'status' => 'aktif']);
+
+        $response = $this->actingAs($admin)
+            ->post(route('penempatan.destroy_bulk'), [
+                'ids' => [$p1->id, $p2->id]
+            ]);
+
+        $response->assertRedirect(route('penempatan.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseMissing('penempatan_pkl', ['id' => $p1->id]);
+        $this->assertDatabaseMissing('penempatan_pkl', ['id' => $p2->id]);
+    }
 }

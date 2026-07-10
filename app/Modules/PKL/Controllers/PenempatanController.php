@@ -72,6 +72,43 @@ class PenempatanController extends Controller
         return redirect()->route('penempatan.index')->with('success', 'Penempatan murid berhasil dibatalkan/dihapus.');
     }
 
+    public function update(Request $request, int $id)
+    {
+        $request->validate([
+            'dudi_id' => 'required|exists:dudi,id',
+            'guru_id' => 'required|exists:guru,id',
+            'pembimbing_industri_id' => 'nullable|exists:pembimbing_industri,id',
+            'tanggal_mulai' => 'required|date',
+            'tanggal_selesai' => 'required|date|after:tanggal_mulai',
+        ], [
+            'tanggal_selesai.after' => 'Tanggal selesai harus setelah tanggal mulai.',
+        ]);
+
+        $this->service->editPlacement($id, $request->only('dudi_id', 'guru_id', 'pembimbing_industri_id', 'tanggal_mulai', 'tanggal_selesai'));
+
+        return redirect()->route('penempatan.index')->with('success', 'Detail penempatan murid berhasil diperbarui.');
+    }
+
+    public function destroyBulk(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if (empty($ids)) {
+            return redirect()->back()->with('error', 'Pilih minimal satu penempatan untuk dihapus.');
+        }
+
+        $count = 0;
+        foreach ($ids as $id) {
+            try {
+                $this->service->removePlacement($id);
+                $count++;
+            } catch (\Throwable $e) {
+                // Ignore
+            }
+        }
+
+        return redirect()->route('penempatan.index')->with('success', $count . ' penempatan murid berhasil dihapus.');
+    }
+
     /**
      * Get industrial supervisors for a given DUDI. Used for dynamic dropdown assignment.
      */
