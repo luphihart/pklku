@@ -30,8 +30,8 @@ class GuruController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'nip' => 'nullable|string|max:30|unique:guru,nip',
+            'email' => 'required|email|unique:users,email,NULL,id,deleted_at,NULL',
+            'nip' => 'nullable|string|max:30|unique:guru,nip,NULL,id,deleted_at,NULL',
             'phone' => 'nullable|string|max:20',
             'tanggal_lahir' => 'nullable|date',
             'password' => 'nullable|string|min:6',
@@ -54,8 +54,8 @@ class GuruController extends Controller
 
         $request->validate([
             'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $guru->user_id,
-            'nip' => 'nullable|string|max:30|unique:guru,nip,' . $id,
+            'email' => 'required|email|unique:users,email,' . $guru->user_id . ',id,deleted_at,NULL',
+            'nip' => 'nullable|string|max:30|unique:guru,nip,' . $id . ',id,deleted_at,NULL',
             'phone' => 'nullable|string|max:20',
             'tanggal_lahir' => 'nullable|date',
             'password' => 'nullable|string|min:6',

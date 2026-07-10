@@ -35,8 +35,8 @@ class MuridController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'nis' => 'required|string|max:30|unique:murid,nis',
+            'email' => 'required|email|unique:users,email,NULL,id,deleted_at,NULL',
+            'nis' => 'required|string|max:30|unique:murid,nis,NULL,id,deleted_at,NULL',
             'kelas_id' => 'required|exists:kelas,id',
             'phone' => 'nullable|string|max:20',
             'tanggal_lahir' => 'nullable|date',
@@ -61,8 +61,8 @@ class MuridController extends Controller
         
         $request->validate([
             'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $murid->user_id,
-            'nis' => 'required|string|max:30|unique:murid,nis,' . $id,
+            'email' => 'required|email|unique:users,email,' . $murid->user_id . ',id,deleted_at,NULL',
+            'nis' => 'required|string|max:30|unique:murid,nis,' . $id . ',id,deleted_at,NULL',
             'kelas_id' => 'required|exists:kelas,id',
             'phone' => 'nullable|string|max:20',
             'tanggal_lahir' => 'nullable|date',
