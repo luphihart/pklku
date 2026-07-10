@@ -424,8 +424,8 @@
         <tr>
             <!-- Names and NIPs -->
             <td style="text-align: center; vertical-align: top; padding-right: 30px; font-size: 11px;">
-                <div class="signature-name">{{ $placement->guru->nama }}</div>
-                @if($placement->guru->nip)
+                <div class="signature-name">{{ $placement->guru ? $placement->guru->nama : '_______________________' }}</div>
+                @if($placement->guru && $placement->guru->nip)
                     <div style="font-size: 9.5px; margin-top: 2px;">NIP. {{ $placement->guru->nip }}</div>
                 @endif
             </td>

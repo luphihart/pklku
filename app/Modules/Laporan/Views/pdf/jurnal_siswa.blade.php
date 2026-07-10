@@ -142,7 +142,7 @@
         <tr>
             <td class="label">Guru Pembimbing</td>
             <td class="separator">:</td>
-            <td class="value">{{ $placement->guru->nama }}</td>
+            <td class="value">{{ $placement->guru ? $placement->guru->nama : '-' }}</td>
         </tr>
     </table>
 
@@ -196,8 +196,8 @@
                 {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}<br>
                 Guru Pembimbing,
                 <div style="margin-top: 65px;">
-                    <strong>{{ $placement->guru->nama }}</strong><br>
-                    <span style="font-size: 10px;">NIP. {{ $placement->guru->nip ?? '-' }}</span>
+                    <strong>{{ $placement->guru ? $placement->guru->nama : '_______________________' }}</strong><br>
+                    <span style="font-size: 10px;">NIP. {{ ($placement->guru && $placement->guru->nip) ? $placement->guru->nip : '-' }}</span>
                 </div>
             </td>
         </tr>

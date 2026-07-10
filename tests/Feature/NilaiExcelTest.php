@@ -574,4 +574,50 @@ class NilaiExcelTest extends TestCase
 
         $response->assertStatus(403);
     }
+
+    public function test_download_nilai_pdf_with_null_scores()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $tahun = TahunAjaran::create(['tahun' => '2025/2026', 'semester' => 'ganjil', 'status' => 'aktif']);
+        $jurusan = Jurusan::create(['kode' => 'RPL', 'nama' => 'Rekayasa Perangkat Lunak']);
+        $kelas = Kelas::create(['nama' => 'XII RPL 1', 'jurusan_id' => $jurusan->id]);
+        
+        $muridUser = User::factory()->create(['role' => 'murid']);
+        $murid = Murid::create(['nis' => '17565', 'nama' => 'Nilai Murid PDF', 'kelas_id' => $kelas->id, 'user_id' => $muridUser->id]);
+        
+        $guruUser = User::factory()->create(['role' => 'guru']);
+        $guru = Guru::create(['user_id' => $guruUser->id, 'nip' => '9999', 'nama' => 'Nilai Guru PDF']);
+        
+        $dudi = Dudi::create([
+            'nama' => 'PT. Nilai Tech', 'alamat' => 'City', 'latitude' => 0.0, 'longitude' => 0.0, 'radius_meter' => 50,
+            'pic_nama' => 'PIC Tech', 'pic_phone' => '0812'
+        ]);
+
+        $placement = PenempatanPkl::create([
+            'murid_id' => $murid->id,
+            'dudi_id' => $dudi->id,
+            'guru_id' => $guru->id,
+            'tahun_ajaran_id' => $tahun->id,
+            'tanggal_mulai' => '2025-07-01',
+            'tanggal_selesai' => '2025-12-31',
+            'status' => 'aktif'
+        ]);
+
+        // Create PenilaianPkl with null average/final scores
+        $penilaian = \App\Modules\Penilaian\Models\PenilaianPkl::create([
+            'penempatan_pkl_id' => $placement->id,
+            'nilai_guru_json' => [],
+            'nilai_industri_json' => [],
+            'keterangan_tp_json' => [],
+            'rata_nilai_guru' => null,      // Null average
+            'rata_nilai_industri' => null,  // Null average
+            'nilai_akhir' => null,          // Null final score
+            'catatan' => 'Good performance',
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->get(route('laporan.nilai_pdf', $placement->id));
+
+        $response->assertStatus(200);
+    }
 }
