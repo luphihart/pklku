@@ -93,13 +93,26 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="jam_masuk" class="form-label small fw-semibold">Jam Mulai Presensi Masuk</label>
-                                <input type="text" name="jam_masuk" id="jam_masuk" class="form-control" placeholder="07:00" value="{{ $settings['jam_masuk'] ?? '07:00' }}" required>
-                                <small class="text-muted">Format 24 jam (Contoh: 07:00). Murid dianggap terlambat jika absen 30 menit setelah jam ini.</small>
+                                <input type="text" name="jam_masuk" id="jam_masuk" class="form-control" placeholder="06:00" value="{{ $settings['jam_masuk'] ?? '06:00' }}" required>
+                                <small class="text-muted">Format 24 jam (Contoh: 06:00). Murid baru bisa melakukan Check In masuk mulai jam ini.</small>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="jam_pulang" class="form-label small fw-semibold">Jam Mulai Presensi Pulang (Bisa Check Out)</label>
-                                <input type="text" name="jam_pulang" id="jam_pulang" class="form-control" placeholder="16:00" value="{{ $settings['jam_pulang'] ?? '16:00' }}" required>
-                                <small class="text-muted">Format 24 jam (Contoh: 16:00). Murid baru bisa melakukan Check Out pulang setelah jam ini.</small>
+                                <label for="batas_terlambat" class="form-label small fw-semibold">Batas Terlambat</label>
+                                <input type="text" name="batas_terlambat" id="batas_terlambat" class="form-control" placeholder="07:30" value="{{ $settings['batas_terlambat'] ?? '07:30' }}" required>
+                                <small class="text-muted">Format 24 jam (Contoh: 07:30). Murid yang absen melewati jam ini dianggap terlambat.</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="jam_pulang" class="form-label small fw-semibold">Buka Jam Pulang</label>
+                                <input type="text" name="jam_pulang" id="jam_pulang" class="form-control" placeholder="14:00" value="{{ $settings['jam_pulang'] ?? '14:00' }}" required>
+                                <small class="text-muted">Format 24 jam (Contoh: 14:00). Murid baru bisa melakukan Check Out pulang mulai jam ini.</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="tutup_jam_pulang" class="form-label small fw-semibold">Tutup Jam Pulang</label>
+                                <input type="text" name="tutup_jam_pulang" id="tutup_jam_pulang" class="form-control" placeholder="17:00" value="{{ $settings['tutup_jam_pulang'] ?? '17:00' }}" required>
+                                <small class="text-muted">Format 24 jam (Contoh: 17:00). Tombol Check Out pulang dikunci kembali setelah jam ini.</small>
                             </div>
                         </div>
 

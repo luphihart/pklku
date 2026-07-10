@@ -78,11 +78,12 @@ class AttendanceService
         $this->verifyWorkingDay($placementId);
 
         // 0.1. Verify Check-in Time Window
-        $jamMasukLimit = Setting::where('key', 'jam_masuk')->value('value') ?: '07:30';
+        $jamMasukLimit = Setting::where('key', 'jam_masuk')->value('value') ?: '06:00';
+        $batasTerlambat = Setting::where('key', 'batas_terlambat')->value('value') ?: '07:30';
         $nowTime = now()->toTimeString();
         
         $startTime = $jamMasukLimit;
-        $endTime = '11:59:59';
+        $endTime = Setting::where('key', 'jam_pulang')->value('value') ?: '14:00';
 
         if ($nowTime < $startTime) {
             throw new \Exception("Presensi Check-In belum dibuka! Presensi dibuka mulai pukul " . substr($startTime, 0, 5) . ".");
@@ -122,9 +123,8 @@ class AttendanceService
             $placement->dudi->nama
         );
 
-        // 3. Determine status (Tepat Waktu if within 30 minutes of start time)
-        $lateLimit = date('H:i:s', strtotime($jamMasukLimit . ' +30 minutes'));
-        $statusMasuk = $nowTime <= $lateLimit ? 'tepat_waktu' : 'terlambat';
+        // 3. Determine status (Tepat Waktu if before/equal to batasTerlambat)
+        $statusMasuk = $nowTime <= $batasTerlambat ? 'tepat_waktu' : 'terlambat';
 
         // 4. Save to DB
         return $this->repo->saveAttendance([
@@ -147,11 +147,16 @@ class AttendanceService
         $this->verifyWorkingDay($placementId);
 
         // 0.1. Verify Check-out Time Window
-        $jamPulangLimit = Setting::where('key', 'jam_pulang')->value('value') ?: '16:00';
+        $jamPulangLimit = Setting::where('key', 'jam_pulang')->value('value') ?: '14:00';
+        $tutupJamPulang = Setting::where('key', 'tutup_jam_pulang')->value('value') ?: '17:00';
         $nowTime = now()->toTimeString();
 
         if ($nowTime < $jamPulangLimit) {
             throw new \Exception("Presensi Check-Out belum dibuka! Presensi dibuka mulai pukul " . substr($jamPulangLimit, 0, 5) . ".");
+        }
+
+        if ($nowTime > $tutupJamPulang) {
+            throw new \Exception("Batas waktu presensi Check-Out telah berakhir (Pukul " . substr($tutupJamPulang, 0, 5) . ").");
         }
 
         $attendance = $this->getToday($placementId);
@@ -194,7 +199,6 @@ class AttendanceService
         );
 
         // 3. Determine status (Pulang Cepat / Tepat Waktu)
-        $jamPulangLimit = Setting::where('key', 'jam_pulang')->value('value') ?: '16:00';
         $statusPulang = $nowTime >= $jamPulangLimit ? 'tepat_waktu' : 'pulang_cepat';
 
         // 4. Update DB
