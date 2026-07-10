@@ -88,7 +88,6 @@
                                 <th class="ps-4">Siswa (NIS)</th>
                                 <th>DUDI PKL</th>
                                 <th class="text-center">Nilai Akhir</th>
-                                <th class="text-center">Predikat</th>
                                 <th class="text-center pe-4" style="width: 100px;">Unduh</th>
                             </tr>
                         </thead>
@@ -101,7 +100,6 @@
                                     </td>
                                     <td>{{ $p->dudi->nama }}</td>
                                     <td class="text-center fw-bold text-primary">{{ number_format($p->penilaianPkl->nilai_akhir, 2) }}</td>
-                                    <td class="text-center"><span class="badge bg-secondary">{{ $p->penilaianPkl->predikat }}</span></td>
                                     <td class="text-center pe-4">
                                         <a href="{{ route('laporan.nilai_pdf', $p->id) }}" class="btn btn-sm btn-outline-danger p-1">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -112,7 +110,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center py-4 text-muted">Belum ada murid yang selesai dinilai.</td>
+                                    <td colspan="4" class="text-center py-4 text-muted">Belum ada murid yang selesai dinilai.</td>
                                 </tr>
                             @endforelse
                         </tbody>
