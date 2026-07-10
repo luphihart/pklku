@@ -111,9 +111,27 @@
                             <tbody>
                                 @forelse($history as $h)
                                     <tr>
-                                        <td>{{ \Carbon\Carbon::parse($h->tanggal)->format('d/m/y') }}</td>
-                                        <td class="text-success">{{ substr($h->jam_masuk, 0, 5) }}</td>
-                                        <td class="text-warning">{{ $h->jam_pulang ? substr($h->jam_pulang, 0, 5) : '-' }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($h->tanggal)->translatedFormat('d F Y') }}</td>
+                                        <td>
+                                            <span class="text-success fw-semibold">{{ $h->jam_masuk ? substr($h->jam_masuk, 0, 5) : '-' }}</span>
+                                            @if($h->foto_masuk)
+                                                <div class="mt-1">
+                                                    <a href="{{ asset('storage/attendance/' . $h->foto_masuk) }}" target="_blank">
+                                                        <img src="{{ asset('storage/attendance/' . $h->foto_masuk) }}" class="rounded border" width="30" height="30" style="object-fit: cover;" title="Foto Check In">
+                                                    </a>
+                                                </div>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <span class="text-warning fw-semibold">{{ $h->jam_pulang ? substr($h->jam_pulang, 0, 5) : '-' }}</span>
+                                            @if($h->foto_pulang)
+                                                <div class="mt-1">
+                                                    <a href="{{ asset('storage/attendance/' . $h->foto_pulang) }}" target="_blank">
+                                                        <img src="{{ asset('storage/attendance/' . $h->foto_pulang) }}" class="rounded border" width="30" height="30" style="object-fit: cover;" title="Foto Check Out">
+                                                    </a>
+                                                </div>
+                                            @endif
+                                        </td>
                                         <td class="text-end">
                                             <span class="badge {{ $h->status_masuk === 'tepat_waktu' ? 'bg-success' : 'bg-danger' }}">
                                                 {{ $h->status_masuk === 'tepat_waktu' ? 'Hadir' : 'Terlambat' }}
