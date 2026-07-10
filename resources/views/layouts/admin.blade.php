@@ -25,7 +25,7 @@
         <nav id="sidebar" :class="{ 'collapsed': !sidebarOpen, 'show': sidebarOpen }">
             <div class="sidebar-header d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center gap-2">
-                    <div class="p-2 rounded-3 text-primary d-flex align-items-center justify-content-center" style="background-color: rgba(79, 70, 229, 0.08) !important;">
+                    <div class="p-2 rounded-3 text-primary d-flex align-items-center justify-content-center bg-primary-light">
                         <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='var(--accent-primary)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' width="22" height="22"><path d='M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z'></path><path d='M12 11v6'></path><path d='M9 14h6'></path></svg>
                     </div>
                     <div>
@@ -245,7 +245,7 @@
         <!-- Page Content -->
         <div id="content">
             <!-- Topbar -->
-            <nav class="topbar">
+            <nav class="topbar" style="background-color: var(--bg-card);">
                 <div class="d-flex align-items-center">
                     <button class="btn border-0 text-secondary p-2 me-2 d-flex align-items-center justify-content-center" @click="sidebarOpen = !sidebarOpen" style="outline: none; box-shadow: none; min-width: 40px; min-height: 40px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="pointer-events: none;">
@@ -262,12 +262,12 @@
                     <div class="dropdown">
                         <button class="btn dropdown-toggle d-flex align-items-center border-0 text-secondary p-0" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
                             <img src="{{ auth()->user()->photo ? asset('storage/profiles/' . auth()->user()->photo) : 'https://www.gravatar.com/avatar/' . md5(auth()->user()->email) . '?d=mp' }}" alt="Foto Profile" class="rounded-circle me-2" width="32" height="32" style="object-fit: cover;">
-                            <span class="d-none d-md-inline text-dark dark-text-light" style="font-size: 14px; font-weight: 500;">{{ auth()->user()->name }}</span>
+                            <span class="d-none d-md-inline text-dark" style="font-size: 14px; font-weight: 500;">{{ auth()->user()->name }}</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="userMenu" style="background-color: var(--bg-card); border: 1px solid var(--border-color) !important;">
                             <li>
                                 <div class="px-3 py-2 border-bottom mb-1" style="border-bottom-color: var(--border-color) !important;">
-                                    <span class="d-block fw-bold text-dark dark-text-light" style="font-size: 13px;">{{ auth()->user()->name }}</span>
+                                    <span class="d-block fw-bold text-dark" style="font-size: 13px;">{{ auth()->user()->name }}</span>
                                     <small class="text-muted text-uppercase" style="font-size: 10px; font-weight: 700;">{{ auth()->user()->role }}</small>
                                 </div>
                             </li>

@@ -247,24 +247,26 @@
                 @endphp
 
                 @if($penempatan)
-                    <table class="table table-borderless m-0 mt-3" style="color: var(--text-primary);">
-                        <tr>
-                            <td class="text-muted p-1" style="width: 150px; font-size: 13px;">Tempat DUDI</td>
-                            <td class="p-1 font-heading fw-semibold">: {{ $penempatan->dudi->nama }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted p-1" style="font-size: 13px;">Guru Pembimbing</td>
-                            <td class="p-1">: {{ $penempatan->guru->nama }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted p-1" style="font-size: 13px;">Pembimbing Industri</td>
-                            <td class="p-1">: {{ $penempatan->pembimbingIndustri ? $penempatan->pembimbingIndustri->nama : ($penempatan->dudi->pic_nama ? $penempatan->dudi->pic_nama . ' (' . $penempatan->dudi->pic_phone . ')' : 'Belum di-assign') }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted p-1" style="font-size: 13px;">Tanggal PKL</td>
-                            <td class="p-1">: {{ \Carbon\Carbon::parse($penempatan->tanggal_mulai)->translatedFormat('d F Y') }} s/d {{ \Carbon\Carbon::parse($penempatan->tanggal_selesai)->translatedFormat('d F Y') }}</td>
-                        </tr>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-borderless m-0 mt-3" style="color: var(--text-primary);">
+                            <tr>
+                                <td class="text-muted p-1 text-nowrap" style="font-size: 13px;">Tempat DUDI</td>
+                                <td class="p-1 font-heading fw-semibold">: {{ $penempatan->dudi->nama }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted p-1 text-nowrap" style="font-size: 13px;">Guru Pembimbing</td>
+                                <td class="p-1">: {{ $penempatan->guru->nama }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted p-1 text-nowrap" style="font-size: 13px;">Pembimbing Industri</td>
+                                <td class="p-1">: {{ $penempatan->pembimbingIndustri ? $penempatan->pembimbingIndustri->nama : ($penempatan->dudi->pic_nama ? $penempatan->dudi->pic_nama . ' (' . $penempatan->dudi->pic_phone . ')' : 'Belum di-assign') }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted p-1 text-nowrap" style="font-size: 13px;">Tanggal PKL</td>
+                                <td class="p-1">: {{ \Carbon\Carbon::parse($penempatan->tanggal_mulai)->translatedFormat('d F Y') }} s/d {{ \Carbon\Carbon::parse($penempatan->tanggal_selesai)->translatedFormat('d F Y') }}</td>
+                            </tr>
+                        </table>
+                    </div>
                 @else
                     <div class="text-center py-4">
                         <span class="text-muted d-block mb-2">Anda belum ditempatkan di DUDI manapun.</span>

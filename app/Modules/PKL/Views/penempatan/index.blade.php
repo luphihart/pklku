@@ -18,8 +18,8 @@
     <!-- Active Placements Table -->
     <div class="card-premium p-0 overflow-hidden">
         <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="border-bottom-color: var(--border-color) !important;">
-            <h6 class="fw-bold m-0 text-dark dark-text-light">Daftar Penempatan Aktif</h6>
-            <button type="submit" form="bulkDeleteForm" id="btnDeleteSelected" class="btn btn-xs btn-danger font-heading fw-bold" style="display: none; font-size: 11px; padding: 4px 8px;" onclick="return confirm('Apakah Anda yakin ingin membatalkan/menghapus penempatan yang terpilih?');">
+            <h6 class="fw-bold m-0 text-dark">Daftar Penempatan Aktif</h6>
+            <button type="submit" form="bulkDeleteForm" id="btnDeleteSelected" class="btn btn-xs btn-danger font-heading fw-bold btn-bulk-action" style="display: none;" onclick="return confirm('Apakah Anda yakin ingin membatalkan/menghapus penempatan yang terpilih?');">
                 <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: inline-block; vertical-align: middle;">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                 </svg>
@@ -60,12 +60,12 @@
                                 </td>
                                 <td class="text-center pe-4">
                                     <div class="d-flex gap-1 justify-content-center">
-                                        <button type="button" class="btn btn-sm btn-outline-warning p-1" data-bs-toggle="modal" data-bs-target="#editModal_{{ $p->id }}" title="Edit Penempatan">
+                                        <button type="button" class="btn btn-sm btn-outline-warning btn-action" data-bs-toggle="modal" data-bs-target="#editModal_{{ $p->id }}" title="Edit Penempatan">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                             </svg>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-outline-danger p-1" title="Hapus Penempatan" onclick="if(confirm('Apakah Anda yakin ingin membatalkan/menghapus penempatan PKL murid ini?')) { document.getElementById('deleteForm_{{ $p->id }}').submit(); }">
+                                        <button type="button" class="btn btn-sm btn-outline-danger btn-action" title="Hapus Penempatan" onclick="if(confirm('Apakah Anda yakin ingin membatalkan/menghapus penempatan PKL murid ini?')) { document.getElementById('deleteForm_{{ $p->id }}').submit(); }">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                             </svg>

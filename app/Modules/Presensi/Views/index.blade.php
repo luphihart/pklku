@@ -94,7 +94,7 @@
                                 @endif
                                 @if(auth()->user()->role === 'admin')
                                     <div class="mt-2 d-flex justify-content-center gap-1">
-                                        <button type="button" class="btn btn-sm btn-outline-warning p-1" title="Koreksi Presensi" data-bs-toggle="modal" data-bs-target="#modalEditManual" onclick="editPresensi({{ json_encode([
+                                        <button type="button" class="btn btn-sm btn-outline-warning btn-action" title="Koreksi Presensi" data-bs-toggle="modal" data-bs-target="#modalEditManual" onclick="editPresensi({{ json_encode([
                                             'id' => $p->id,
                                             'tanggal' => \Carbon\Carbon::parse($p->tanggal)->translatedFormat('d F Y'),
                                             'jam_masuk' => $p->jam_masuk,
@@ -112,7 +112,7 @@
                                         <form action="{{ route('presensi.destroy', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data presensi ini?');" style="display: inline-block;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger p-1" title="Hapus Presensi">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger btn-action" title="Hapus Presensi">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                 </svg>
@@ -143,7 +143,7 @@
 <!-- Modal Tambah Manual -->
 <div class="modal fade" id="modalTambahManual" tabindex="-1" aria-labelledby="modalTambahManualLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color);">
             <div class="modal-header">
                 <h6 class="modal-title fw-bold" id="modalTambahManualLabel">Tambah Presensi Manual</h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -193,7 +193,7 @@
                         </div>
                     </div>
                     <div class="text-muted small" style="font-size: 11px;">
-                        * Isikan salah satu (Jam Masuk saja / Jam Pulang saja) atau isi keduanya.
+                        * Isikan salah satu (Jam Masuk saja / Jam Pulang saja) or isi keduanya.
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -208,7 +208,7 @@
 <!-- Modal Edit Manual -->
 <div class="modal fade" id="modalEditManual" tabindex="-1" aria-labelledby="modalEditManualLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color);">
             <div class="modal-header">
                 <h6 class="modal-title fw-bold" id="modalEditManualLabel">Koreksi Presensi Manual</h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

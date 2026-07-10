@@ -51,13 +51,13 @@
         <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="border-bottom-color: var(--border-color) !important;">
             <h6 class="fw-bold m-0 text-dark">Data Murid Aktif</h6>
             <div class="d-flex gap-2">
-                <button type="submit" form="bulkDeleteForm" id="btnResetSelected" formaction="{{ route('murid.reset_password_bulk') }}" class="btn btn-xs btn-info text-white font-heading fw-bold" style="display: none; font-size: 11px; padding: 4px 8px;" onclick="return confirm('Apakah Anda yakin ingin mereset password murid yang terpilih menjadi default (siswa123)?');">
+                <button type="submit" form="bulkDeleteForm" id="btnResetSelected" formaction="{{ route('murid.reset_password_bulk') }}" class="btn btn-xs btn-info text-white font-heading fw-bold btn-bulk-action" style="display: none;" onclick="return confirm('Apakah Anda yakin ingin mereset password murid yang terpilih menjadi default (siswa123)?');">
                     <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: inline-block; vertical-align: middle;">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m-2-2a2 2 0 11-2-2m2 2a2 2 0 002 2m0 0a2 2 0 002-2v3a2 2 0 01-2 2h-1a2 2 0 01-2-2v-5a2 2 0 00-2-2H9m0 0l-2 2m2-2l-2-2M7 9v1H6v1H5v1H4v1H3v1h1"/>
                     </svg>
                     Reset Password Terpilih
                 </button>
-                <button type="submit" form="bulkDeleteForm" id="btnDeleteSelected" class="btn btn-xs btn-danger font-heading fw-bold" style="display: none; font-size: 11px; padding: 4px 8px;" onclick="return confirm('Apakah Anda yakin ingin menghapus murid yang terpilih? Akun login terkait juga akan ikut dihapus.');">
+                <button type="submit" form="bulkDeleteForm" id="btnDeleteSelected" class="btn btn-xs btn-danger font-heading fw-bold btn-bulk-action" style="display: none;" onclick="return confirm('Apakah Anda yakin ingin menghapus murid yang terpilih? Akun login terkait juga akan ikut dihapus.');">
                     <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: inline-block; vertical-align: middle;">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
@@ -92,17 +92,17 @@
                                 <td>{{ $murid->user->phone ?? '-' }}</td>
                                 <td class="text-center pe-4">
                                     <div class="d-flex gap-1 justify-content-center">
-                                        <button type="button" class="btn btn-sm btn-outline-warning p-1" data-bs-toggle="modal" data-bs-target="#editModal_{{ $murid->id }}" title="Edit Murid">
+                                        <button type="button" class="btn btn-sm btn-outline-warning btn-action" data-bs-toggle="modal" data-bs-target="#editModal_{{ $murid->id }}" title="Edit Murid">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                             </svg>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-outline-info p-1" title="Reset Password (siswa123)" onclick="if(confirm('Apakah Anda yakin ingin mereset password murid ini menjadi default (siswa123)?')) { document.getElementById('resetForm_{{ $murid->id }}').submit(); }">
+                                        <button type="button" class="btn btn-sm btn-outline-info btn-action" title="Reset Password (siswa123)" onclick="if(confirm('Apakah Anda yakin ingin mereset password murid ini menjadi default (siswa123)?')) { document.getElementById('resetForm_{{ $murid->id }}').submit(); }">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m-2-2a2 2 0 11-2-2m2 2a2 2 0 002 2m0 0a2 2 0 002-2v3a2 2 0 01-2 2h-1a2 2 0 01-2-2v-5a2 2 0 00-2-2H9m0 0l-2 2m2-2l-2-2M7 9v1H6v1H5v1H4v1H3v1h1"/>
                                             </svg>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-outline-danger p-1" title="Hapus Murid" onclick="if(confirm('Apakah Anda yakin ingin menghapus murid ini? Akun login yang berhubungan juga akan dihapus.')) { document.getElementById('deleteForm_{{ $murid->id }}').submit(); }">
+                                        <button type="button" class="btn btn-sm btn-outline-danger btn-action" title="Hapus Murid" onclick="if(confirm('Apakah Anda yakin ingin menghapus murid ini? Akun login yang berhubungan juga akan dihapus.')) { document.getElementById('deleteForm_{{ $murid->id }}').submit(); }">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                             </svg>

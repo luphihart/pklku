@@ -27,6 +27,12 @@
         border-color: rgba(79, 70, 229, 0.2);
     }
 
+    @media (max-width: 400px) {
+        .login-card {
+            padding: 1.5rem !important;
+        }
+    }
+
     .form-control-premium {
         padding: 0.75rem 1rem;
         border-radius: 0.75rem;
@@ -111,7 +117,7 @@
                 <label for="password" class="form-label font-heading fw-semibold text-secondary" style="font-size: 13px;">Password</label>
                 <div class="position-relative">
                     <input :type="show ? 'text' : 'password'" name="password" id="password" class="form-control form-control-premium @error('password') is-invalid @enderror" placeholder="••••••••" style="padding-right: 45px;" required>
-                    <button type="button" @click="show = !show" class="position-absolute end-0 top-50 translate-middle-y border-0 bg-transparent text-muted pe-3 d-flex align-items-center justify-content-center" style="outline: none; z-index: 10;" title="Tampilkan/Sembunyikan password">
+                    <button type="button" @click="show = !show" class="position-absolute end-0 top-50 translate-middle-y border-0 bg-transparent text-muted pe-3 d-flex align-items-center justify-content-center" style="outline: none; z-index: 10; min-width: 44px; min-height: 44px;" title="Tampilkan/Sembunyikan password">
                         <svg x-show="!show" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -133,7 +139,7 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-premium w-100 py-2.5 font-heading fw-semibold">Masuk Sekarang</button>
+            <button type="submit" class="btn btn-premium w-100 py-2 font-heading fw-semibold">Masuk Sekarang</button>
         </form>
     </div>
     

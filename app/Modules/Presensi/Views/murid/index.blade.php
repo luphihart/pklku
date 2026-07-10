@@ -293,7 +293,12 @@
                         this.cameraActive = true;
                     })
                     .catch((err) => {
-                        alert('Kamera diblokir atau tidak ditemukan. Izin kamera wajib untuk selfie.');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Akses Kamera Gagal',
+                            text: 'Kamera diblokir atau tidak ditemukan. Izin kamera wajib untuk selfie.',
+                            confirmButtonColor: 'var(--accent-primary)'
+                        });
                     });
             },
 
@@ -326,15 +331,31 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert(data.message);
-                        window.location.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: data.message,
+                            confirmButtonColor: 'var(--accent-primary)'
+                        }).then(() => {
+                            window.location.reload();
+                        });
                     } else {
-                        alert('Error: ' + data.message);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Presensi Gagal',
+                            text: data.message,
+                            confirmButtonColor: 'var(--accent-primary)'
+                        });
                         this.submitting = false;
                     }
                 })
                 .catch(err => {
-                    alert('Terjadi kesalahan koneksi server.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Koneksi Bermasalah',
+                        text: 'Terjadi kesalahan koneksi server.',
+                        confirmButtonColor: 'var(--accent-primary)'
+                    });
                     this.submitting = false;
                 });
             }

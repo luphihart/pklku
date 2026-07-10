@@ -441,3 +441,57 @@ h1, h2, h3, h4, h5, h6, .font-heading, .sidebar-header, .modal-title, .sidebar-h
     font-family: var(--font-heading);
 }
 
+/* Button & Action Touch Target Optimizations */
+.btn-action {
+    min-width: 36px;
+    min-height: 36px;
+    padding: 6px !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-bulk-action {
+    font-size: 12px;
+    padding: 5px 10px;
+}
+
+@media (max-width: 768px) {
+    .btn-action {
+        min-width: 40px;
+        min-height: 40px;
+        padding: 8px !important;
+    }
+    
+    .btn-bulk-action {
+        font-size: 13px;
+        padding: 8px 12px;
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* Soft Badge Colors */
+.bg-success-soft { background-color: rgba(16, 185, 129, 0.12) !important; color: var(--success) !important; }
+.bg-warning-soft { background-color: rgba(245, 158, 11, 0.12) !important; color: var(--warning) !important; }
+.bg-danger-soft  { background-color: rgba(225, 29, 72, 0.12) !important; color: var(--danger) !important; }
+.bg-info-soft    { background-color: rgba(13, 202, 240, 0.12) !important; color: #0dcaf0 !important; }
+
+/* Custom Sidebar Header style */
+.sidebar-header-custom {
+    background-color: rgba(79, 70, 229, 0.08) !important;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
