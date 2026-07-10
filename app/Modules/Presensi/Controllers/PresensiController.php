@@ -58,8 +58,15 @@ class PresensiController extends Controller
             $query->where('tanggal', now()->toDateString());
         }
 
+        $placementQuery = PenempatanPkl::with(['murid.kelas', 'dudi'])->where('status', 'aktif');
+        if ($role === 'guru') {
+            $guruId = auth()->user()->guru->id;
+            $placementQuery->where('guru_id', $guruId);
+        }
+        $activePlacements = $placementQuery->get();
+
         $presensis = $query->paginate(15);
-        return view('presensi::index', compact('presensis'));
+        return view('presensi::index', compact('presensis', 'activePlacements'));
     }
 
     /**
@@ -129,5 +136,77 @@ class PresensiController extends Controller
         $presensi->delete();
 
         return redirect()->back()->with('success', 'Data presensi berhasil dihapus.');
+    }
+
+    /**
+     * Store manual attendance correction (Admin / Guru).
+     */
+    public function storeManual(Request $request)
+    {
+        $request->validate([
+            'penempatan_pkl_id' => 'required|exists:penempatan_pkl,id',
+            'tanggal' => 'required|date',
+            'jam_masuk' => 'required|string',
+            'status_masuk' => 'required|in:tepat_waktu,terlambat',
+            'jam_pulang' => 'nullable|string',
+            'status_pulang' => 'nullable|in:tepat_waktu,pulang_cepat',
+        ]);
+
+        // Check if attendance already exists for this student on this day
+        $exists = Presensi::where('penempatan_pkl_id', $request->penempatan_pkl_id)
+            ->where('tanggal', $request->tanggal)
+            ->exists();
+
+        if ($exists) {
+            return redirect()->back()->with('error', 'Catatan presensi untuk murid tersebut pada tanggal terpilih sudah ada.');
+        }
+
+        // Standardise time format to HH:MM:SS
+        $jamMasuk = $request->jam_masuk ? date('H:i:s', strtotime($request->jam_masuk)) : null;
+        $jamPulang = $request->jam_pulang ? date('H:i:s', strtotime($request->jam_pulang)) : null;
+
+        Presensi::create([
+            'penempatan_pkl_id' => $request->penempatan_pkl_id,
+            'tanggal' => $request->tanggal,
+            'jam_masuk' => $jamMasuk,
+            'status_masuk' => $request->status_masuk,
+            'jam_pulang' => $jamPulang,
+            'status_pulang' => $request->status_pulang,
+            'lat_masuk' => null,
+            'lng_masuk' => null,
+            'lat_pulang' => null,
+            'lng_pulang' => null,
+            'foto_masuk' => null,
+            'foto_pulang' => null,
+        ]);
+
+        return redirect()->back()->with('success', 'Koreksi presensi manual berhasil ditambahkan.');
+    }
+
+    /**
+     * Update manual attendance correction (Admin / Guru).
+     */
+    public function updateManual(Request $request, int $id)
+    {
+        $request->validate([
+            'jam_masuk' => 'required|string',
+            'status_masuk' => 'required|in:tepat_waktu,terlambat',
+            'jam_pulang' => 'nullable|string',
+            'status_pulang' => 'nullable|in:tepat_waktu,pulang_cepat',
+        ]);
+
+        $presensi = Presensi::findOrFail($id);
+
+        $jamMasuk = $request->jam_masuk ? date('H:i:s', strtotime($request->jam_masuk)) : null;
+        $jamPulang = $request->jam_pulang ? date('H:i:s', strtotime($request->jam_pulang)) : null;
+
+        $presensi->update([
+            'jam_masuk' => $jamMasuk,
+            'status_masuk' => $request->status_masuk,
+            'jam_pulang' => $jamPulang,
+            'status_pulang' => $request->status_pulang,
+        ]);
+
+        return redirect()->back()->with('success', 'Koreksi presensi manual berhasil diperbarui.');
     }
 }

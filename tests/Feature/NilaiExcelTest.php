@@ -296,4 +296,121 @@ class NilaiExcelTest extends TestCase
             'tanggal_lahir' => '2008-11-20 00:00:00',
         ]);
     }
+
+    public function test_admin_and_guru_can_create_manual_attendance()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $tahun = TahunAjaran::create(['tahun' => '2025/2026', 'semester' => 'ganjil', 'status' => 'aktif']);
+        $jurusan = Jurusan::create(['kode' => 'RPL', 'nama' => 'Rekayasa Perangkat Lunak']);
+        $kelas = Kelas::create(['nama' => 'XII RPL 1', 'jurusan_id' => $jurusan->id]);
+        
+        $muridUser = User::factory()->create(['role' => 'murid']);
+        $murid = Murid::create(['nis' => '17559', 'nama' => 'Manual Murid', 'kelas_id' => $kelas->id, 'user_id' => $muridUser->id]);
+        
+        $guruUser = User::factory()->create(['role' => 'guru']);
+        $guru = Guru::create(['user_id' => $guruUser->id, 'nip' => '8888', 'nama' => 'Manual Guru']);
+        
+        $dudi = Dudi::create([
+            'nama' => 'PT. Manual Tech', 'alamat' => 'City', 'latitude' => 0.0, 'longitude' => 0.0, 'radius_meter' => 50,
+            'pic_nama' => 'PIC Tech', 'pic_phone' => '0812'
+        ]);
+
+        $placement = PenempatanPkl::create([
+            'murid_id' => $murid->id,
+            'dudi_id' => $dudi->id,
+            'guru_id' => $guru->id,
+            'tahun_ajaran_id' => $tahun->id,
+            'tanggal_mulai' => '2025-07-01',
+            'tanggal_selesai' => '2025-12-31',
+            'status' => 'aktif'
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->post(route('presensi.store_manual'), [
+                'penempatan_pkl_id' => $placement->id,
+                'tanggal' => '2025-07-10',
+                'jam_masuk' => '07:15',
+                'status_masuk' => 'tepat_waktu',
+                'jam_pulang' => '16:00',
+                'status_pulang' => 'tepat_waktu',
+            ]);
+
+        $response->assertStatus(302);
+        $this->assertDatabaseHas('presensi', [
+            'penempatan_pkl_id' => $placement->id,
+            'tanggal' => '2025-07-10',
+            'jam_masuk' => '07:15:00',
+            'jam_pulang' => '16:00:00',
+            'status_masuk' => 'tepat_waktu',
+            'status_pulang' => 'tepat_waktu',
+        ]);
+    }
+
+    public function test_admin_and_guru_can_update_manual_attendance()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $tahun = TahunAjaran::create(['tahun' => '2025/2026', 'semester' => 'ganjil', 'status' => 'aktif']);
+        $jurusan = Jurusan::create(['kode' => 'RPL', 'nama' => 'Rekayasa Perangkat Lunak']);
+        $kelas = Kelas::create(['nama' => 'XII RPL 1', 'jurusan_id' => $jurusan->id]);
+        
+        $muridUser = User::factory()->create(['role' => 'murid']);
+        $murid = Murid::create(['nis' => '17560', 'nama' => 'Manual Murid 2', 'kelas_id' => $kelas->id, 'user_id' => $muridUser->id]);
+        
+        $guruUser = User::factory()->create(['role' => 'guru']);
+        $guru = Guru::create(['user_id' => $guruUser->id, 'nip' => '8889', 'nama' => 'Manual Guru 2']);
+        
+        $dudi = Dudi::create([
+            'nama' => 'PT. Manual Tech 2', 'alamat' => 'City', 'latitude' => 0.0, 'longitude' => 0.0, 'radius_meter' => 50,
+            'pic_nama' => 'PIC Tech', 'pic_phone' => '0812'
+        ]);
+
+        $placement = PenempatanPkl::create([
+            'murid_id' => $murid->id,
+            'dudi_id' => $dudi->id,
+            'guru_id' => $guru->id,
+            'tahun_ajaran_id' => $tahun->id,
+            'tanggal_mulai' => '2025-07-01',
+            'tanggal_selesai' => '2025-12-31',
+            'status' => 'aktif'
+        ]);
+
+        $presensi = \App\Modules\Presensi\Models\Presensi::create([
+            'penempatan_pkl_id' => $placement->id,
+            'tanggal' => '2025-07-10',
+            'jam_masuk' => '07:45:00',
+            'status_masuk' => 'terlambat',
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->put(route('presensi.update_manual', $presensi->id), [
+                'jam_masuk' => '07:05',
+                'status_masuk' => 'tepat_waktu',
+                'jam_pulang' => '16:05',
+                'status_pulang' => 'tepat_waktu',
+            ]);
+
+        $response->assertStatus(302);
+        $this->assertDatabaseHas('presensi', [
+            'id' => $presensi->id,
+            'jam_masuk' => '07:05:00',
+            'jam_pulang' => '16:05:00',
+            'status_masuk' => 'tepat_waktu',
+            'status_pulang' => 'tepat_waktu',
+        ]);
+    }
+
+    public function test_student_cannot_create_or_update_manual_attendance()
+    {
+        $student = User::factory()->create(['role' => 'murid']);
+        
+        $response1 = $this->actingAs($student)
+            ->post(route('presensi.store_manual'), [
+                'penempatan_pkl_id' => 1,
+                'tanggal' => '2025-07-10',
+                'jam_masuk' => '07:15',
+                'status_masuk' => 'tepat_waktu',
+            ]);
+
+        $response1->assertStatus(403); // Forbidden
+    }
 }
