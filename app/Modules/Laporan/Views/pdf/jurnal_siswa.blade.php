@@ -31,7 +31,7 @@
             margin: 4px 0 0 0;
             font-size: 12px;
             text-transform: uppercase;
-            font-weight: 600;
+            font-weight: bold;
             color: #333;
         }
         .header p {
@@ -87,10 +87,10 @@
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
-        .status-disetujui { color: #155724; font-weight: 600; }
-        .status-ditolak { color: #721c24; font-weight: 600; }
-        .status-revisi { color: #856404; font-weight: 600; }
-        .status-pending { color: #666; font-weight: 600; }
+        .status-disetujui { color: #155724; font-weight: bold; }
+        .status-ditolak { color: #721c24; font-weight: bold; }
+        .status-revisi { color: #856404; font-weight: bold; }
+        .status-pending { color: #666; font-weight: bold; }
         .footer {
             width: 100%;
             margin-top: 35px;

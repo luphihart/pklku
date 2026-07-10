@@ -31,7 +31,7 @@
             margin: 4px 0 0 0;
             font-size: 12px;
             text-transform: uppercase;
-            font-weight: 600;
+            font-weight: bold;
             color: #333;
         }
         .header p {
@@ -92,11 +92,11 @@
         }
         .badge-hadir {
             color: #155724;
-            font-weight: 600;
+            font-weight: bold;
         }
         .badge-terlambat {
             color: #856404;
-            font-weight: 600;
+            font-weight: bold;
         }
         .footer {
             width: 100%;
