@@ -334,6 +334,62 @@
     </div>
     @endif
 
+    @if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
+    <!-- Active Location Map (Peta Lokasi Aktif) -->
+    <div class="row mt-2">
+        <!-- Leaflet Map Column -->
+        <div class="col-lg-8 mb-4">
+            <div class="card-premium">
+                <h5 class="fw-bold font-heading mb-3 text-dark">Peta Lokasi PKL Aktif</h5>
+                <div id="monitoringMap" style="height: 400px; border-radius: 0.5rem; border: 1px solid var(--border-color); z-index: 1;"></div>
+            </div>
+        </div>
+
+        <!-- DUDI List Column -->
+        <div class="col-lg-4 mb-4">
+            <div class="card-premium">
+                <h5 class="fw-bold font-heading mb-3 text-dark">
+                    {{ auth()->user()->role === 'guru' ? 'Daftar DUDI Bimbingan Anda' : 'Daftar Mitra DUDI Aktif' }}
+                </h5>
+                
+                <div class="pe-2" style="max-height: 400px; overflow-y: auto;">
+                    @forelse($dudiList as $dudiId => $dudiItem)
+                        <div class="p-3 mb-3 border rounded" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <span class="fw-bold text-primary font-heading" style="font-size: 13.5px;">{{ $dudiItem['dudi']->nama }}</span>
+                                <span class="badge bg-primary-light text-primary" style="font-size: 10px; font-weight: 700;">{{ count($dudiItem['placements']) }} Siswa</span>
+                            </div>
+                            <small class="text-muted d-block mt-1 mb-2" style="font-size: 11px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="align-middle me-1">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                </svg>{{ $dudiItem['dudi']->alamat }}
+                            </small>
+                            
+                            @if(auth()->user()->role === 'guru')
+                                <!-- Show details (like list of students) for Guru -->
+                                <div class="mt-2 pt-2 border-top" style="border-top-color: var(--border-color) !important;">
+                                    <span class="text-muted d-block mb-1 fw-semibold" style="font-size: 10px; text-uppercase;">Daftar Siswa Bimbingan:</span>
+                                    <ul class="ps-3 mb-0" style="font-size: 11px; color: var(--text-primary);">
+                                        @foreach($dudiItem['placements'] as $placement)
+                                            <li class="mb-1">
+                                                <strong>{{ $placement->murid->nama }}</strong> ({{ $placement->murid->kelas->nama }})
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                        </div>
+                    @empty
+                        <div class="text-center py-5 text-muted small">
+                            Belum ada bimbingan aktif di DUDI saat ini.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- Announcements Feed (Visible to all users) -->
     <div class="row mt-2">
         <div class="col-12 mb-4">
@@ -389,3 +445,80 @@
     </div>
 </div>
 @endsection
+
+@if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
+@section('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Fix Leaflet broken default marker icons
+        delete L.Icon.Default.prototype._getIconUrl;
+        L.Icon.Default.mergeOptions({
+            iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+            iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+            shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        });
+
+        const placements = @json($placements);
+        const dudiGroups = {};
+
+        placements.forEach(p => {
+            if (p.dudi) {
+                if (!dudiGroups[p.dudi_id]) {
+                    dudiGroups[p.dudi_id] = {
+                        name: p.dudi.nama,
+                        lat: parseFloat(p.dudi.latitude),
+                        lng: parseFloat(p.dudi.longitude),
+                        students: []
+                    };
+                }
+                dudiGroups[p.dudi_id].students.push(p);
+            }
+        });
+
+        // Initialize map centered at first DUDI or average center
+        let mapCenter = [-6.200000, 106.816666]; // Default Jakarta
+        const dudiKeys = Object.keys(dudiGroups);
+        
+        if (dudiKeys.length > 0) {
+            mapCenter = [dudiGroups[dudiKeys[0]].lat, dudiGroups[dudiKeys[0]].lng];
+        }
+
+        const map = L.map('monitoringMap').setView(mapCenter, 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        const markers = [];
+        const isGuru = @json(auth()->user()->role === 'guru');
+
+        // Draw DUDI markers
+        Object.values(dudiGroups).forEach(dudi => {
+            let popupContent = `<strong>${dudi.name}</strong>`;
+            if (isGuru) {
+                popupContent += `<br><hr class="my-1">Siswa Terplotting:<br><ul class="ps-3 mb-0" style="font-size: 11px;">`;
+                dudi.students.forEach(studentPlacement => {
+                    popupContent += `<li><strong>${studentPlacement.murid.nama}</strong> (${studentPlacement.murid.kelas.nama})</li>`;
+                });
+                popupContent += '</ul>';
+            } else {
+                popupContent += `<br><span class="text-muted" style="font-size: 11px;">Total Terplotting: ${dudi.students.length} Siswa</span>`;
+            }
+
+            const marker = L.marker([dudi.lat, dudi.lng]).addTo(map)
+                .bindPopup(popupContent);
+            
+            markers.push(marker);
+        });
+
+        // Adjust bounds
+        if (markers.length > 0) {
+            const group = new L.featureGroup(markers);
+            map.fitBounds(group.getBounds().pad(0.15));
+        }
+    });
+</script>
+@endsection
+@endif

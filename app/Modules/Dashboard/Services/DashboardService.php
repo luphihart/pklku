@@ -24,10 +24,38 @@ class DashboardService
                   });
         })->orderBy('created_at', 'desc')->limit(5)->get();
 
+        $placements = collect();
+        $dudiList = [];
+
+        if (in_array($user->role, ['admin', 'guru'])) {
+            $query = \App\Modules\PKL\Models\PenempatanPkl::with(['murid.kelas', 'dudi', 'guru'])
+                ->where('status', 'aktif');
+
+            if ($user->role === 'guru' && $user->guru) {
+                $query->where('guru_id', $user->guru->id);
+            }
+
+            $placements = $query->get();
+
+            foreach ($placements as $p) {
+                if ($p->dudi) {
+                    if (!isset($dudiList[$p->dudi_id])) {
+                        $dudiList[$p->dudi_id] = [
+                            'dudi' => $p->dudi,
+                            'placements' => []
+                        ];
+                    }
+                    $dudiList[$p->dudi_id]['placements'][] = $p;
+                }
+            }
+        }
+
         return [
             'counts' => $this->repo->getCounts(),
             'attendance' => $this->repo->getAttendanceStatsToday(),
             'announcements' => $announcements,
+            'placements' => $placements,
+            'dudiList' => $dudiList,
         ];
     }
 }
