@@ -247,25 +247,62 @@
                 @endphp
 
                 @if($penempatan)
-                    <div class="table-responsive">
-                        <table class="table table-borderless m-0 mt-3" style="color: var(--text-primary);">
-                            <tr>
-                                <td class="text-muted p-1 text-nowrap" style="font-size: 13px;">Tempat DUDI</td>
-                                <td class="p-1 font-heading fw-semibold">: {{ $penempatan->dudi->nama }}</td>
-                            </tr>
-                            <tr>
-                                <td class="text-muted p-1 text-nowrap" style="font-size: 13px;">Guru Pembimbing</td>
-                                <td class="p-1">: {{ $penempatan->guru->nama }}</td>
-                            </tr>
-                            <tr>
-                                <td class="text-muted p-1 text-nowrap" style="font-size: 13px;">Pembimbing Industri</td>
-                                <td class="p-1">: {{ $penempatan->pembimbingIndustri ? $penempatan->pembimbingIndustri->nama : ($penempatan->dudi->pic_nama ? $penempatan->dudi->pic_nama . ' (' . $penempatan->dudi->pic_phone . ')' : 'Belum di-assign') }}</td>
-                            </tr>
-                            <tr>
-                                <td class="text-muted p-1 text-nowrap" style="font-size: 13px;">Tanggal PKL</td>
-                                <td class="p-1">: {{ \Carbon\Carbon::parse($penempatan->tanggal_mulai)->translatedFormat('d F Y') }} s/d {{ \Carbon\Carbon::parse($penempatan->tanggal_selesai)->translatedFormat('d F Y') }}</td>
-                            </tr>
-                        </table>
+                    <div class="d-flex flex-column gap-3 mt-3">
+                        <!-- Tempat DUDI -->
+                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background-color: var(--bg-canvas); border: 1px solid var(--border-color);">
+                            <div class="p-2 rounded bg-primary-light text-primary d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="text-muted d-block small mb-1 text-uppercase fw-bold" style="font-size: 10px; letter-spacing: 0.5px;">Tempat DUDI</span>
+                                <span class="font-heading fw-bold text-dark" style="font-size: 14px; line-height: 1.4;">{{ $penempatan->dudi->nama }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Guru Pembimbing -->
+                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background-color: var(--bg-canvas); border: 1px solid var(--border-color);">
+                            <div class="p-2 rounded bg-success-light text-success d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6m-6 4h6"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="text-muted d-block small mb-1 text-uppercase fw-bold" style="font-size: 10px; letter-spacing: 0.5px;">Guru Pembimbing</span>
+                                <span class="fw-semibold text-dark font-heading" style="font-size: 14px; line-height: 1.4;">{{ $penempatan->guru->nama }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Pembimbing Industri -->
+                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background-color: var(--bg-canvas); border: 1px solid var(--border-color);">
+                            <div class="p-2 rounded bg-warning-light text-warning d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="text-muted d-block small mb-1 text-uppercase fw-bold" style="font-size: 10px; letter-spacing: 0.5px;">Pembimbing Industri</span>
+                                <span class="fw-semibold text-dark font-heading" style="font-size: 14px; line-height: 1.4;">
+                                    {{ $penempatan->pembimbingIndustri ? $penempatan->pembimbingIndustri->nama : ($penempatan->dudi->pic_nama ? $penempatan->dudi->pic_nama . ' (' . $penempatan->dudi->pic_phone . ')' : 'Belum di-assign') }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Tanggal Pelaksanaan -->
+                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background-color: var(--bg-canvas); border: 1px solid var(--border-color);">
+                            <div class="p-2 rounded bg-indigo-light text-indigo d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="text-muted d-block small mb-1 text-uppercase fw-bold" style="font-size: 10px; letter-spacing: 0.5px;">Tanggal Pelaksanaan</span>
+                                <span class="fw-semibold text-dark font-heading" style="font-size: 14px; line-height: 1.4;">
+                                    {{ \Carbon\Carbon::parse($penempatan->tanggal_mulai)->translatedFormat('d F Y') }} s/d {{ \Carbon\Carbon::parse($penempatan->tanggal_selesai)->translatedFormat('d F Y') }}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 @else
                     <div class="text-center py-4">
