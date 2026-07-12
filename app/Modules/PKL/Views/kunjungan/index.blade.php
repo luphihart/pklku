@@ -60,8 +60,14 @@
         <!-- Visitations History Card -->
         <div class="{{ auth()->user()->role === 'guru' ? 'col-md-8' : 'col-md-12' }} mb-4">
             <div class="card-premium p-0 overflow-hidden">
-                <div class="p-3 border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="border-bottom-color: var(--border-color) !important;">
                     <h6 class="fw-bold m-0 text-dark">Riwayat Kunjungan Pembimbing</h6>
+                    <a href="{{ route('kunjungan.export_pdf') }}" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1 font-heading fw-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Export PDF
+                    </a>
                 </div>
 
                 <div class="table-responsive">

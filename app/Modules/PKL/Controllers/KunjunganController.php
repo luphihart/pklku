@@ -117,4 +117,34 @@ class KunjunganController extends Controller
 
         return redirect()->route('kunjungan.index')->with('success', 'Kunjungan pembimbing berhasil dihapus.');
     }
+
+    public function exportPdf()
+    {
+        $role = auth()->user()->role;
+        $query = KunjunganMonitoring::with(['penempatanPkl.murid', 'penempatanPkl.dudi', 'penempatanPkl.guru']);
+
+        if ($role === 'guru') {
+            $guruId = auth()->user()->guru->id;
+            $query->whereHas('penempatanPkl', function($q) use ($guruId) {
+                $q->where('guru_id', $guruId);
+            });
+        }
+
+        $kunjungans = $query->orderBy('tanggal', 'desc')->get();
+        $branding = $this->getBranding();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pkl::kunjungan.pdf', compact('kunjungans', 'branding'));
+        return $pdf->download('rekap_kunjungan_dudi_' . time() . '.pdf');
+    }
+
+    private function getBranding(): array
+    {
+        return [
+            'nama_sekolah' => \App\Modules\Setting\Models\Setting::where('key', 'nama_sekolah')->value('value') ?: 'SMK NEGERI 1 JAKARTA',
+            'alamat_sekolah' => \App\Modules\Setting\Models\Setting::where('key', 'alamat_sekolah')->value('value') ?: 'Jl. Teknologi Canggih No. 42, Kota Digital',
+            'kepala_sekolah' => \App\Modules\Setting\Models\Setting::where('key', 'nama_kepala_sekolah')->value('value') ?: 'Dr. H. Akhmad Yusuf, M.T.',
+            'nip_kepala_sekolah' => \App\Modules\Setting\Models\Setting::where('key', 'nip_kepala_sekolah')->value('value') ?: '198001012005011001',
+            'kota_sekolah' => \App\Modules\Setting\Models\Setting::where('key', 'kota_sekolah')->value('value') ?: 'Pati',
+        ];
+    }
 }

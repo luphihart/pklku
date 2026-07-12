@@ -707,4 +707,40 @@ class NilaiExcelTest extends TestCase
         $this->assertDatabaseMissing('penempatan_pkl', ['id' => $p1->id]);
         $this->assertDatabaseMissing('penempatan_pkl', ['id' => $p2->id]);
     }
+
+    public function test_kunjungan_pdf_export()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $guruUser = User::factory()->create(['role' => 'guru']);
+        $guru = Guru::create(['user_id' => $guruUser->id, 'nip' => '12345678', 'nama' => 'Pak Guru Budi']);
+
+        $tahun = TahunAjaran::create(['tahun' => '2025/2026', 'semester' => 'ganjil', 'status' => 'aktif']);
+        $jurusan = Jurusan::create(['nama' => 'RPL', 'kode' => 'RPL', 'singkatan' => 'RPL']);
+        $kelas = Kelas::create(['nama' => 'XII RPL 1', 'jurusan_id' => $jurusan->id]);
+        $murid = Murid::create(['nis' => '123', 'nama' => 'Ahmad', 'kelas_id' => $kelas->id, 'user_id' => User::factory()->create(['role' => 'murid'])->id]);
+
+        $dudi = Dudi::create(['nama' => 'PT. Sukses', 'alamat' => 'Jakarta', 'latitude' => 0.0, 'longitude' => 0.0, 'radius_meter' => 50, 'pic_nama' => 'B', 'pic_phone' => '1']);
+
+        $placement = PenempatanPkl::create(['murid_id' => $murid->id, 'dudi_id' => $dudi->id, 'guru_id' => $guru->id, 'tahun_ajaran_id' => $tahun->id, 'tanggal_mulai' => '2025-07-01', 'tanggal_selesai' => '2025-12-31', 'status' => 'aktif']);
+
+        $kunjungan = \App\Modules\PKL\Models\KunjunganMonitoring::create([
+            'penempatan_pkl_id' => $placement->id,
+            'tanggal' => '2025-08-01',
+            'jenis_kunjungan' => 'Monitoring Berkala',
+            'deskripsi_kunjungan' => 'Semua berjalan lancar.',
+            'foto_kunjungan' => null
+        ]);
+
+        // Admin can export
+        $responseAdmin = $this->actingAs($admin)
+            ->get(route('kunjungan.export_pdf'));
+        $responseAdmin->assertStatus(200);
+        $responseAdmin->assertHeader('Content-Type', 'application/pdf');
+
+        // Guru can export
+        $responseGuru = $this->actingAs($guruUser)
+            ->get(route('kunjungan.export_pdf'));
+        $responseGuru->assertStatus(200);
+        $responseGuru->assertHeader('Content-Type', 'application/pdf');
+    }
 }
