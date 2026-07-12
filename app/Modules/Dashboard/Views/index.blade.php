@@ -525,7 +525,10 @@
                                  `<strong style="font-size: 12.5px; color: var(--accent-primary);">${dudi.name}</strong>` +
                                  `<div class="text-muted mt-1" style="font-size: 11px; max-width: 200px; white-space: normal; line-height: 1.3;">` +
                                  `<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="me-1" style="display:inline-block; vertical-align:middle;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>` +
-                                 `${dudi.alamat}</div></div>`;
+                                 `${dudi.alamat}</div>` +
+                                 `<div class="mt-1" style="font-size: 11px; font-weight: 600; color: var(--accent-primary);">` +
+                                 `Siswa Terplotting: ${dudi.students.length} Murid</div>` +
+                                 `</div>`;
 
             const marker = L.marker([dudi.lat, dudi.lng], { icon: dudiIcon }).addTo(map)
                 .bindTooltip(tooltipContent, { direction: 'top', permanent: false });
