@@ -486,6 +486,9 @@
         const todayPresensi = @json($todayPresensi);
         const dudiGroups = {};
 
+        console.log("PKLku Dashboard - Placements:", placements);
+        console.log("PKLku Dashboard - Today Presensi:", todayPresensi);
+
         placements.forEach(p => {
             if (p.dudi) {
                 if (!dudiGroups[p.dudi_id]) {
@@ -539,43 +542,47 @@
         // Draw student presensi markers (only for Guru)
         if (isGuru && todayPresensi && todayPresensi.length > 0) {
             todayPresensi.forEach(presensi => {
-                const placement = placements.find(pl => pl.id === presensi.penempatan_pkl_id);
+                const placement = placements.find(pl => String(pl.id) === String(presensi.penempatan_pkl_id));
                 if (placement) {
                     const studentName = placement.murid.nama;
                     const kelasName = placement.murid.kelas.nama;
                     
                     // 1. Check-in Marker
-                    if (presensi.lat_masuk && presensi.lng_masuk) {
+                    if (presensi.lat_masuk !== null && presensi.lat_masuk !== undefined && presensi.lng_masuk !== null && presensi.lng_masuk !== undefined) {
                         const checkinLat = parseFloat(presensi.lat_masuk);
                         const checkinLng = parseFloat(presensi.lng_masuk);
                         
-                        let checkinTooltip = `<div class="p-1">` +
-                                             `<strong>${studentName}</strong> <small class="text-muted">(${kelasName})</small><br>` +
-                                             `<span class="badge bg-success-soft mt-1 mb-1">Presensi Masuk</span><br>` +
-                                             `<small class="text-muted">Jam: <strong>${presensi.jam_masuk || '-'}</strong> | Status: <strong>${presensi.status_masuk ? presensi.status_masuk.replace('_', ' ') : '-'}</strong></small>` +
-                                             `</div>`;
-                        
-                        const checkinMarker = L.marker([checkinLat, checkinLng], { icon: studentIcon }).addTo(map)
-                            .bindTooltip(checkinTooltip, { direction: 'top', permanent: false });
-                        
-                        markers.push(checkinMarker);
+                        if (!isNaN(checkinLat) && !isNaN(checkinLng)) {
+                            let checkinTooltip = `<div class="p-1">` +
+                                                 `<strong>${studentName}</strong> <small class="text-muted">(${kelasName})</small><br>` +
+                                                 `<span class="badge bg-success-soft mt-1 mb-1">Presensi Masuk</span><br>` +
+                                                 `<small class="text-muted">Jam: <strong>${presensi.jam_masuk || '-'}</strong> | Status: <strong>${presensi.status_masuk ? presensi.status_masuk.replace('_', ' ') : '-'}</strong></small>` +
+                                                 `</div>`;
+                            
+                            const checkinMarker = L.marker([checkinLat, checkinLng], { icon: studentIcon }).addTo(map)
+                                .bindTooltip(checkinTooltip, { direction: 'top', permanent: false });
+                            
+                            markers.push(checkinMarker);
+                        }
                     }
                     
                     // 2. Check-out Marker
-                    if (presensi.lat_pulang && presensi.lng_pulang) {
+                    if (presensi.lat_pulang !== null && presensi.lat_pulang !== undefined && presensi.lng_pulang !== null && presensi.lng_pulang !== undefined) {
                         const checkoutLat = parseFloat(presensi.lat_pulang);
                         const checkoutLng = parseFloat(presensi.lng_pulang);
                         
-                        let checkoutTooltip = `<div class="p-1">` +
-                                              `<strong>${studentName}</strong> <small class="text-muted">(${kelasName})</small><br>` +
-                                              `<span class="badge bg-danger-soft mt-1 mb-1">Presensi Pulang</span><br>` +
-                                              `<small class="text-muted">Jam: <strong>${presensi.jam_pulang || '-'}</strong> | Status: <strong>${presensi.status_pulang ? presensi.status_pulang.replace('_', ' ') : '-'}</strong></small>` +
-                                              `</div>`;
-                        
-                        const checkoutMarker = L.marker([checkoutLat, checkoutLng], { icon: studentIcon }).addTo(map)
-                            .bindTooltip(checkoutTooltip, { direction: 'top', permanent: false });
-                        
-                        markers.push(checkoutMarker);
+                        if (!isNaN(checkoutLat) && !isNaN(checkoutLng)) {
+                            let checkoutTooltip = `<div class="p-1">` +
+                                                  `<strong>${studentName}</strong> <small class="text-muted">(${kelasName})</small><br>` +
+                                                  `<span class="badge bg-danger-soft mt-1 mb-1">Presensi Pulang</span><br>` +
+                                                  `<small class="text-muted">Jam: <strong>${presensi.jam_pulang || '-'}</strong> | Status: <strong>${presensi.status_pulang ? presensi.status_pulang.replace('_', ' ') : '-'}</strong></small>` +
+                                                  `</div>`;
+                            
+                            const checkoutMarker = L.marker([checkoutLat, checkoutLng], { icon: studentIcon }).addTo(map)
+                                .bindTooltip(checkoutTooltip, { direction: 'top', permanent: false });
+                            
+                            markers.push(checkoutMarker);
+                        }
                     }
                 }
             });
