@@ -15,7 +15,7 @@ class DudiSeeder extends Seeder
     {
         $dudiList = [
             [
-                'nama' => 'PT. Antigravity Global Technology',
+                'nama' => 'PT. Sukses Kreatif Solusindo',
                 'alamat' => 'Sudirman Central Business District (SCBD) Lot 10, Jakarta Selatan',
                 'latitude' => -6.223056,
                 'longitude' => 106.809722,
@@ -23,8 +23,8 @@ class DudiSeeder extends Seeder
                 'pic_nama' => 'Eko Prasetyo',
                 'pic_phone' => '081299998888',
                 'pembimbing' => [
-                    ['nama' => 'Rahmat Hidayat', 'phone' => '081299998881', 'email' => 'rahmat@antigravity.co.id'],
-                    ['nama' => 'Maya Kartika', 'phone' => '081299998882', 'email' => 'maya@antigravity.co.id']
+                    ['nama' => 'Rahmat Hidayat', 'phone' => '081299998881', 'email' => 'rahmat@sukseskreatif.co.id'],
+                    ['nama' => 'Maya Kartika', 'phone' => '081299998882', 'email' => 'maya@sukseskreatif.co.id']
                 ]
             ],
             [

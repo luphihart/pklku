@@ -119,9 +119,9 @@ class LaporanController extends Controller
     private function getBranding(): array
     {
         return [
-            'nama_sekolah' => Setting::where('key', 'nama_sekolah')->value('value') ?: 'SMK NEGERI 1 ANTIGRAVITY',
+            'nama_sekolah' => Setting::where('key', 'nama_sekolah')->value('value') ?: 'SMK NEGERI 1 JAKARTA',
             'alamat_sekolah' => Setting::where('key', 'alamat_sekolah')->value('value') ?: 'Jl. Teknologi Canggih No. 42, Kota Digital',
-            'kepala_sekolah' => Setting::where('key', 'nama_kepala_sekolah')->value('value') ?: 'Dr. Antigravity, M.T.',
+            'kepala_sekolah' => Setting::where('key', 'nama_kepala_sekolah')->value('value') ?: 'Dr. H. Akhmad Yusuf, M.T.',
             'nip_kepala_sekolah' => Setting::where('key', 'nip_kepala_sekolah')->value('value') ?: '198001012005011001',
             'kota_sekolah' => Setting::where('key', 'kota_sekolah')->value('value') ?: 'Pati',
             'footer_rapor' => Setting::where('key', 'footer_rapor')->value('value') ?: 'Nilai diisi rentang 0 - 100. Keterangan diisi jika dibutuhkan.',

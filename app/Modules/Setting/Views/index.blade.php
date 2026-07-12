@@ -42,7 +42,7 @@
                             <div class="col-md-8">
                                 <div class="mb-3">
                                     <label for="nama_sekolah" class="form-label small fw-semibold">Nama Sekolah Resmi</label>
-                                    <input type="text" name="nama_sekolah" id="nama_sekolah" class="form-control" value="{{ $settings['nama_sekolah'] ?? 'SMK Negeri 1 Antigravity' }}" required>
+                                    <input type="text" name="nama_sekolah" id="nama_sekolah" class="form-control" value="{{ $settings['nama_sekolah'] ?? 'SMK Negeri 1 Jakarta' }}" required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="alamat_sekolah" class="form-label small fw-semibold">Alamat Lengkap Sekolah</label>
@@ -58,7 +58,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="footer_login" class="form-label small fw-semibold">Copyright / Footer Halaman Login</label>
-                                    <input type="text" name="footer_login" id="footer_login" class="form-control" value="{{ $settings['footer_login'] ?? '© 2026 SMK Negeri 1 Antigravity. All rights reserved.' }}" placeholder="Contoh: © 2026 SMK Negeri 2 Pati. All rights reserved." required>
+                                    <input type="text" name="footer_login" id="footer_login" class="form-control" value="{{ $settings['footer_login'] ?? '© 2026 SMK Negeri 1 Jakarta. All rights reserved.' }}" placeholder="Contoh: © 2026 SMK Negeri 2 Pati. All rights reserved." required>
                                 </div>
                             </div>
                             <div class="col-md-4 text-center mb-3">
@@ -79,7 +79,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="nama_kepala_sekolah" class="form-label small fw-semibold">Nama Kepala Sekolah & Gelar</label>
-                                <input type="text" name="nama_kepala_sekolah" id="nama_kepala_sekolah" class="form-control" value="{{ $settings['nama_kepala_sekolah'] ?? 'Dr. Antigravity, M.T.' }}">
+                                <input type="text" name="nama_kepala_sekolah" id="nama_kepala_sekolah" class="form-control" value="{{ $settings['nama_kepala_sekolah'] ?? 'Dr. H. Akhmad Yusuf, M.T.' }}">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="nip_kepala_sekolah" class="form-label small fw-semibold">NIP Kepala Sekolah</label>

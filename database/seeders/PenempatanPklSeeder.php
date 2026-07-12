@@ -27,7 +27,7 @@ class PenempatanPklSeeder extends Seeder
         // Get resources
         $murids = Murid::all();
         $gurus = Guru::all();
-        $dudiPT = Dudi::where('nama', 'like', '%Antigravity%')->first();
+        $dudiPT = Dudi::where('nama', 'like', '%Sukses Kreatif%')->first();
         $dudiCV = Dudi::where('nama', 'like', '%Tech Media%')->first();
 
         if ($murids->count() >= 4 && $gurus->count() >= 2 && $dudiPT && $dudiCV) {
@@ -35,7 +35,7 @@ class PenempatanPklSeeder extends Seeder
             $piPT = PembimbingIndustri::where('dudi_id', $dudiPT->id)->first();
             $piCV = PembimbingIndustri::where('dudi_id', $dudiCV->id)->first();
 
-            // Assign Ahmad and Citra to PT. Antigravity, guided by Guru Budi (guru1)
+            // Assign Ahmad and Citra to PT. Sukses Kreatif, guided by Guru Budi (guru1)
             PenempatanPkl::create([
                 'murid_id' => $murids[0]->id, // Ahmad
                 'dudi_id' => $dudiPT->id,

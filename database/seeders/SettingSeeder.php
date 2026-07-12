@@ -13,10 +13,10 @@ class SettingSeeder extends Seeder
     public function run(): void
     {
         $settings = [
-            'nama_sekolah' => 'SMK Negeri 1 Antigravity',
-            'alamat_sekolah' => 'Jl. Raya Antigravity No. 42, Kota Coding',
+            'nama_sekolah' => 'SMK Negeri 1 Jakarta',
+            'alamat_sekolah' => 'Jl. Raya Sudirman No. 42, Jakarta',
             'logo_sekolah' => 'logo_smk.png',
-            'kop_surat' => 'PEMERINTAH PROVINSI ANTIGRAVITY\nDinas Pendidikan Dan Kebudayaan\nSMK NEGERI 1 ANTIGRAVITY\nJl. Raya Antigravity No. 42, Telp (021) 555-0199',
+            'kop_surat' => 'PEMERINTAH PROVINSI DKI JAKARTA\nDinas Pendidikan Dan Kebudayaan\nSMK NEGERI 1 JAKARTA\nJl. Raya Sudirman No. 42, Telp (021) 555-0199',
             'radius_presensi' => '50', // dalam meter
             'jam_masuk' => '06:00',
             'batas_terlambat' => '07:30',

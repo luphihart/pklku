@@ -471,7 +471,7 @@ class ExcelImportService
                 $sheet->setCellValue('G1', 'No. Telp Pembimbing Industri');
                 
                 // Example
-                $sheet->setCellValue('A2', 'PT. Antigravity Global Technology');
+                $sheet->setCellValue('A2', 'PT. Sukses Kreatif Solusindo');
                 $sheet->setCellValue('B2', 'Sudirman Central Business District (SCBD) Lot 10, Jakarta Selatan');
                 $sheet->setCellValue('C2', '-6.223056');
                 $sheet->setCellValue('D2', '106.809722');
@@ -489,7 +489,7 @@ class ExcelImportService
                 
                 // Example
                 $sheet->setCellValue('A2', '102911');
-                $sheet->setCellValue('B2', 'PT. Antigravity Global Technology');
+                $sheet->setCellValue('B2', 'PT. Sukses Kreatif Solusindo');
                 $sheet->setCellValue('C2', '198503112010011002');
                 $sheet->setCellValue('D2', '2026-07-01');
                 $sheet->setCellValue('E2', '2026-12-31');

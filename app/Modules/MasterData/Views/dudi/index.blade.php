@@ -210,7 +210,7 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="nama" class="form-label small fw-semibold">Nama Perusahaan / Instansi</label>
-                        <input type="text" name="nama" id="nama" class="form-control form-control-sm" placeholder="PT. Antigravity Global Technology" required>
+                        <input type="text" name="nama" id="nama" class="form-control form-control-sm" placeholder="PT. Sukses Kreatif Solusindo" required>
                     </div>
                     
                     <div class="mb-3">
