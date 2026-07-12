@@ -63,13 +63,14 @@ class PlacementService
         $visitation = KunjunganMonitoring::create([
             'penempatan_pkl_id' => $placementId,
             'tanggal' => $data['tanggal'] ?? now()->toDateString(),
+            'jenis_kunjungan' => $data['jenis_kunjungan'] ?? null,
             'deskripsi_kunjungan' => $data['deskripsi_kunjungan'],
             'foto_kunjungan' => $filepath,
-            'latitude' => $data['latitude'] ?? null,
-            'longitude' => $data['longitude'] ?? null,
+            'latitude' => null,
+            'longitude' => null,
         ]);
 
-        $this->logActivity("Mencatat kunjungan monitoring guru pembimbing untuk penempatan ID: " . $placementId);
+        $this->logActivity("Mencatat kunjungan guru pembimbing untuk penempatan ID: " . $placementId);
         return $visitation;
     }
 

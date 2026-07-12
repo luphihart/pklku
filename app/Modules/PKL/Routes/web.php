@@ -19,5 +19,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::middleware('role:admin,guru')->group(function () {
         Route::get('/kunjungan', [KunjunganController::class, 'index'])->name('kunjungan.index');
         Route::post('/kunjungan', [KunjunganController::class, 'store'])->name('kunjungan.store');
+        Route::put('/kunjungan/{id}', [KunjunganController::class, 'update'])->name('kunjungan.update');
+        Route::delete('/kunjungan/{id}', [KunjunganController::class, 'destroy'])->name('kunjungan.destroy');
     });
 });
