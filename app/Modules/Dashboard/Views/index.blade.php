@@ -459,7 +459,31 @@
             shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
         });
 
+        // Define Custom DivIcons for premium visual styling
+        const dudiIcon = L.divIcon({
+            className: 'custom-dudi-marker',
+            html: `<div style="background-color: #4f46e5; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(15,23,42,0.35); display: flex; align-items: center; justify-content: center; color: white;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16"/>
+                    </svg>
+                   </div>`,
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
+        });
+
+        const studentIcon = L.divIcon({
+            className: 'custom-student-marker',
+            html: `<div style="background-color: #10b981; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(16,185,129,0.35); display: flex; align-items: center; justify-content: center; color: white;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                   </div>`,
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
+        });
+
         const placements = @json($placements);
+        const todayPresensi = @json($todayPresensi);
         const dudiGroups = {};
 
         placements.forEach(p => {
@@ -467,6 +491,7 @@
                 if (!dudiGroups[p.dudi_id]) {
                     dudiGroups[p.dudi_id] = {
                         name: p.dudi.nama,
+                        alamat: p.dudi.alamat,
                         lat: parseFloat(p.dudi.latitude),
                         lng: parseFloat(p.dudi.longitude),
                         students: []
@@ -494,26 +519,66 @@
         const markers = [];
         const isGuru = @json(auth()->user()->role === 'guru');
 
-        // Draw DUDI markers
+        // Draw DUDI markers (shown for both Admin and Guru)
         Object.values(dudiGroups).forEach(dudi => {
-            let popupContent = `<strong>${dudi.name}</strong>`;
-            if (isGuru) {
-                popupContent += `<br><hr class="my-1">Siswa Terplotting:<br><ul class="ps-3 mb-0" style="font-size: 11px;">`;
-                dudi.students.forEach(studentPlacement => {
-                    popupContent += `<li><strong>${studentPlacement.murid.nama}</strong> (${studentPlacement.murid.kelas.nama})</li>`;
-                });
-                popupContent += '</ul>';
-            } else {
-                popupContent += `<br><span class="text-muted" style="font-size: 11px;">Total Terplotting: ${dudi.students.length} Siswa</span>`;
-            }
+            let tooltipContent = `<div class="p-1">` +
+                                 `<strong style="font-size: 12.5px; color: var(--accent-primary);">${dudi.name}</strong>` +
+                                 `<div class="text-muted mt-1" style="font-size: 11px; max-width: 200px; white-space: normal; line-height: 1.3;">` +
+                                 `<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="me-1" style="display:inline-block; vertical-align:middle;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>` +
+                                 `${dudi.alamat}</div></div>`;
 
-            const marker = L.marker([dudi.lat, dudi.lng]).addTo(map)
-                .bindPopup(popupContent);
+            const marker = L.marker([dudi.lat, dudi.lng], { icon: dudiIcon }).addTo(map)
+                .bindTooltip(tooltipContent, { direction: 'top', permanent: false });
             
             markers.push(marker);
         });
 
-        // Adjust bounds
+        // Draw student presensi markers (only for Guru)
+        if (isGuru && todayPresensi && todayPresensi.length > 0) {
+            todayPresensi.forEach(presensi => {
+                const placement = placements.find(pl => pl.id === presensi.penempatan_pkl_id);
+                if (placement) {
+                    const studentName = placement.murid.nama;
+                    const kelasName = placement.murid.kelas.nama;
+                    
+                    // 1. Check-in Marker
+                    if (presensi.lat_masuk && presensi.lng_masuk) {
+                        const checkinLat = parseFloat(presensi.lat_masuk);
+                        const checkinLng = parseFloat(presensi.lng_masuk);
+                        
+                        let checkinTooltip = `<div class="p-1">` +
+                                             `<strong>${studentName}</strong> <small class="text-muted">(${kelasName})</small><br>` +
+                                             `<span class="badge bg-success-soft mt-1 mb-1">Presensi Masuk</span><br>` +
+                                             `<small class="text-muted">Jam: <strong>${presensi.jam_masuk || '-'}</strong> | Status: <strong>${presensi.status_masuk ? presensi.status_masuk.replace('_', ' ') : '-'}</strong></small>` +
+                                             `</div>`;
+                        
+                        const checkinMarker = L.marker([checkinLat, checkinLng], { icon: studentIcon }).addTo(map)
+                            .bindTooltip(checkinTooltip, { direction: 'top', permanent: false });
+                        
+                        markers.push(checkinMarker);
+                    }
+                    
+                    // 2. Check-out Marker
+                    if (presensi.lat_pulang && presensi.lng_pulang) {
+                        const checkoutLat = parseFloat(presensi.lat_pulang);
+                        const checkoutLng = parseFloat(presensi.lng_pulang);
+                        
+                        let checkoutTooltip = `<div class="p-1">` +
+                                              `<strong>${studentName}</strong> <small class="text-muted">(${kelasName})</small><br>` +
+                                              `<span class="badge bg-danger-soft mt-1 mb-1">Presensi Pulang</span><br>` +
+                                              `<small class="text-muted">Jam: <strong>${presensi.jam_pulang || '-'}</strong> | Status: <strong>${presensi.status_pulang ? presensi.status_pulang.replace('_', ' ') : '-'}</strong></small>` +
+                                              `</div>`;
+                        
+                        const checkoutMarker = L.marker([checkoutLat, checkoutLng], { icon: studentIcon }).addTo(map)
+                            .bindTooltip(checkoutTooltip, { direction: 'top', permanent: false });
+                        
+                        markers.push(checkoutMarker);
+                    }
+                }
+            });
+        }
+
+        // Adjust bounds to fit all markers
         if (markers.length > 0) {
             const group = new L.featureGroup(markers);
             map.fitBounds(group.getBounds().pad(0.15));

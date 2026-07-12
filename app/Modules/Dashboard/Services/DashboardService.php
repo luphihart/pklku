@@ -26,6 +26,7 @@ class DashboardService
 
         $placements = collect();
         $dudiList = [];
+        $todayPresensi = collect();
 
         if (in_array($user->role, ['admin', 'guru'])) {
             $query = \App\Modules\PKL\Models\PenempatanPkl::with(['murid.kelas', 'dudi', 'guru'])
@@ -36,6 +37,11 @@ class DashboardService
             }
 
             $placements = $query->get();
+
+            $placementIds = $placements->pluck('id');
+            $todayPresensi = \App\Modules\Presensi\Models\Presensi::whereIn('penempatan_pkl_id', $placementIds)
+                ->where('tanggal', now()->toDateString())
+                ->get();
 
             foreach ($placements as $p) {
                 if ($p->dudi) {
@@ -56,6 +62,7 @@ class DashboardService
             'announcements' => $announcements,
             'placements' => $placements,
             'dudiList' => $dudiList,
+            'todayPresensi' => $todayPresensi,
         ];
     }
 }
