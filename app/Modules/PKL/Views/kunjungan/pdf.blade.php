@@ -103,7 +103,7 @@
                 <th style="width: 5%;">No</th>
                 <th style="width: 12%;">Tanggal</th>
                 <th style="width: 23%;">Mitra DUDI & Jenis</th>
-                <th style="width: 20%;">Guru Pembimbing & Siswa</th>
+                <th style="width: 20%;">Guru Pembimbing</th>
                 <th style="width: 30%;">Catatan Kunjungan</th>
                 <th style="width: 10%;" class="center">Bukti Foto</th>
             </tr>
@@ -118,13 +118,23 @@
                         <span class="badge-type">{{ $k->jenis_kunjungan ?? 'Monitoring Berkala' }}</span>
                     </td>
                     <td>
-                        <strong>{{ $k->penempatanPkl->guru->nama }}</strong><br>
-                        <small style="color: #666;">Siswa: {{ $k->penempatanPkl->murid->nama }}</small>
+                        <strong>{{ $k->penempatanPkl->guru->nama }}</strong>
                     </td>
                     <td>{{ $k->deskripsi_kunjungan }}</td>
                     <td class="center">
-                        @if($k->foto_kunjungan && file_exists(public_path('storage/kunjungan/' . $k->foto_kunjungan)))
-                            <img src="{{ public_path('storage/kunjungan/' . $k->foto_kunjungan) }}" style="width: 45px; height: 45px; object-fit: cover;">
+                        @php
+                            $path = public_path('storage/kunjungan/' . $k->foto_kunjungan);
+                            $base64 = '';
+                            if ($k->foto_kunjungan && file_exists($path)) {
+                                $type = pathinfo($path, PATHINFO_EXTENSION);
+                                $data = @file_get_contents($path);
+                                if ($data !== false) {
+                                    $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                                }
+                            }
+                        @endphp
+                        @if($base64)
+                            <img src="{{ $base64 }}" style="width: 45px; height: 45px; object-fit: cover; border-radius: 4px;">
                         @else
                             <span style="color: #888; font-size: 9px;">Tidak Ada Foto</span>
                         @endif

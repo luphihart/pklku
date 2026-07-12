@@ -92,7 +92,6 @@
                                     </td>
                                     <td>
                                         <div class="fw-semibold">{{ $k->penempatanPkl->guru->nama }}</div>
-                                        <small class="text-muted">Siswa: {{ $k->penempatanPkl->murid->nama }}</small>
                                     </td>
                                     <td>{{ Str::limit($k->deskripsi_kunjungan, 120) }}</td>
                                     <td class="text-center">
