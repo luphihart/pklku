@@ -22,6 +22,7 @@
         background-color: #000;
         object-fit: cover;
         box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+        transform: scaleX(-1);
     }
     #selfie-canvas {
         display: none;
@@ -308,6 +309,10 @@
                 const video = document.getElementById('camera-preview');
                 const canvas = document.getElementById('selfie-canvas');
                 const context = canvas.getContext('2d');
+                
+                // Set canvas size to native video size for original aspect ratio
+                canvas.width = video.videoWidth || 640;
+                canvas.height = video.videoHeight || 480;
 
                 // Draw video frame to canvas
                 context.drawImage(video, 0, 0, canvas.width, canvas.height);

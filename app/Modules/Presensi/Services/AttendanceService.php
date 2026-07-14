@@ -247,7 +247,7 @@ class AttendanceService
                 // Add Watermark via Native GD (safer than using intervention v3 text drivers which require gd extra packages)
                 $this->addWatermarkNative($outputPath, $type, $studentName, $dudiName, $lat, $lng);
             } else {
-                $this->compressImageNative($tempFile, $outputPath, 640, 480, 75);
+                $this->compressImageNative($tempFile, $outputPath, 640, 75);
                 $this->addWatermarkNative($outputPath, $type, $studentName, $dudiName, $lat, $lng);
             }
         } catch (\Throwable $e) {
@@ -303,10 +303,19 @@ class AttendanceService
         imagedestroy($im);
     }
 
-    private function compressImageNative(string $sourcePath, string $destPath, int $width, int $height, int $quality): void
+    private function compressImageNative(string $sourcePath, string $destPath, int $maxWidth, int $quality): void
     {
         list($origWidth, $origHeight, $type) = getimagesize($sourcePath);
         
+        $width = $origWidth;
+        $height = $origHeight;
+
+        // Proportional scaling if larger than max width
+        if ($origWidth > $maxWidth) {
+            $width = $maxWidth;
+            $height = (int)($origHeight * ($maxWidth / $origWidth));
+        }
+
         switch ($type) {
             case IMAGETYPE_JPEG: $srcImg = imagecreatefromjpeg($sourcePath); break;
             case IMAGETYPE_PNG: $srcImg = imagecreatefrompng($sourcePath); break;
