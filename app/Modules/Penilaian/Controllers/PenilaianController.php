@@ -121,4 +121,15 @@ class PenilaianController extends Controller
             return redirect()->route('penilaian.index')->with('error', 'Gagal mengimport data nilai: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Delete submitted evaluation record (Admin only).
+     */
+    public function destroy(int $id)
+    {
+        $penilaian = \App\Modules\Penilaian\Models\PenilaianPkl::findOrFail($id);
+        $penilaian->delete();
+
+        return redirect()->route('penilaian.index')->with('success', 'Data nilai siswa berhasil dihapus.');
+    }
 }
