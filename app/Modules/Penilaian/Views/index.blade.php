@@ -242,7 +242,7 @@
 </div>
 @endsection
 
-@push('scripts')
+@section('scripts')
 <script>
 function confirmDeleteNilai(id, nama) {
     if (confirm('Hapus data nilai yang sudah diinput untuk siswa "' + nama + '"?\n\nTindakan ini tidak dapat dibatalkan.')) {
@@ -256,4 +256,4 @@ function confirmDeleteNilai(id, nama) {
     @csrf
     @method('DELETE')
 </form>
-@endpush
+@endsection
