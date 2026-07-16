@@ -58,11 +58,11 @@ class IzinSakitController extends Controller
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
             'tipe' => 'required|in:izin,sakit',
             'alasan' => 'required|string',
-            'surat' => 'required|file|mimes:jpeg,png,jpg,pdf|max:2048',
+            'surat' => 'required|file|mimes:jpeg,png,jpg|max:2048',
         ], [
             'tanggal_selesai.after_or_equal' => 'Tanggal selesai harus setelah atau sama dengan tanggal mulai.',
             'surat.required' => 'Surat pendukung wajib dilampirkan.',
-            'surat.mimes' => 'Format surat pendukung harus JPG, JPEG, PNG, atau PDF.',
+            'surat.mimes' => 'Format surat pendukung harus berupa gambar (JPG, JPEG, PNG).',
             'surat.max' => 'Ukuran file surat pendukung maksimal 2MB.',
         ]);
 
@@ -129,15 +129,15 @@ class IzinSakitController extends Controller
         ];
 
         if (!$permission->surat_pendukung) {
-            $rules['surat'] = 'required|file|mimes:jpeg,png,jpg,pdf|max:2048';
+            $rules['surat'] = 'required|file|mimes:jpeg,png,jpg|max:2048';
         } else {
-            $rules['surat'] = 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048';
+            $rules['surat'] = 'nullable|file|mimes:jpeg,png,jpg|max:2048';
         }
 
         $request->validate($rules, [
             'tanggal_selesai.after_or_equal' => 'Tanggal selesai harus setelah atau sama dengan tanggal mulai.',
             'surat.required' => 'Surat pendukung wajib dilampirkan.',
-            'surat.mimes' => 'Format surat pendukung harus JPG, JPEG, PNG, atau PDF.',
+            'surat.mimes' => 'Format surat pendukung harus berupa gambar (JPG, JPEG, PNG).',
             'surat.max' => 'Ukuran file surat pendukung maksimal 2MB.',
         ]);
 

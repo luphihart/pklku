@@ -46,9 +46,9 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="surat" class="form-label small fw-semibold">Surat Pendukung (Wajib, Foto/PDF)</label>
-                            <input type="file" name="surat" id="surat" class="form-control form-control-sm" accept="image/*,application/pdf" required>
-                            <small class="text-muted" style="font-size: 10px;">Format: JPG, JPEG, PNG, atau PDF (Maks. 2MB)</small>
+                            <label for="surat" class="form-label small fw-semibold">Surat Pendukung (Wajib, Foto)</label>
+                            <input type="file" name="surat" id="surat" class="form-control form-control-sm" accept="image/*" required>
+                            <small class="text-muted" style="font-size: 10px;">Format: JPG, JPEG, PNG (Maks. 2MB)</small>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100 font-heading">Kirim Pengajuan</button>

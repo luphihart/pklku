@@ -27,8 +27,12 @@ class PermissionService
     {
         $filename = null;
         if ($file) {
-            $filename = 'surat_izin_' . $placementId . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('storage/izin'), $filename);
+            $filename = 'surat_izin_' . $placementId . '_' . time() . '.jpg';
+            $outputPath = public_path('storage/izin/' . $filename);
+            if (!file_exists(public_path('storage/izin'))) {
+                mkdir(public_path('storage/izin'), 0777, true);
+            }
+            $this->processUploadedFile($file, $outputPath);
         }
 
         return $this->repo->savePermission([
@@ -74,8 +78,12 @@ class PermissionService
             if ($filename && file_exists(public_path('storage/izin/' . $filename))) {
                 @unlink(public_path('storage/izin/' . $filename));
             }
-            $filename = 'surat_izin_' . $permission->penempatan_pkl_id . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('storage/izin'), $filename);
+            $filename = 'surat_izin_' . $permission->penempatan_pkl_id . '_' . time() . '.jpg';
+            $outputPath = public_path('storage/izin/' . $filename);
+            if (!file_exists(public_path('storage/izin'))) {
+                mkdir(public_path('storage/izin'), 0777, true);
+            }
+            $this->processUploadedFile($file, $outputPath);
         }
 
         $permission->update([
@@ -90,5 +98,57 @@ class PermissionService
         ]);
 
         return $permission;
+    }
+
+    private function processUploadedFile($file, string $outputPath): void
+    {
+        $tempFile = $file->getRealPath();
+        
+        try {
+            if (class_exists(\Intervention\Image\ImageManager::class)) {
+                $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+                $image = $manager->read($tempFile);
+                $image->scale(width: 800);
+                $image->toJpeg(75)->save($outputPath);
+            } else {
+                $this->compressImageNative($tempFile, $outputPath, 800, 75);
+            }
+        } catch (\Throwable $e) {
+            // ultimate fallback: save directly
+            $file->move(dirname($outputPath), basename($outputPath));
+        }
+    }
+
+    private function compressImageNative(string $sourcePath, string $destPath, int $maxWidth, int $quality): void
+    {
+        list($origWidth, $origHeight, $type) = getimagesize($sourcePath);
+        
+        $width = $origWidth;
+        $height = $origHeight;
+
+        if ($origWidth > $maxWidth) {
+            $width = $maxWidth;
+            $height = (int)($origHeight * ($maxWidth / $origWidth));
+        }
+
+        switch ($type) {
+            case IMAGETYPE_JPEG: $srcImg = imagecreatefromjpeg($sourcePath); break;
+            case IMAGETYPE_PNG: $srcImg = imagecreatefrompng($sourcePath); break;
+            default: $srcImg = imagecreatefromjpeg($sourcePath); break;
+        }
+
+        $destImg = imagecreatetruecolor($width, $height);
+        
+        // Handle transparency
+        if ($type == IMAGETYPE_PNG) {
+            imagealphablending($destImg, false);
+            imagesavealpha($destImg, true);
+        }
+
+        imagecopyresampled($destImg, $srcImg, 0, 0, 0, 0, $width, $height, $origWidth, $origHeight);
+        imagejpeg($destImg, $destPath, $quality);
+
+        imagedestroy($srcImg);
+        imagedestroy($destImg);
     }
 }
