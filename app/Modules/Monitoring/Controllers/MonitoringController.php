@@ -42,6 +42,19 @@ class MonitoringController extends Controller
             }
         }
 
+        // Sort DUDI list alphabetically by DUDI name (case-insensitive)
+        uasort($dudiList, function ($a, $b) {
+            return strcasecmp($a['dudi']->nama ?? '', $b['dudi']->nama ?? '');
+        });
+
+        // Sort students within each DUDI alphabetically
+        foreach ($dudiList as &$dItem) {
+            usort($dItem['placements'], function ($a, $b) {
+                return strcasecmp($a->murid?->nama ?? '', $b->murid?->nama ?? '');
+            });
+        }
+        unset($dItem);
+
         return view('monitoring::index', compact('placements', 'dudiList'));
     }
 }

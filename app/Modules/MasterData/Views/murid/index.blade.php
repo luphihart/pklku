@@ -5,6 +5,18 @@
 
 @section('content')
 <div class="container-fluid p-0">
+    @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+            <strong class="font-heading">Gagal Menyimpan Data!</strong>
+            <ul class="mb-0 ps-3 mt-1 small">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
     <!-- Action Header -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
         <h5 class="fw-bold font-heading m-0 text-dark dark-text-light">Daftar Seluruh Murid</h5>
@@ -27,21 +39,46 @@
     </div>
 
     <!-- Search & Filter Card -->
-    <div class="card-premium mb-4">
-        <form action="{{ route('murid.index') }}" method="GET" class="row g-3">
-            <div class="col-md-5">
-                <input type="text" name="search" class="form-control form-control-sm" placeholder="Cari berdasarkan nama atau NIS..." value="{{ request('search') }}">
+    <div class="card-premium mb-3 p-3">
+        <form action="{{ route('murid.index') }}" method="GET" class="row g-2 align-items-center">
+            <div class="col-md-4 col-lg-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-transparent border-end-0 text-muted">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </span>
+                    <input type="text" name="search" class="form-control form-control-sm border-start-0 ps-0" placeholder="Cari nama atau NIS..." value="{{ request('search') }}">
+                </div>
             </div>
-            <div class="col-md-4">
-                <select name="kelas_id" class="form-select form-select-sm">
+            <div class="col-md-3 col-lg-3">
+                <select name="kelas_id" class="form-select form-select-sm" onchange="this.form.submit()">
                     <option value="">-- Semua Kelas --</option>
                     @foreach($kelas as $k)
                         <option value="{{ $k->id }}" {{ request('kelas_id') == $k->id ? 'selected' : '' }}>{{ $k->nama }}</option>
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-3 d-grid">
-                <button type="submit" class="btn btn-sm btn-primary">Filter Data</button>
+            <div class="col-md-3 col-lg-3">
+                <select name="sort_by_order" class="form-select form-select-sm" onchange="
+                    const val = this.value.split(':');
+                    document.getElementById('murid_sort_by').value = val[0];
+                    document.getElementById('murid_order').value = val[1];
+                    this.form.submit();
+                ">
+                    <option value="nama:asc" {{ (request('sort_by', 'nama') == 'nama' && request('order', 'asc') == 'asc') ? 'selected' : '' }}>Nama (A ➔ Z)</option>
+                    <option value="nama:desc" {{ (request('sort_by') == 'nama' && request('order') == 'desc') ? 'selected' : '' }}>Nama (Z ➔ A)</option>
+                    <option value="nis:asc" {{ (request('sort_by') == 'nis' && request('order', 'asc') == 'asc') ? 'selected' : '' }}>NIS (Terkecil ➔ Terbesar)</option>
+                    <option value="nis:desc" {{ (request('sort_by') == 'nis' && request('order') == 'desc') ? 'selected' : '' }}>NIS (Terbesar ➔ Terkecil)</option>
+                </select>
+                <input type="hidden" name="sort_by" id="murid_sort_by" value="{{ request('sort_by', 'nama') }}">
+                <input type="hidden" name="order" id="murid_order" value="{{ request('order', 'asc') }}">
+            </div>
+            <div class="col-md-2 col-lg-2 d-flex gap-2">
+                <button type="submit" class="btn btn-sm btn-primary px-3">Cari</button>
+                @if(request()->filled('search') || request()->filled('kelas_id') || request()->filled('sort_by') || request()->filled('order'))
+                    <a href="{{ route('murid.index') }}" class="btn btn-sm btn-outline-secondary">Reset</a>
+                @endif
             </div>
         </form>
     </div>
@@ -51,13 +88,41 @@
         <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="border-bottom-color: var(--border-color) !important;">
             <h6 class="fw-bold m-0 text-dark">Data Murid Aktif</h6>
             <div class="d-flex gap-2">
-                <button type="submit" form="bulkDeleteForm" id="btnResetSelected" formaction="{{ route('murid.reset_password_bulk') }}" class="btn btn-xs btn-info text-white font-heading fw-bold" style="display: none; font-size: 11px; padding: 4px 8px;" onclick="return confirm('Apakah Anda yakin ingin mereset password murid yang terpilih menjadi default (siswa123)?');">
+                <button type="button" id="btnResetSelected" class="btn btn-xs btn-info text-white font-heading fw-bold btn-bulk-action" style="display: none;" onclick="
+                    const count = document.querySelectorAll('.row-checkbox:checked').length;
+                    window.confirmAction({
+                        title: 'Reset Password ' + count + ' Murid?',
+                        text: 'Password untuk seluruh murid terpilih akan direset ke default (siswa123).',
+                        confirmButtonText: 'Ya, Reset'
+                    }).then(r => {
+                        if(r.isConfirmed) {
+                            const form = document.getElementById('bulkDeleteForm');
+                            form.action = '{{ route('murid.reset_password_bulk') }}';
+                            form.submit();
+                        }
+                    });
+                ">
                     <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: inline-block; vertical-align: middle;">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m-2-2a2 2 0 11-2-2m2 2a2 2 0 002 2m0 0a2 2 0 002-2v3a2 2 0 01-2 2h-1a2 2 0 01-2-2v-5a2 2 0 00-2-2H9m0 0l-2 2m2-2l-2-2M7 9v1H6v1H5v1H4v1H3v1h1"/>
                     </svg>
                     Reset Password Terpilih
                 </button>
-                <button type="submit" form="bulkDeleteForm" id="btnDeleteSelected" class="btn btn-xs btn-danger font-heading fw-bold" style="display: none; font-size: 11px; padding: 4px 8px;" onclick="return confirm('Apakah Anda yakin ingin menghapus murid yang terpilih? Akun login terkait juga akan ikut dihapus.');">
+                <button type="button" id="btnDeleteSelected" class="btn btn-xs btn-danger font-heading fw-bold btn-bulk-action" style="display: none;" onclick="
+                    const count = document.querySelectorAll('.row-checkbox:checked').length;
+                    window.confirmAction({
+                        title: 'Hapus ' + count + ' Murid Terpilih?',
+                        text: 'Data murid dan akun login terkait akan dihapus secara permanen.',
+                        icon: 'warning',
+                        confirmButtonColor: '#e11d48',
+                        confirmButtonText: 'Ya, Hapus'
+                    }).then(r => {
+                        if(r.isConfirmed) {
+                            const form = document.getElementById('bulkDeleteForm');
+                            form.action = '{{ route('murid.destroy_bulk') }}';
+                            form.submit();
+                        }
+                    });
+                ">
                     <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: inline-block; vertical-align: middle;">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
@@ -73,8 +138,34 @@
                     <thead class="table-light" style="background-color: var(--bg-canvas);">
                         <tr class="font-heading" style="font-size: 13px; font-weight: 600;">
                             <th class="ps-4" style="width: 40px;"><input type="checkbox" id="selectAll"></th>
-                            <th>NIS</th>
-                            <th>Nama Lengkap</th>
+                            <th>
+                                <a href="{{ route('murid.index', array_merge(request()->query(), ['sort_by' => 'nis', 'order' => (request('sort_by') === 'nis' && request('order', 'asc') === 'asc') ? 'desc' : 'asc'])) }}" class="text-decoration-none text-dark dark-text-light d-inline-flex align-items-center gap-1" title="Klik untuk mengurutkan NIS">
+                                    NIS
+                                    @if(request('sort_by') === 'nis')
+                                        @if(request('order', 'asc') === 'desc')
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-primary"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                        @else
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-primary"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                                        @endif
+                                    @else
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-muted opacity-50"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+                                    @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('murid.index', array_merge(request()->query(), ['sort_by' => 'nama', 'order' => (request('sort_by', 'nama') === 'nama' && request('order', 'asc') === 'asc') ? 'desc' : 'asc'])) }}" class="text-decoration-none text-dark dark-text-light d-inline-flex align-items-center gap-1" title="Klik untuk mengurutkan Nama Lengkap">
+                                    Nama Lengkap
+                                    @if(request('sort_by', 'nama') === 'nama')
+                                        @if(request('order', 'asc') === 'desc')
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-primary"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                        @else
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-primary"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                                        @endif
+                                    @else
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-muted opacity-50"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+                                    @endif
+                                </a>
+                            </th>
                             <th>Kelas</th>
                             <th>Email</th>
                             <th>No. Telp</th>
@@ -87,22 +178,22 @@
                                 <td class="ps-4"><input type="checkbox" name="ids[]" value="{{ $murid->id }}" class="row-checkbox"></td>
                                 <td class="fw-semibold">{{ $murid->nis }}</td>
                                 <td class="fw-bold text-dark">{{ $murid->nama }}</td>
-                                <td><span class="badge bg-secondary">{{ $murid->kelas->nama }}</span></td>
-                                <td>{{ $murid->user->email }}</td>
-                                <td>{{ $murid->user->phone ?? '-' }}</td>
+                                <td><span class="badge bg-secondary">{{ $murid->kelas?->nama ?? '-' }}</span></td>
+                                <td>{{ $murid->user?->email ?? '-' }}</td>
+                                <td>{{ $murid->user?->phone ?? '-' }}</td>
                                 <td class="text-center pe-4">
                                     <div class="d-flex gap-1 justify-content-center">
-                                        <button type="button" class="btn btn-sm btn-outline-warning p-1" data-bs-toggle="modal" data-bs-target="#editModal_{{ $murid->id }}" title="Edit Murid">
+                                        <button type="button" class="btn btn-sm btn-outline-warning btn-action" data-bs-toggle="modal" data-bs-target="#editModal_{{ $murid->id }}" title="Edit Murid" aria-label="Edit Murid {{ $murid->nama }}">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                             </svg>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-outline-info p-1" title="Reset Password (siswa123)" onclick="if(confirm('Apakah Anda yakin ingin mereset password murid ini menjadi default (siswa123)?')) { document.getElementById('resetForm_{{ $murid->id }}').submit(); }">
+                                        <button type="button" class="btn btn-sm btn-outline-info btn-action" title="Reset Password" aria-label="Reset Password Murid {{ $murid->nama }}" onclick="window.confirmAction({ title: 'Reset Password?', text: 'Password untuk {{ addslashes($murid->nama) }} akan direset menjadi default (siswa123).', confirmButtonText: 'Ya, Reset' }).then(r => { if(r.isConfirmed) document.getElementById('resetForm_{{ $murid->id }}').submit(); });">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m-2-2a2 2 0 11-2-2m2 2a2 2 0 002 2m0 0a2 2 0 002-2v3a2 2 0 01-2 2h-1a2 2 0 01-2-2v-5a2 2 0 00-2-2H9m0 0l-2 2m2-2l-2-2M7 9v1H6v1H5v1H4v1H3v1h1"/>
                                             </svg>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-outline-danger p-1" title="Hapus Murid" onclick="if(confirm('Apakah Anda yakin ingin menghapus murid ini? Akun login yang berhubungan juga akan dihapus.')) { document.getElementById('deleteForm_{{ $murid->id }}').submit(); }">
+                                        <button type="button" class="btn btn-sm btn-outline-danger btn-action" title="Hapus Murid" aria-label="Hapus Murid {{ $murid->nama }}" onclick="window.confirmDelete('deleteForm_{{ $murid->id }}', 'murid {{ addslashes($murid->nama) }}')">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                             </svg>
@@ -112,7 +203,17 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-4 text-muted">Tidak ada data murid ditemukan.</td>
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="empty-state py-4">
+                                        <div class="empty-state-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                        </div>
+                                        <h6 class="empty-state-title">Tidak Ada Data Murid</h6>
+                                        <p class="empty-state-text">Gunakan tombol Tambah Murid atau Impor Excel di atas untuk memasukkan data siswa baru.</p>
+                                    </div>
+                                </td>
                             </tr>
                         @endforelse
                     </tbody>

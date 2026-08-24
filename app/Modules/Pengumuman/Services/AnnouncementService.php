@@ -5,6 +5,7 @@ namespace App\Modules\Pengumuman\Services;
 use App\Modules\Pengumuman\Repositories\AnnouncementRepositoryInterface;
 use App\Modules\Pengumuman\Models\PengumumanPenerima;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AnnouncementService
 {
@@ -28,48 +29,52 @@ class AnnouncementService
 
     public function create(array $data, array $customUserIds = [])
     {
-        $announcement = $this->repo->createAnnouncement([
-            'judul' => $data['judul'],
-            'isi' => $data['isi'],
-            'target_role' => $data['target_role'],
-        ]);
+        return DB::transaction(function() use ($data, $customUserIds) {
+            $announcement = $this->repo->createAnnouncement([
+                'judul' => $data['judul'],
+                'isi' => $data['isi'],
+                'target_role' => $data['target_role'],
+            ]);
 
-        if ($data['target_role'] === 'kustom' && !empty($customUserIds)) {
-            foreach ($customUserIds as $userId) {
-                PengumumanPenerima::create([
-                    'pengumuman_id' => $announcement->id,
-                    'user_id' => $userId,
-                ]);
+            if ($data['target_role'] === 'kustom' && !empty($customUserIds)) {
+                foreach ($customUserIds as $userId) {
+                    PengumumanPenerima::create([
+                        'pengumuman_id' => $announcement->id,
+                        'user_id' => $userId,
+                    ]);
+                }
             }
-        }
 
-        $this->logActivity("Membuat pengumuman baru: " . $announcement->judul);
-        return $announcement;
+            $this->logActivity("Membuat pengumuman baru: " . $announcement->judul);
+            return $announcement;
+        });
     }
 
     public function update(int $id, array $data, array $customUserIds = [])
     {
-        $announcement = \App\Modules\Pengumuman\Models\Pengumuman::findOrFail($id);
-        $announcement->update([
-            'judul' => $data['judul'],
-            'isi' => $data['isi'],
-            'target_role' => $data['target_role'],
-        ]);
+        return DB::transaction(function() use ($id, $data, $customUserIds) {
+            $announcement = \App\Modules\Pengumuman\Models\Pengumuman::findOrFail($id);
+            $announcement->update([
+                'judul' => $data['judul'],
+                'isi' => $data['isi'],
+                'target_role' => $data['target_role'],
+            ]);
 
-        // Wipe old recipients
-        PengumumanPenerima::where('pengumuman_id', $id)->delete();
+            // Wipe old recipients
+            PengumumanPenerima::where('pengumuman_id', $id)->delete();
 
-        if ($data['target_role'] === 'kustom' && !empty($customUserIds)) {
-            foreach ($customUserIds as $userId) {
-                PengumumanPenerima::create([
-                    'pengumuman_id' => $announcement->id,
-                    'user_id' => $userId,
-                ]);
+            if ($data['target_role'] === 'kustom' && !empty($customUserIds)) {
+                foreach ($customUserIds as $userId) {
+                    PengumumanPenerima::create([
+                        'pengumuman_id' => $announcement->id,
+                        'user_id' => $userId,
+                    ]);
+                }
             }
-        }
 
-        $this->logActivity("Mengubah pengumuman: " . $announcement->judul);
-        return $announcement;
+            $this->logActivity("Mengubah pengumuman: " . $announcement->judul);
+            return $announcement;
+        });
     }
 
     public function remove(int $id)

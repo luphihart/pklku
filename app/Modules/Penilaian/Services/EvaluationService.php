@@ -4,7 +4,6 @@ namespace App\Modules\Penilaian\Services;
 
 use App\Modules\Penilaian\Repositories\EvaluationRepositoryInterface;
 use App\Modules\Setting\Models\Setting;
-use Illuminate\Support\Facades\Auth;
 
 class EvaluationService
 {
@@ -23,12 +22,19 @@ class EvaluationService
      */
     public function saveEvaluation(array $data)
     {
+        // Pre-fetch all indicators in a single query to eliminate N+1 queries
+        $allIndikatorIds = array_unique(array_merge(
+            array_keys($data['nilai_guru'] ?? []),
+            array_keys($data['nilai_industri'] ?? [])
+        ));
+        $indikators = \App\Modules\Penilaian\Models\IndikatorPenilaian::whereIn('id', $allIndikatorIds)->get()->keyBy('id');
+
         // 1. Process Guru Marks
         $nilaiGuruJson = [];
         $sumGuru = 0;
         $countGuru = 0;
         foreach ($data['nilai_guru'] ?? [] as $id => $val) {
-            $ind = \App\Modules\Penilaian\Models\IndikatorPenilaian::find($id);
+            $ind = $indikators->get($id);
             $nama = $ind ? $ind->nama : 'Indikator #' . $id;
             $deskripsi = $ind ? $ind->deskripsi : '';
             $nilaiGuruJson[$id] = [
@@ -47,7 +53,7 @@ class EvaluationService
         $sumIndustri = 0;
         $countIndustri = 0;
         foreach ($data['nilai_industri'] ?? [] as $id => $val) {
-            $ind = \App\Modules\Penilaian\Models\IndikatorPenilaian::find($id);
+            $ind = $indikators->get($id);
             $nama = $ind ? $ind->nama : 'Indikator #' . $id;
             $deskripsi = $ind ? $ind->deskripsi : '';
             $nilaiIndustriJson[$id] = [
@@ -62,11 +68,13 @@ class EvaluationService
         $avgIndustri = $countIndustri > 0 ? $sumIndustri / $countIndustri : 0;
 
         // 3. Fetch Weights from settings
-        $weightGuru = (float)Setting::where('key', 'bobot_nilai_guru')->value('value') ?: 50.0;
-        $weightIndustri = (float)Setting::where('key', 'bobot_nilai_industri')->value('value') ?: 50.0;
+        $settings = Setting::whereIn('key', ['bobot_nilai_guru', 'bobot_nilai_industri'])->pluck('value', 'key');
+        $weightGuru = (float)($settings->get('bobot_nilai_guru') ?: 50.0);
+        $weightIndustri = (float)($settings->get('bobot_nilai_industri') ?: 50.0);
 
-        // 4. Calculate final combined score
-        $finalScore = (($avgGuru * $weightGuru) + ($avgIndustri * $weightIndustri)) / 100;
+        // 4. Calculate final combined score with weight normalization
+        $totalWeight = ($weightGuru + $weightIndustri) ?: 100.0;
+        $finalScore = (($avgGuru * $weightGuru) + ($avgIndustri * $weightIndustri)) / $totalWeight;
 
         // 5. Determine predicate grade
         $predicate = 'D';
@@ -96,21 +104,17 @@ class EvaluationService
         return $evaluation;
     }
 
-    /**
-     * Audit log helper.
-     */
-    private function logActivity(string $aktivitas)
+    private function logActivity(string $aktivitas, ?int $userId = null): void
     {
+        $uId = $userId ?? \Illuminate\Support\Facades\Auth::id();
         try {
             \App\Modules\System\Models\AuditLog::create([
-                'user_id' => Auth::id(),
+                'user_id' => $uId,
                 'aktivitas' => $aktivitas,
                 'ip_address' => request()->ip() ?? '127.0.0.1',
                 'user_agent' => request()->userAgent() ?? 'Unknown',
                 'payload' => null,
             ]);
-        } catch (\Throwable $e) {
-            // Ignore
-        }
+        } catch (\Throwable $e) {}
     }
 }

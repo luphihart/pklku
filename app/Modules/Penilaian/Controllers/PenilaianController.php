@@ -45,7 +45,8 @@ class PenilaianController extends Controller
             ->where('status', 'aktif');
 
         if ($role === 'guru') {
-            $query->where('guru_id', auth()->user()->guru->id);
+            $guruId = auth()->user()->guru?->id ?: -1;
+            $query->where('guru_id', $guruId);
         }
 
         $placements = $query->paginate(15);
@@ -74,6 +75,16 @@ class PenilaianController extends Controller
             'catatan' => 'required|string',
         ]);
 
+        // Guru hanya bisa input nilai untuk murid bimbingannya sendiri
+        $role = auth()->user()->role;
+        if ($role === 'guru') {
+            $guruId = auth()->user()->guru?->id;
+            $placement = PenempatanPkl::findOrFail($request->penempatan_pkl_id);
+            if (!$guruId || $placement->guru_id !== $guruId) {
+                abort(403, 'Anda hanya dapat menginput nilai untuk murid bimbingan Anda.');
+            }
+        }
+
         $this->service->saveEvaluation($request->all());
 
         return redirect()->route('penilaian.index')->with('success', 'Penilaian siswa berhasil disimpan.');
@@ -85,7 +96,7 @@ class PenilaianController extends Controller
     public function downloadTemplate()
     {
         $role = auth()->user()->role;
-        $guruId = $role === 'guru' ? auth()->user()->guru->id : null;
+        $guruId = $role === 'guru' ? (auth()->user()->guru?->id ?: -1) : null;
 
         $exporter = new NilaiExportTemplate($role, $guruId);
         return $exporter->generate();
@@ -102,7 +113,7 @@ class PenilaianController extends Controller
 
         try {
             $role = auth()->user()->role;
-            $guruId = $role === 'guru' ? auth()->user()->guru->id : null;
+            $guruId = $role === 'guru' ? (auth()->user()->guru?->id ?: -1) : null;
 
             $result = $this->importService->importNilai(
                 $request->file('file_excel')->getRealPath(),
@@ -120,5 +131,16 @@ class PenilaianController extends Controller
         } catch (\Throwable $e) {
             return redirect()->route('penilaian.index')->with('error', 'Gagal mengimport data nilai: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Delete submitted evaluation record (Admin only).
+     */
+    public function destroy(int $id)
+    {
+        $penilaian = \App\Modules\Penilaian\Models\PenilaianPkl::findOrFail($id);
+        $penilaian->delete();
+
+        return redirect()->route('penilaian.index')->with('success', 'Data nilai siswa berhasil dihapus.');
     }
 }

@@ -62,9 +62,9 @@
                 @endif
 
                 <div class="mb-4">
-                    <label for="surat" class="form-label small fw-semibold">Ganti Surat Pendukung (Foto/PDF) {{ !$permission->surat_pendukung ? '(Wajib)' : '(Opsional)' }}</label>
-                    <input type="file" name="surat" id="surat" class="form-control @error('surat') is-invalid @enderror" accept="image/*,application/pdf" {{ !$permission->surat_pendukung ? 'required' : '' }}>
-                    <small class="text-muted" style="font-size: 10px;">Format: JPG, JPEG, PNG, atau PDF (Maks. 2MB)</small>
+                    <label for="surat" class="form-label small fw-semibold">Ganti Surat Pendukung (Foto) {{ !$permission->surat_pendukung ? '(Wajib)' : '(Opsional)' }}</label>
+                    <input type="file" name="surat" id="surat" class="form-control @error('surat') is-invalid @enderror" accept="image/*" {{ !$permission->surat_pendukung ? 'required' : '' }}>
+                    <small class="text-muted" style="font-size: 10px;">Format: JPG, JPEG, PNG (Maks. 2MB)</small>
                     @error('surat')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror

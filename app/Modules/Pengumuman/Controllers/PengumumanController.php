@@ -43,8 +43,11 @@ class PengumumanController extends Controller
             'judul' => 'required|string|max:255',
             'isi' => 'required|string',
             'target_role' => 'required|in:semua,guru,murid,kustom',
-            'user_ids' => 'nullable|array',
+            'user_ids' => 'required_if:target_role,kustom|nullable|array|min:1',
             'user_ids.*' => 'exists:users,id',
+        ], [
+            'user_ids.required_if' => 'Penerima pengumuman wajib dipilih jika target adalah Kustom.',
+            'user_ids.min' => 'Pilih minimal 1 penerima untuk pengumuman Kustom.',
         ]);
 
         $this->service->create(
@@ -64,8 +67,11 @@ class PengumumanController extends Controller
             'judul' => 'required|string|max:255',
             'isi' => 'required|string',
             'target_role' => 'required|in:semua,guru,murid,kustom',
-            'user_ids' => 'nullable|array',
+            'user_ids' => 'required_if:target_role,kustom|nullable|array|min:1',
             'user_ids.*' => 'exists:users,id',
+        ], [
+            'user_ids.required_if' => 'Penerima pengumuman wajib dipilih jika target adalah Kustom.',
+            'user_ids.min' => 'Pilih minimal 1 penerima untuk pengumuman Kustom.',
         ]);
 
         $this->service->update(

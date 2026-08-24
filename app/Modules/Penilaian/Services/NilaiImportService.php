@@ -161,9 +161,9 @@ class NilaiImportService
                 }
             }
 
-            // If every single row failed, rollback the entire transaction
-            if ($successCount === 0 && !empty($errors)) {
-                throw new \Exception('Semua baris gagal diimport. ' . implode(' | ', $errors));
+            // All-or-Nothing: Rollback entire transaction if there are any errors
+            if (!empty($errors)) {
+                throw new \Exception('Import dibatalkan karena terdapat kesalahan: ' . implode(' | ', $errors));
             }
         });
 

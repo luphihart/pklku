@@ -18,7 +18,7 @@ class MuridController extends Controller
 
     public function index(Request $request)
     {
-        $filters = $request->only('kelas_id', 'search');
+        $filters = $request->only('kelas_id', 'search', 'sort_by', 'order', 'sort');
         $murids = $this->service->listMurid($filters);
         $kelas = Kelas::all();
 
@@ -43,7 +43,7 @@ class MuridController extends Controller
             'password' => 'nullable|string|min:6',
         ]);
 
-        $this->service->saveMurid($request->all());
+        $this->service->saveMurid($request->only(['nama', 'email', 'nis', 'kelas_id', 'phone', 'tanggal_lahir', 'password']));
 
         return redirect()->route('murid.index')->with('success', 'Data murid berhasil ditambahkan.');
     }
@@ -69,7 +69,7 @@ class MuridController extends Controller
             'password' => 'nullable|string|min:6',
         ]);
 
-        $this->service->editMurid($id, $request->all());
+        $this->service->editMurid($id, $request->only(['nama', 'email', 'nis', 'kelas_id', 'phone', 'tanggal_lahir', 'password']));
 
         return redirect()->route('murid.index')->with('success', 'Data murid berhasil diperbarui.');
     }
@@ -102,14 +102,16 @@ class MuridController extends Controller
 
     public function resetPassword(int $id)
     {
-        $murid = \App\Modules\MasterData\Models\Murid::findOrFail($id);
+        $murid = $this->service->getMurid($id);
+        $defaultPassword = \App\Modules\Setting\Models\Setting::where('key', 'default_password_siswa')->value('value') ?: 'siswa123';
+        
         $user = $murid->user;
         if ($user) {
             $user->update([
-                'password' => \Illuminate\Support\Facades\Hash::make('siswa123')
+                'password' => \Illuminate\Support\Facades\Hash::make($defaultPassword)
             ]);
         }
-        return redirect()->route('murid.index')->with('success', 'Password murid ' . $murid->nama . ' berhasil direset menjadi "siswa123".');
+        return redirect()->route('murid.index')->with('success', 'Password murid ' . $murid->nama . ' berhasil direset menjadi "' . $defaultPassword . '".');
     }
 
     public function resetPasswordBulk(Request $request)
@@ -119,21 +121,18 @@ class MuridController extends Controller
             return redirect()->back()->with('error', 'Pilih minimal satu murid untuk direset password.');
         }
 
+        $defaultPassword = \App\Modules\Setting\Models\Setting::where('key', 'default_password_siswa')->value('value') ?: 'siswa123';
+        $murids = \App\Modules\MasterData\Models\Murid::whereIn('id', $ids)->get();
+        $userIds = $murids->pluck('user_id')->filter()->toArray();
         $count = 0;
-        foreach ($ids as $id) {
-            try {
-                $murid = \App\Modules\MasterData\Models\Murid::find($id);
-                if ($murid && $murid->user) {
-                    $murid->user->update([
-                        'password' => \Illuminate\Support\Facades\Hash::make('siswa123')
-                    ]);
-                    $count++;
-                }
-            } catch (\Throwable $e) {
-                // Ignore
-            }
+
+        if (!empty($userIds)) {
+            \App\Models\User::whereIn('id', $userIds)->update([
+                'password' => \Illuminate\Support\Facades\Hash::make($defaultPassword)
+            ]);
+            $count = count($userIds);
         }
 
-        return redirect()->route('murid.index')->with('success', $count . ' password murid berhasil direset menjadi "siswa123".');
+        return redirect()->route('murid.index')->with('success', $count . ' password murid berhasil direset menjadi "' . $defaultPassword . '".');
     }
 }

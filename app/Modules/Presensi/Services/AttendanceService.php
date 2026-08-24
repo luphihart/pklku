@@ -67,6 +67,13 @@ class AttendanceService
         if (!in_array($currentDayNameIndo, $allowedDays)) {
             throw new \Exception("Presensi gagal! Hari ini (" . $currentDayNameIndo . ") adalah hari libur.");
         }
+
+        // Check National / Custom Holiday
+        $today = now()->toDateString();
+        $holiday = \App\Modules\MasterData\Models\HariLibur::getHoliday($today);
+        if ($holiday) {
+            throw new \Exception("Presensi ditutup! Hari ini adalah hari libur: " . $holiday->nama . ".");
+        }
     }
 
     /**
@@ -77,15 +84,23 @@ class AttendanceService
         // 0. Verify Working Day
         $this->verifyWorkingDay($placementId);
 
-        // 0.1. Verify Check-in Time Window
-        $jamMasukLimit = Setting::where('key', 'jam_masuk')->value('value') ?: '07:30';
-        $nowTime = now()->toTimeString();
-        
-        $startTime = $jamMasukLimit;
-        $endTime = '11:59:59';
+        // 0.0. Verify Student Has Not Already Checked In Today
+        $existing = $this->getToday($placementId);
+        if ($existing && $existing->jam_masuk) {
+            throw new \Exception("Anda sudah melakukan Check In hari ini.");
+        }
 
-        if ($nowTime < $startTime) {
-            throw new \Exception("Presensi Check-In belum dibuka! Presensi dibuka mulai pukul " . substr($startTime, 0, 5) . ".");
+        // 0.1. Fetch Settings in Single Query
+        $settings = Setting::whereIn('key', ['jam_masuk', 'batas_terlambat', 'jam_pulang', 'radius_presensi'])
+            ->pluck('value', 'key');
+
+        $jamMasukLimit  = $settings->get('jam_masuk', '06:00');
+        $batasTerlambat = $settings->get('batas_terlambat', '07:30');
+        $endTime        = $settings->get('jam_pulang', '14:00');
+        $nowTime        = now()->toTimeString();
+
+        if ($nowTime < $jamMasukLimit) {
+            throw new \Exception("Presensi Check-In belum dibuka! Presensi dibuka mulai pukul " . substr($jamMasukLimit, 0, 5) . ".");
         }
 
         if ($nowTime > $endTime) {
@@ -96,7 +111,7 @@ class AttendanceService
         
         // 1. Verify Geofence (Prioritise DUDI specific radius)
         $distance = $this->calculateDistance($lat, $lng, $placement->dudi->latitude, $placement->dudi->longitude);
-        $allowedRadius = $placement->dudi->radius_meter ?: (int)Setting::where('key', 'radius_presensi')->value('value');
+        $allowedRadius = $placement->dudi->radius_meter ?: (int)$settings->get('radius_presensi', 100);
         if (!$allowedRadius) {
             $allowedRadius = 100; // ultimate fallback
         }
@@ -122,9 +137,8 @@ class AttendanceService
             $placement->dudi->nama
         );
 
-        // 3. Determine status (Tepat Waktu if within 30 minutes of start time)
-        $lateLimit = date('H:i:s', strtotime($jamMasukLimit . ' +30 minutes'));
-        $statusMasuk = $nowTime <= $lateLimit ? 'tepat_waktu' : 'terlambat';
+        // 3. Determine status (Tepat Waktu if before/equal to batasTerlambat)
+        $statusMasuk = $nowTime <= $batasTerlambat ? 'tepat_waktu' : 'terlambat';
 
         // 4. Save to DB
         return $this->repo->saveAttendance([
@@ -146,16 +160,9 @@ class AttendanceService
         // 0. Verify Working Day
         $this->verifyWorkingDay($placementId);
 
-        // 0.1. Verify Check-out Time Window
-        $jamPulangLimit = Setting::where('key', 'jam_pulang')->value('value') ?: '16:00';
-        $nowTime = now()->toTimeString();
-
-        if ($nowTime < $jamPulangLimit) {
-            throw new \Exception("Presensi Check-Out belum dibuka! Presensi dibuka mulai pukul " . substr($jamPulangLimit, 0, 5) . ".");
-        }
-
+        // 0.1. Check existing check-in
         $attendance = $this->getToday($placementId);
-        if (!$attendance) {
+        if (!$attendance || !$attendance->jam_masuk) {
             throw new \Exception("Presensi gagal! Anda belum melakukan Check In hari ini.");
         }
 
@@ -163,11 +170,23 @@ class AttendanceService
             throw new \Exception("Anda sudah melakukan Check Out hari ini.");
         }
 
+        // 0.2. Fetch Settings in Single Query
+        $settings = Setting::whereIn('key', ['jam_pulang', 'tutup_jam_pulang', 'radius_presensi'])
+            ->pluck('value', 'key');
+
+        $jamPulangLimit = $settings->get('jam_pulang', '14:00');
+        $tutupJamPulang = $settings->get('tutup_jam_pulang', '17:00');
+        $nowTime        = now()->toTimeString();
+
+        if ($nowTime > $tutupJamPulang) {
+            throw new \Exception("Batas waktu presensi Check-Out telah berakhir (Pukul " . substr($tutupJamPulang, 0, 5) . ").");
+        }
+
         $placement = \App\Modules\PKL\Models\PenempatanPkl::with(['dudi', 'murid'])->findOrFail($placementId);
         
         // 1. Verify Geofence (Prioritise DUDI specific radius)
         $distance = $this->calculateDistance($lat, $lng, $placement->dudi->latitude, $placement->dudi->longitude);
-        $allowedRadius = $placement->dudi->radius_meter ?: (int)Setting::where('key', 'radius_presensi')->value('value');
+        $allowedRadius = $placement->dudi->radius_meter ?: (int)$settings->get('radius_presensi', 100);
         if (!$allowedRadius) {
             $allowedRadius = 100; // ultimate fallback
         }
@@ -193,8 +212,7 @@ class AttendanceService
             $placement->dudi->nama
         );
 
-        // 3. Determine status (Pulang Cepat / Tepat Waktu)
-        $jamPulangLimit = Setting::where('key', 'jam_pulang')->value('value') ?: '16:00';
+        // 3. Determine status (Pulang Cepat if before jamPulangLimit, Tepat Waktu if on/after jamPulangLimit)
         $statusPulang = $nowTime >= $jamPulangLimit ? 'tepat_waktu' : 'pulang_cepat';
 
         // 4. Update DB
@@ -243,7 +261,7 @@ class AttendanceService
                 // Add Watermark via Native GD (safer than using intervention v3 text drivers which require gd extra packages)
                 $this->addWatermarkNative($outputPath, $type, $studentName, $dudiName, $lat, $lng);
             } else {
-                $this->compressImageNative($tempFile, $outputPath, 640, 480, 75);
+                $this->compressImageNative($tempFile, $outputPath, 640, 75);
                 $this->addWatermarkNative($outputPath, $type, $studentName, $dudiName, $lat, $lng);
             }
         } catch (\Throwable $e) {
@@ -299,10 +317,19 @@ class AttendanceService
         imagedestroy($im);
     }
 
-    private function compressImageNative(string $sourcePath, string $destPath, int $width, int $height, int $quality): void
+    private function compressImageNative(string $sourcePath, string $destPath, int $maxWidth, int $quality): void
     {
         list($origWidth, $origHeight, $type) = getimagesize($sourcePath);
         
+        $width = $origWidth;
+        $height = $origHeight;
+
+        // Proportional scaling if larger than max width
+        if ($origWidth > $maxWidth) {
+            $width = $maxWidth;
+            $height = (int)($origHeight * ($maxWidth / $origWidth));
+        }
+
         switch ($type) {
             case IMAGETYPE_JPEG: $srcImg = imagecreatefromjpeg($sourcePath); break;
             case IMAGETYPE_PNG: $srcImg = imagecreatefrompng($sourcePath); break;

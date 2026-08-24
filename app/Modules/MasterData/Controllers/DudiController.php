@@ -15,9 +15,10 @@ class DudiController extends Controller
         $this->service = $service;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $dudis = $this->service->listDudi();
+        $filters = $request->only('search', 'sort', 'sort_by', 'order');
+        $dudis = $this->service->listDudi($filters);
         return view('masterdata::dudi.index', compact('dudis'));
     }
 
@@ -39,7 +40,7 @@ class DudiController extends Controller
             'hari_kerja' => 'nullable|array',
         ]);
 
-        $data = $request->all();
+        $data = $request->only(['nama', 'alamat', 'latitude', 'longitude', 'radius_meter', 'pic_nama', 'pic_phone']);
         $data['hari_kerja'] = implode(',', $request->input('hari_kerja', ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']));
 
         $this->service->saveDudi($data);
@@ -66,7 +67,7 @@ class DudiController extends Controller
             'hari_kerja' => 'nullable|array',
         ]);
 
-        $data = $request->all();
+        $data = $request->only(['nama', 'alamat', 'latitude', 'longitude', 'radius_meter', 'pic_nama', 'pic_phone']);
         $data['hari_kerja'] = implode(',', $request->input('hari_kerja', []));
 
         $this->service->editDudi($id, $data);

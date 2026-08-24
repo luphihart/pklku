@@ -18,8 +18,10 @@ class SettingSeeder extends Seeder
             'logo_sekolah' => 'logo_smk.png',
             'kop_surat' => 'PEMERINTAH PROVINSI ANTIGRAVITY\nDinas Pendidikan Dan Kebudayaan\nSMK NEGERI 1 ANTIGRAVITY\nJl. Raya Antigravity No. 42, Telp (021) 555-0199',
             'radius_presensi' => '50', // dalam meter
-            'jam_masuk' => '07:30',
-            'jam_pulang' => '16:00',
+            'jam_masuk' => '06:00',
+            'batas_terlambat' => '07:30',
+            'jam_pulang' => '14:00',
+            'tutup_jam_pulang' => '17:00',
             'hari_kerja' => 'Senin,Selasa,Rabu,Kamis,Jumat',
             'bobot_nilai_guru' => '40', // 40%
             'bobot_nilai_industri' => '60', // 60%

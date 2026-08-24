@@ -29,7 +29,19 @@ class MasterDataRepository implements MasterDataRepositoryInterface
             });
         }
 
-        return $query->paginate(15);
+        $sortBy = $filters['sort_by'] ?? ($filters['sort_field'] ?? 'nama');
+        $order = strtolower($filters['order'] ?? ($filters['sort'] ?? 'asc'));
+        if (!in_array($order, ['asc', 'desc'])) {
+            $order = 'asc';
+        }
+
+        if ($sortBy === 'nis') {
+            $query->orderBy('nis', $order);
+        } else {
+            $query->orderBy('nama', $order);
+        }
+
+        return $query->paginate(15)->appends(array_filter($filters));
     }
 
     public function findMuridById(int $id)
@@ -130,6 +142,10 @@ class MasterDataRepository implements MasterDataRepositoryInterface
         return DB::transaction(function() use ($id) {
             $murid = Murid::findOrFail($id);
             $user = $murid->user;
+
+            // Soft-delete semua penempatan PKL terkait murid ini
+            // agar relasi tidak menjadi null orphan di halaman Laporan/Monitoring
+            \App\Modules\PKL\Models\PenempatanPkl::where('murid_id', $id)->update(['status' => 'dibatalkan']);
             
             $murid->delete();
             if ($user) {
@@ -141,9 +157,31 @@ class MasterDataRepository implements MasterDataRepositoryInterface
 
     // Guru CRUD
 
-    public function getAllGuru()
+    public function getAllGuru(array $filters = [])
     {
-        return Guru::with('user')->paginate(15);
+        $query = Guru::with('user');
+
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $query->where(function($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('nip', 'like', "%{$search}%");
+            });
+        }
+
+        $sortBy = $filters['sort_by'] ?? ($filters['sort_field'] ?? 'nama');
+        $order = strtolower($filters['order'] ?? ($filters['sort'] ?? 'asc'));
+        if (!in_array($order, ['asc', 'desc'])) {
+            $order = 'asc';
+        }
+
+        if ($sortBy === 'nip') {
+            $query->orderBy('nip', $order);
+        } else {
+            $query->orderBy('nama', $order);
+        }
+
+        return $query->paginate(15)->appends(array_filter($filters));
     }
 
     public function findGuruById(int $id)
@@ -246,6 +284,10 @@ class MasterDataRepository implements MasterDataRepositoryInterface
             $guru = Guru::findOrFail($id);
             $user = $guru->user;
 
+            // Hapus relasi guru_id di PenempatanPkl agar tidak menjadi null orphan
+            // Set ke null sehingga penempatan tidak crash saat diakses
+            \App\Modules\PKL\Models\PenempatanPkl::where('guru_id', $id)->update(['guru_id' => null]);
+
             $guru->delete();
             if ($user) {
                 $user->delete();
@@ -256,9 +298,32 @@ class MasterDataRepository implements MasterDataRepositoryInterface
 
     // Dudi CRUD
 
-    public function getAllDudi()
+    public function getAllDudi(array $filters = [])
     {
-        return Dudi::paginate(15);
+        $query = Dudi::query();
+
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $query->where(function($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('alamat', 'like', "%{$search}%")
+                  ->orWhere('pic_nama', 'like', "%{$search}%");
+            });
+        }
+
+        $sortBy = $filters['sort_by'] ?? ($filters['sort_field'] ?? 'nama');
+        $order = strtolower($filters['order'] ?? ($filters['sort'] ?? 'asc'));
+        if (!in_array($order, ['asc', 'desc'])) {
+            $order = 'asc';
+        }
+
+        if ($sortBy === 'alamat') {
+            $query->orderBy('alamat', $order);
+        } else {
+            $query->orderBy('nama', $order);
+        }
+
+        return $query->paginate(15)->appends(array_filter($filters));
     }
 
     public function findDudiById(int $id)
@@ -279,7 +344,14 @@ class MasterDataRepository implements MasterDataRepositoryInterface
 
     public function deleteDudi(int $id)
     {
-        $dudi = Dudi::findOrFail($id);
-        return $dudi->delete();
+        return DB::transaction(function() use ($id) {
+            $dudi = Dudi::findOrFail($id);
+
+            // Batalkan semua penempatan PKL yang terkait DUDI ini
+            // agar relasi tidak menjadi null orphan di halaman Presensi/Laporan
+            \App\Modules\PKL\Models\PenempatanPkl::where('dudi_id', $id)->update(['status' => 'dibatalkan']);
+
+            return $dudi->delete();
+        });
     }
 }

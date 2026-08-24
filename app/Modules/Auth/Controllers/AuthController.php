@@ -39,14 +39,10 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
         $remember = $request->has('remember');
 
-        if ($this->authService->login($credentials, $remember)) {
-            $request->session()->regenerate();
-            return redirect()->intended(route('dashboard'));
-        }
+        $this->authService->login($credentials, $remember);
+        $request->session()->regenerate();
 
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ])->withInput($request->only('email', 'remember'));
+        return redirect()->intended(route('dashboard'));
     }
 
     /**

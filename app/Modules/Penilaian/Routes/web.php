@@ -8,14 +8,15 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/penilaian', [PenilaianController::class, 'store'])->name('penilaian.store')->middleware('role:admin,guru');
     Route::get('/penilaian/template', [PenilaianController::class, 'downloadTemplate'])->name('penilaian.template')->middleware('role:admin,guru');
     Route::post('/penilaian/import', [PenilaianController::class, 'import'])->name('penilaian.import')->middleware('role:admin,guru');
-    Route::resource('/master/indikator', \App\Modules\Penilaian\Controllers\IndikatorController::class)->middleware('role:admin,guru')->names([
+    Route::delete('/penilaian/{id}', [PenilaianController::class, 'destroy'])->name('penilaian.destroy')->middleware('role:admin');
+    Route::resource('/master/indikator', \App\Modules\Penilaian\Controllers\IndikatorController::class)->middleware('role:admin,guru')->only(['index', 'store', 'update', 'destroy'])->names([
         'index' => 'indikator.index',
         'store' => 'indikator.store',
         'update' => 'indikator.update',
         'destroy' => 'indikator.destroy',
     ]);
 
-    Route::resource('/master/tujuan-pembelajaran', \App\Modules\Penilaian\Controllers\TujuanPembelajaranController::class)->middleware('role:admin,guru')->names([
+    Route::resource('/master/tujuan-pembelajaran', \App\Modules\Penilaian\Controllers\TujuanPembelajaranController::class)->middleware('role:admin,guru')->only(['index', 'store', 'update', 'destroy'])->names([
         'index' => 'tujuan-pembelajaran.index',
         'store' => 'tujuan-pembelajaran.store',
         'update' => 'tujuan-pembelajaran.update',

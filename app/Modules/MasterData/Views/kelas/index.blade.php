@@ -38,7 +38,20 @@
             <div class="card-premium p-0 overflow-hidden">
                 <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="border-bottom-color: var(--border-color) !important;">
                     <h6 class="fw-bold m-0 text-dark">Daftar Kelas Sekolah</h6>
-                    <button type="submit" form="bulkDeleteForm" id="btnDeleteSelected" class="btn btn-xs btn-danger font-heading fw-bold" style="display: none; font-size: 11px; padding: 4px 8px;" onclick="return confirm('Apakah Anda yakin ingin menghapus kelas yang terpilih?');">
+                    <button type="button" id="btnDeleteSelected" class="btn btn-xs btn-danger font-heading fw-bold btn-bulk-action" style="display: none;" onclick="
+                        const count = document.querySelectorAll('.row-checkbox:checked').length;
+                        window.confirmAction({
+                            title: 'Hapus ' + count + ' Kelas Terpilih?',
+                            text: 'Semua kelas yang dipilih akan dihapus permanen.',
+                            icon: 'warning',
+                            confirmButtonColor: '#e11d48',
+                            confirmButtonText: 'Ya, Hapus'
+                        }).then(r => {
+                            if(r.isConfirmed) {
+                                document.getElementById('bulkDeleteForm').submit();
+                            }
+                        });
+                    ">
                         <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: inline-block; vertical-align: middle;">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                         </svg>
@@ -71,14 +84,14 @@
                                         <td class="text-center pe-4">
                                             <div class="d-flex gap-1 justify-content-center">
                                                 <!-- Edit button with Icon -->
-                                                <button type="button" class="btn btn-sm btn-outline-warning p-1" data-bs-toggle="modal" data-bs-target="#editModal_{{ $k->id }}" title="Edit Kelas">
+                                                <button type="button" class="btn btn-sm btn-outline-warning btn-action" data-bs-toggle="modal" data-bs-target="#editModal_{{ $k->id }}" title="Edit Kelas" aria-label="Edit Kelas {{ $k->name ?? $k->nama }}">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                                     </svg>
                                                 </button>
                                                 
                                                 <!-- Delete Form with Icon -->
-                                                <button type="button" class="btn btn-sm btn-outline-danger p-1" title="Hapus Kelas" onclick="if(confirm('Apakah Anda yakin ingin menghapus kelas ini?')) { document.getElementById('deleteForm_{{ $k->id }}').submit(); }">
+                                                <button type="button" class="btn btn-sm btn-outline-danger btn-action" title="Hapus Kelas" aria-label="Hapus Kelas {{ $k->name ?? $k->nama }}" onclick="window.confirmDelete('deleteForm_{{ $k->id }}', 'kelas {{ addslashes($k->name ?? $k->nama) }}')">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                     </svg>
@@ -88,7 +101,17 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="text-center py-4 text-muted">Belum ada data kelas.</td>
+                                        <td colspan="5" class="text-center py-4">
+                                            <div class="empty-state py-4">
+                                                <div class="empty-state-icon">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                                    </svg>
+                                                </div>
+                                                <h6 class="empty-state-title">Belum Ada Data Kelas</h6>
+                                                <p class="empty-state-text">Gunakan form di sebelah kiri untuk menambahkan rombongan belajar / kelas baru.</p>
+                                            </div>
+                                        </td>
                                     </tr>
                                 @endforelse
                             </tbody>

@@ -34,7 +34,7 @@ class JurnalController extends Controller
 
         // Guru / Admin: List bimbingan journals
         $status = $request->get('status');
-        $guruId = auth()->user()->role === 'guru' ? auth()->user()->guru->id : null;
+        $guruId = auth()->user()->role === 'guru' ? (auth()->user()->guru?->id ?: -1) : null;
         $journals = $this->service->getTeacherReviews($guruId, $status);
 
         return view('jurnal::index', compact('journals'));
@@ -74,8 +74,12 @@ class JurnalController extends Controller
         $journal = $this->service->getDetail($id);
         
         // Policy check: only owner murid can edit
-        if (auth()->user()->role === 'murid' && $journal->penempatanPkl->murid_id !== auth()->user()->murid->id) {
-            abort(403);
+        $user = auth()->user();
+        if ($user->role === 'murid') {
+            $muridId = $user->murid?->id;
+            if (!$muridId || $journal->penempatanPkl?->murid_id !== $muridId) {
+                abort(403);
+            }
         }
 
         return view('jurnal::edit', compact('journal'));
@@ -87,6 +91,15 @@ class JurnalController extends Controller
     public function update(Request $request, int $id)
     {
         $journal = $this->service->getDetail($id);
+
+        // Policy check: only owner murid can update
+        $user = auth()->user();
+        if ($user->role === 'murid') {
+            $muridId = $user->murid?->id;
+            if (!$muridId || $journal->penempatanPkl?->murid_id !== $muridId) {
+                abort(403, 'Anda tidak diizinkan mengubah jurnal milik siswa lain.');
+            }
+        }
 
         $rules = [
             'deskripsi_aktivitas' => 'required|string',
@@ -118,12 +131,17 @@ class JurnalController extends Controller
      */
     public function verify(Request $request, int $id)
     {
+        // Only guru or admin can verify journals
+        if (!in_array(auth()->user()->role, ['guru', 'admin'])) {
+            abort(403, 'Hanya Guru Pembimbing atau Admin yang dapat memverifikasi jurnal.');
+        }
+
         $request->validate([
             'status' => 'required|in:disetujui,ditolak,revisi',
             'catatan_verifikasi' => 'required_if:status,revisi,ditolak|nullable|string',
         ]);
 
-        $guruId = auth()->user()->role === 'guru' ? auth()->user()->guru->id : null;
+        $guruId = auth()->user()->role === 'guru' ? auth()->user()->guru?->id : null;
 
         $this->service->verifyEntry(
             $id,

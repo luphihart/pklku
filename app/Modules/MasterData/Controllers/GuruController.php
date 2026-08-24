@@ -15,9 +15,10 @@ class GuruController extends Controller
         $this->service = $service;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $gurus = $this->service->listGuru();
+        $filters = $request->only('search', 'sort_by', 'order', 'sort');
+        $gurus = $this->service->listGuru($filters);
         return view('masterdata::guru.index', compact('gurus'));
     }
 
@@ -37,7 +38,7 @@ class GuruController extends Controller
             'password' => 'nullable|string|min:6',
         ]);
 
-        $this->service->saveGuru($request->all());
+        $this->service->saveGuru($request->only(['nama', 'email', 'nip', 'phone', 'tanggal_lahir', 'password']));
 
         return redirect()->route('guru.index')->with('success', 'Data guru berhasil ditambahkan.');
     }
@@ -61,7 +62,7 @@ class GuruController extends Controller
             'password' => 'nullable|string|min:6',
         ]);
 
-        $this->service->editGuru($id, $request->all());
+        $this->service->editGuru($id, $request->only(['nama', 'email', 'nip', 'phone', 'tanggal_lahir', 'password']));
 
         return redirect()->route('guru.index')->with('success', 'Data guru berhasil diperbarui.');
     }
@@ -95,13 +96,16 @@ class GuruController extends Controller
     public function resetPassword(int $id)
     {
         $guru = \App\Modules\MasterData\Models\Guru::findOrFail($id);
+        $defaultPassword = \App\Modules\Setting\Models\Setting::where('key', 'default_password_guru')->value('value')
+            ?: (\App\Modules\Setting\Models\Setting::where('key', 'default_password_siswa')->value('value') ?: 'guru123');
+        
         $user = $guru->user;
         if ($user) {
             $user->update([
-                'password' => \Illuminate\Support\Facades\Hash::make('guru123')
+                'password' => \Illuminate\Support\Facades\Hash::make($defaultPassword)
             ]);
         }
-        return redirect()->route('guru.index')->with('success', 'Password guru ' . $guru->nama . ' berhasil direset menjadi "guru123".');
+        return redirect()->route('guru.index')->with('success', 'Password guru ' . $guru->nama . ' berhasil direset menjadi "' . $defaultPassword . '".');
     }
 
     public function resetPasswordBulk(Request $request)
@@ -111,21 +115,20 @@ class GuruController extends Controller
             return redirect()->back()->with('error', 'Pilih minimal satu guru untuk direset password.');
         }
 
+        $defaultPassword = \App\Modules\Setting\Models\Setting::where('key', 'default_password_guru')->value('value')
+            ?: (\App\Modules\Setting\Models\Setting::where('key', 'default_password_siswa')->value('value') ?: 'guru123');
+        
+        $gurus = \App\Modules\MasterData\Models\Guru::whereIn('id', $ids)->get();
+        $userIds = $gurus->pluck('user_id')->filter()->toArray();
         $count = 0;
-        foreach ($ids as $id) {
-            try {
-                $guru = \App\Modules\MasterData\Models\Guru::find($id);
-                if ($guru && $guru->user) {
-                    $guru->user->update([
-                        'password' => \Illuminate\Support\Facades\Hash::make('guru123')
-                    ]);
-                    $count++;
-                }
-            } catch (\Throwable $e) {
-                // Ignore
-            }
+
+        if (!empty($userIds)) {
+            \App\Models\User::whereIn('id', $userIds)->update([
+                'password' => \Illuminate\Support\Facades\Hash::make($defaultPassword)
+            ]);
+            $count = count($userIds);
         }
 
-        return redirect()->route('guru.index')->with('success', $count . ' password guru berhasil direset menjadi "guru123".');
+        return redirect()->route('guru.index')->with('success', $count . ' password guru berhasil direset menjadi "' . $defaultPassword . '".');
     }
 }

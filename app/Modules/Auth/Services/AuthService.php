@@ -5,7 +5,6 @@ namespace App\Modules\Auth\Services;
 use App\Modules\Auth\Repositories\UserRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class AuthService
@@ -117,8 +116,11 @@ class AuthService
         }
 
         // Delete old photo if exists
-        if ($user->photo && file_exists($dirPath . '/' . $user->photo)) {
-            @unlink($dirPath . '/' . $user->photo);
+        if ($user->photo) {
+            $oldFilename = basename($user->photo);
+            if (file_exists($dirPath . '/' . $oldFilename)) {
+                @unlink($dirPath . '/' . $oldFilename);
+            }
         }
 
         // Save to DB
@@ -179,14 +181,9 @@ class AuthService
         imagedestroy($destImg);
     }
 
-    /**
-     * Audit logger helper.
-     */
     private function logActivity(string $aktivitas, ?int $userId = null): void
     {
         $uId = $userId ?? Auth::id();
-        
-        // Use try-catch so auth works even if AuditLog module is not fully loaded
         try {
             \App\Modules\System\Models\AuditLog::create([
                 'user_id' => $uId,
@@ -195,8 +192,6 @@ class AuthService
                 'user_agent' => request()->userAgent() ?? 'Unknown',
                 'payload' => null,
             ]);
-        } catch (\Throwable $e) {
-            // Ignore if audit_logs table does not exist or isn't migrated
-        }
+        } catch (\Throwable $e) {}
     }
 }

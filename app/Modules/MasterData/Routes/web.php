@@ -20,21 +20,28 @@ Route::middleware(['web', 'auth', 'role:admin'])->group(function () {
     Route::post('/master/guru/bulk-reset-password', [GuruController::class, 'resetPasswordBulk'])->name('guru.reset_password_bulk');
 
     // CRUD Resources
-    Route::resource('/master/murid', MuridController::class);
-    Route::resource('/master/guru', GuruController::class);
-    Route::resource('/master/dudi', DudiController::class);
-    Route::resource('/master/tahun-ajaran', TahunAjaranController::class);
-    Route::resource('/master/jurusan', \App\Modules\MasterData\Controllers\JurusanController::class)->names([
+    Route::resource('/master/murid', MuridController::class)->except(['show']);
+    Route::resource('/master/guru', GuruController::class)->except(['show']);
+    Route::resource('/master/dudi', DudiController::class)->except(['show']);
+    Route::resource('/master/tahun-ajaran', TahunAjaranController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('/master/jurusan', \App\Modules\MasterData\Controllers\JurusanController::class)->only(['index', 'store', 'update', 'destroy'])->names([
         'index' => 'jurusan.index',
         'store' => 'jurusan.store',
         'update' => 'jurusan.update',
         'destroy' => 'jurusan.destroy',
     ]);
-    Route::resource('/master/kelas', \App\Modules\MasterData\Controllers\KelasController::class)->names([
+    Route::resource('/master/kelas', \App\Modules\MasterData\Controllers\KelasController::class)->only(['index', 'store', 'update', 'destroy'])->names([
         'index' => 'kelas.index',
         'store' => 'kelas.store',
         'update' => 'kelas.update',
         'destroy' => 'kelas.destroy',
+    ]);
+    Route::post('/master/hari-libur/sync-national', [\App\Modules\MasterData\Controllers\HariLiburController::class, 'syncNational'])->name('hari-libur.sync_national');
+    Route::resource('/master/hari-libur', \App\Modules\MasterData\Controllers\HariLiburController::class)->only(['index', 'store', 'update', 'destroy'])->names([
+        'index' => 'hari-libur.index',
+        'store' => 'hari-libur.store',
+        'update' => 'hari-libur.update',
+        'destroy' => 'hari-libur.destroy',
     ]);
 
     // Import/Export Excel Routes

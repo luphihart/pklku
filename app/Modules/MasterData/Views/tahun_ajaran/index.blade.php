@@ -63,19 +63,19 @@
                                     <td class="text-center">
                                         <div class="d-flex gap-1 justify-content-center">
                                             @if(!$ta->is_aktif)
-                                                <form action="{{ route('tahun-ajaran.update', $ta->id) }}" method="POST" style="display: inline-block;">
+                                                <form action="{{ route('tahun-ajaran.update', $ta->id) }}" method="POST" id="activateForm_{{ $ta->id }}" style="display: inline-block;">
                                                     @csrf
                                                     @method('PUT')
-                                                    <button type="submit" class="btn btn-sm btn-outline-success p-1" title="Aktifkan Periode">
+                                                    <button type="button" class="btn btn-sm btn-outline-success btn-action" title="Aktifkan Periode" aria-label="Aktifkan Tahun Ajaran {{ $ta->tahun }} {{ $ta->semester }}" onclick="window.confirmAction({ title: 'Aktifkan Tahun Ajaran?', text: 'Menjadikan periode {{ $ta->tahun }} ({{ ucfirst($ta->semester) }}) sebagai periode aktif sistem.', confirmButtonText: 'Ya, Aktifkan' }).then(r => { if(r.isConfirmed) document.getElementById('activateForm_{{ $ta->id }}').submit(); });">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                                         </svg>
                                                     </button>
                                                 </form>
-                                                <form action="{{ route('tahun-ajaran.destroy', $ta->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus tahun ajaran ini?');" style="display: inline-block;">
+                                                <form action="{{ route('tahun-ajaran.destroy', $ta->id) }}" method="POST" id="deleteTaForm_{{ $ta->id }}" style="display: inline-block;">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger p-1" title="Hapus Periode">
+                                                    <button type="button" class="btn btn-sm btn-outline-danger btn-action" title="Hapus Periode" aria-label="Hapus Tahun Ajaran {{ $ta->tahun }} {{ $ta->semester }}" onclick="window.confirmDelete('deleteTaForm_{{ $ta->id }}', 'tahun ajaran {{ $ta->tahun }} ({{ ucfirst($ta->semester) }})')">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                         </svg>

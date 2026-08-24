@@ -5,6 +5,18 @@
 
 @section('content')
 <div class="container-fluid p-0">
+    @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+            <strong class="font-heading">Gagal Menyimpan Data!</strong>
+            <ul class="mb-0 ps-3 mt-1 small">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
     <!-- Action Header -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
         <h5 class="fw-bold font-heading m-0 text-dark dark-text-light">Daftar Mitra Dunia Usaha / Industri</h5>
@@ -26,13 +38,53 @@
         </div>
     </div>
 
+    <!-- Search & Filter Card -->
+    <div class="card-premium mb-3 p-3">
+        <form action="{{ route('dudi.index') }}" method="GET" class="row g-2 align-items-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-transparent border-end-0 text-muted">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </span>
+                    <input type="text" name="search" class="form-control form-control-sm border-start-0 ps-0" placeholder="Cari nama DUDI, alamat, atau PIC..." value="{{ request('search') }}">
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <div class="d-flex align-items-center gap-2">
+                    <label class="small text-muted text-nowrap" style="font-size: 12px;">Urutan Nama DUDI:</label>
+                    <select name="sort" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="asc" {{ request('sort', 'asc') == 'asc' ? 'selected' : '' }}>A ➔ Z (Abjad)</option>
+                        <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Z ➔ A (Terbalik)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2 col-lg-4 d-flex gap-2">
+                <button type="submit" class="btn btn-sm btn-primary px-3">Cari</button>
+                @if(request()->filled('search') || request()->filled('sort'))
+                    <a href="{{ route('dudi.index') }}" class="btn btn-sm btn-outline-secondary">Reset</a>
+                @endif
+            </div>
+        </form>
+    </div>
+
     <!-- Table Card -->
     <div class="card-premium p-0 overflow-hidden">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0" style="color: var(--text-primary);">
                 <thead class="table-light" style="background-color: var(--bg-canvas);">
                     <tr class="font-heading" style="font-size: 13px; font-weight: 600;">
-                        <th class="ps-4">Nama Perusahaan</th>
+                        <th class="ps-4">
+                            <a href="{{ route('dudi.index', array_merge(request()->query(), ['sort' => request('sort') === 'desc' ? 'asc' : 'desc'])) }}" class="text-decoration-none text-dark dark-text-light d-inline-flex align-items-center gap-1" title="Klik untuk mengurutkan nama DUDI">
+                                Nama DUDI
+                                @if(request('sort') === 'desc')
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-primary"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                @else
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-primary"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                                @endif
+                            </a>
+                        </th>
                         <th>Alamat</th>
                         <th>Koordinat (Lat, Lng)</th>
                         <th>Radius Geofence</th>
@@ -58,15 +110,15 @@
                             </td>
                             <td class="text-center pe-4">
                                 <div class="d-flex gap-1 justify-content-center">
-                                    <button class="btn btn-sm btn-outline-warning p-1" data-bs-toggle="modal" data-bs-target="#editModal_{{ $dudi->id }}" title="Edit DUDI">
+                                    <button class="btn btn-sm btn-outline-warning btn-action" data-bs-toggle="modal" data-bs-target="#editModal_{{ $dudi->id }}" title="Edit DUDI" aria-label="Edit DUDI {{ $dudi->nama }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                         </svg>
                                     </button>
-                                    <form action="{{ route('dudi.destroy', $dudi->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus mitra DUDI ini? Semua hubungan penempatan aktif di dalamnya akan ikut dihapus.');">
+                                    <form action="{{ route('dudi.destroy', $dudi->id) }}" method="POST" id="deleteDudiForm_{{ $dudi->id }}">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger p-1" title="Hapus DUDI">
+                                        <button type="button" class="btn btn-sm btn-outline-danger btn-action" title="Hapus DUDI" aria-label="Hapus DUDI {{ $dudi->nama }}" onclick="window.confirmDelete('deleteDudiForm_{{ $dudi->id }}', 'mitra DUDI {{ addslashes($dudi->nama) }}')">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                             </svg>
@@ -146,7 +198,17 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center py-4 text-muted">Tidak ada data mitra DUDI ditemukan.</td>
+                            <td colspan="6" class="text-center py-4">
+                                <div class="empty-state py-4">
+                                    <div class="empty-state-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                        </svg>
+                                    </div>
+                                    <h6 class="empty-state-title">Tidak Ada Data Mitra DUDI</h6>
+                                    <p class="empty-state-text">Gunakan tombol Tambah Mitra DUDI atau Impor Excel di atas untuk mendaftarkan mitra industri baru.</p>
+                                </div>
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -155,7 +217,7 @@
 
         @if($dudis->hasPages())
         <div class="px-4 py-3 border-top d-flex justify-content-end" style="border-top-color: var(--border-color) !important;">
-            {{ $dudis->links() }}
+            {{ $dudis->withQueryString()->links() }}
         </div>
         @endif
     </div>
@@ -210,7 +272,7 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="nama" class="form-label small fw-semibold">Nama Perusahaan / Instansi</label>
-                        <input type="text" name="nama" id="nama" class="form-control form-control-sm" placeholder="PT. Antigravity Global Technology" required>
+                        <input type="text" name="nama" id="nama" class="form-control form-control-sm" placeholder="PT. Sukses Kreatif Solusindo" required>
                     </div>
                     
                     <div class="mb-3">

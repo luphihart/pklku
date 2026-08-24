@@ -21,20 +21,22 @@ class PenempatanController extends Controller
 
     public function index(Request $request)
     {
-        $filters = $request->only('status', 'dudi_id', 'guru_id', 'search');
+        $filters = $request->only('status', 'dudi_id', 'guru_id', 'search', 'sort_by', 'order', 'sort');
         $placements = $this->service->listPlacements($filters);
 
-        // Get DUDI, Guru, and students without active placements for plotting
-        $dudis = Dudi::all();
-        $gurus = Guru::all();
+        // Get DUDI, Guru, and students without active placements for plotting, ordered alphabetically
+        $dudis = Dudi::orderBy('nama', 'asc')->get();
+        $gurus = Guru::orderBy('nama', 'asc')->get();
         
         // Find students who do NOT have an active placement currently
         $unassignedStudents = Murid::with('kelas')
             ->whereDoesntHave('penempatanPkl', function($q) {
                 $q->where('status', 'aktif');
-            })->get();
+            })
+            ->orderBy('nama', 'asc')
+            ->get();
 
-        $kelasOptions = $unassignedStudents->pluck('kelas')->unique('id')->filter();
+        $kelasOptions = $unassignedStudents->pluck('kelas')->unique('id')->filter()->sortBy('nama')->values();
 
         return view('pkl::penempatan.index', compact('placements', 'dudis', 'gurus', 'unassignedStudents', 'kelasOptions'));
     }
@@ -70,6 +72,43 @@ class PenempatanController extends Controller
     {
         $this->service->removePlacement($id);
         return redirect()->route('penempatan.index')->with('success', 'Penempatan murid berhasil dibatalkan/dihapus.');
+    }
+
+    public function update(Request $request, int $id)
+    {
+        $request->validate([
+            'dudi_id' => 'required|exists:dudi,id',
+            'guru_id' => 'required|exists:guru,id',
+            'pembimbing_industri_id' => 'nullable|exists:pembimbing_industri,id',
+            'tanggal_mulai' => 'required|date',
+            'tanggal_selesai' => 'required|date|after:tanggal_mulai',
+        ], [
+            'tanggal_selesai.after' => 'Tanggal selesai harus setelah tanggal mulai.',
+        ]);
+
+        $this->service->editPlacement($id, $request->only('dudi_id', 'guru_id', 'pembimbing_industri_id', 'tanggal_mulai', 'tanggal_selesai'));
+
+        return redirect()->route('penempatan.index')->with('success', 'Detail penempatan murid berhasil diperbarui.');
+    }
+
+    public function destroyBulk(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if (empty($ids)) {
+            return redirect()->back()->with('error', 'Pilih minimal satu penempatan untuk dihapus.');
+        }
+
+        $count = 0;
+        foreach ($ids as $id) {
+            try {
+                $this->service->removePlacement($id);
+                $count++;
+            } catch (\Throwable $e) {
+                // Ignore
+            }
+        }
+
+        return redirect()->route('penempatan.index')->with('success', $count . ' penempatan murid berhasil dihapus.');
     }
 
     /**

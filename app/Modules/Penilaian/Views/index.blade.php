@@ -5,6 +5,18 @@
 
 @section('content')
 <div class="container-fluid p-0">
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+            <strong>Berhasil!</strong> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+            <strong>Error!</strong> {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
     <div class="card-premium p-0 overflow-hidden">
         <div class="p-3 border-bottom d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2" style="border-bottom-color: var(--border-color) !important;">
             <h6 class="fw-bold m-0 text-dark dark-text-light">
@@ -43,11 +55,11 @@
                     @forelse($placements as $p)
                         <tr>
                             <td class="ps-4">
-                                <div class="fw-semibold">{{ $p->murid->nama }}</div>
-                                <small class="text-muted">{{ $p->murid->nis }}</small>
+                                <div class="fw-semibold">{{ $p->murid?->nama ?? 'Siswa Terhapus' }}</div>
+                                <small class="text-muted">{{ $p->murid?->nis ?? '-' }}</small>
                             </td>
-                            <td>{{ $p->murid->kelas->nama ?? '-' }}</td>
-                            <td>{{ $p->dudi->nama ?? '-' }}</td>
+                            <td>{{ $p->murid?->kelas?->nama ?? '-' }}</td>
+                            <td>{{ $p->dudi?->nama ?? 'DUDI Terhapus' }}</td>
                             <td class="text-center text-success fw-semibold">
                                 {{ $p->penilaianPkl ? number_format($p->penilaianPkl->rata_nilai_guru, 2) : '-' }}
                             </td>
@@ -60,11 +72,28 @@
 
                             <td class="text-center pe-4">
                                 @if(auth()->user()->role === 'guru' || auth()->user()->role === 'admin')
-                                    <button type="button" class="btn btn-sm btn-outline-primary p-1" data-bs-toggle="modal" data-bs-target="#gradeModal_{{ $p->id }}" title="{{ $p->penilaianPkl ? 'Edit Nilai' : 'Input Nilai' }}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-                                        </svg>
-                                    </button>
+                                    <div class="d-inline-flex gap-1">
+                                        <button type="button" class="btn btn-sm btn-outline-primary btn-action" data-bs-toggle="modal" data-bs-target="#gradeModal_{{ $p->id }}" title="{{ $p->penilaianPkl ? 'Edit Nilai' : 'Input Nilai' }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                                            </svg>
+                                        </button>
+                                        @if($p->penilaianPkl)
+                                            <a href="{{ route('laporan.nilai_pdf', $p->id) }}" class="btn btn-sm btn-outline-danger btn-action" title="Unduh Rapor PDF" aria-label="Unduh Rapor PDF {{ $p->murid?->nama }}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                </svg>
+                                            </a>
+                                            @if(auth()->user()->role === 'admin')
+                                                <button type="button" class="btn btn-sm btn-outline-secondary btn-action" title="Hapus Nilai" aria-label="Hapus Nilai {{ $p->murid?->nama }}"
+                                                    onclick="confirmDeleteNilai({{ $p->penilaianPkl->id }}, '{{ addslashes($p->murid?->nama ?? 'Siswa') }}')">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                    </svg>
+                                                </button>
+                                            @endif
+                                        @endif
+                                    </div>
 
                                     <!-- Grade Input Modal -->
                                     <div class="modal fade text-start" id="gradeModal_{{ $p->id }}" tabindex="-1" aria-hidden="true">
@@ -74,12 +103,25 @@
                                                     <h5 class="modal-title font-heading fw-bold" style="font-size: 15px;">Input Nilai Kelulusan PKL</h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
-                                                <form action="{{ route('penilaian.store') }}" method="POST">
+                                                <form action="{{ route('penilaian.store') }}" method="POST" id="gradeForm_{{ $p->id }}">
                                                     @csrf
                                                     <input type="hidden" name="penempatan_pkl_id" value="{{ $p->id }}">
 
                                                     <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-                                                        <p class="small text-muted mb-4">Input skor (skala 0 - 100) dan keterangan untuk masing-masing kriteria penilaian untuk siswa <strong>{{ $p->murid->nama }}</strong>.</p>
+                                                        <div class="d-flex flex-wrap justify-content-between align-items-center p-3 rounded mb-3" style="background: rgba(14, 165, 233, 0.06); border: 1px solid rgba(14, 165, 233, 0.2);">
+                                                            <div>
+                                                                <h6 class="fw-bold m-0 text-dark">{{ $p->murid?->nama }}</h6>
+                                                                <small class="text-muted">NIS: {{ $p->murid?->nis }} &bull; {{ $p->dudi?->nama }}</small>
+                                                            </div>
+                                                            <div class="d-flex gap-3 align-items-center mt-2 mt-md-0">
+                                                                <div class="text-center">
+                                                                    <span class="text-muted d-block" style="font-size: 10px; text-transform: uppercase; font-weight: 600;">Skor Akhir Estimasi</span>
+                                                                    <span class="fw-bold font-heading text-primary estimated-final-score-{{ $p->id }}" style="font-size: 16px;">
+                                                                        {{ $p->penilaianPkl ? number_format($p->penilaianPkl->nilai_akhir, 2) : '0.00' }}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                         
                                                         <div class="table-responsive">
                                                             <table class="table table-bordered table-sm align-middle" style="font-size: 12px; color: var(--text-primary);">
@@ -103,7 +145,7 @@
                                                                             <td style="text-align: center;">{{ $tp->nomor }}</td>
                                                                             <td>{{ $tp->nama }}</td>
                                                                             <td></td>
-                                                                            <td rowspan="{{ $rowspan }}" style="vertical-align: top; background-color: #fff;">
+                                                                            <td rowspan="{{ $rowspan }}" style="vertical-align: top; background-color: var(--bg-card);">
                                                                                 <textarea name="keterangan_tp[{{ $tp->id }}]" class="form-control form-control-sm h-100" style="min-height: 120px; resize: vertical;" placeholder="Tulis keterangan untuk Tujuan Pembelajaran {{ $tp->nomor }} di sini..." required>{{ $existingTpDesc }}</textarea>
                                                                             </td>
                                                                         </tr>
@@ -148,7 +190,7 @@
                                                                                     </div>
                                                                                 </td>
                                                                                 <td>
-                                                                                    <input type="number" name="{{ $fieldName }}" class="form-control form-control-sm text-center" min="0" max="100" value="{{ $existingVal }}" required>
+                                                                                    <input type="number" name="{{ $fieldName }}" class="form-control form-control-sm text-center grade-input-{{ $p->id }}" min="0" max="100" value="{{ $existingVal }}" oninput="calculateLiveScore({{ $p->id }})" required>
                                                                                 </td>
                                                                             </tr>
                                                                         @empty
@@ -168,7 +210,7 @@
                                                     </div>
                                                     <div class="modal-footer border-top" style="border-top-color: var(--border-color) !important;">
                                                         <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                                        <button type="submit" class="btn btn-sm btn-primary">Simpan Penilaian</button>
+                                                        <button type="submit" class="btn btn-sm btn-primary" data-loading-text="Menyimpan...">Simpan Penilaian</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -181,7 +223,17 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-4 text-muted">Belum ada murid bimbingan aktif saat ini.</td>
+                            <td colspan="7" class="text-center py-4">
+                                <div class="empty-state py-4">
+                                    <div class="empty-state-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                                        </svg>
+                                    </div>
+                                    <h6 class="empty-state-title">Belum Ada Data Penilaian</h6>
+                                    <p class="empty-state-text">Data penilaian akan tersedia setelah murid ditempatkan pada mitra industri.</p>
+                                </div>
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -223,4 +275,46 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+function confirmDeleteNilai(id, nama) {
+    window.confirmAction({
+        title: 'Hapus Nilai Siswa?',
+        text: 'Data nilai untuk ' + nama + ' akan dihapus dan perlu diinput ulang.',
+        icon: 'warning',
+        confirmButtonColor: '#e11d48',
+        confirmButtonText: 'Ya, Hapus'
+    }).then(r => {
+        if(r.isConfirmed) {
+            const form = document.getElementById('deleteNilaiForm');
+            form.action = '{{ url("/penilaian") }}/' + id;
+            form.submit();
+        }
+    });
+}
+
+function calculateLiveScore(placementId) {
+    const inputs = document.querySelectorAll('.grade-input-' + placementId);
+    let sum = 0;
+    let count = 0;
+    inputs.forEach(inp => {
+        const val = parseFloat(inp.value);
+        if (!isNaN(val) && val >= 0) {
+            sum += val;
+            count++;
+        }
+    });
+    const avg = count > 0 ? (sum / count).toFixed(2) : '0.00';
+    const scoreDisplay = document.querySelector('.estimated-final-score-' + placementId);
+    if (scoreDisplay) {
+        scoreDisplay.textContent = avg;
+    }
+}
+</script>
+<form id="deleteNilaiForm" method="POST" style="display:none;">
+    @csrf
+    @method('DELETE')
+</form>
 @endsection

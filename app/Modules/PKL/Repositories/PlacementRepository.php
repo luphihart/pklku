@@ -10,29 +10,62 @@ class PlacementRepository implements PlacementRepositoryInterface
 {
     public function getActivePlacements(array $filters = [])
     {
-        $query = PenempatanPkl::with(['murid.kelas', 'dudi', 'guru', 'pembimbingIndustri', 'tahunAjaran']);
+        $query = PenempatanPkl::with(['murid.kelas', 'dudi', 'guru', 'pembimbingIndustri', 'tahunAjaran'])
+            ->select('penempatan_pkl.*');
 
         if (!empty($filters['status'])) {
-            $query->where('status', $filters['status']);
+            $query->where('penempatan_pkl.status', $filters['status']);
         }
 
         if (!empty($filters['dudi_id'])) {
-            $query->where('dudi_id', $filters['dudi_id']);
+            $query->where('penempatan_pkl.dudi_id', $filters['dudi_id']);
         }
 
         if (!empty($filters['guru_id'])) {
-            $query->where('guru_id', $filters['guru_id']);
+            $query->where('penempatan_pkl.guru_id', $filters['guru_id']);
         }
 
         if (!empty($filters['search'])) {
             $search = $filters['search'];
-            $query->whereHas('murid', function($q) use ($search) {
-                $q->where('nama', 'like', "%{$search}%")
-                  ->orWhere('nis', 'like', "%{$search}%");
+            $query->where(function($mainQ) use ($search) {
+                $mainQ->whereHas('murid', function($q) use ($search) {
+                    $q->where('nama', 'like', "%{$search}%")
+                      ->orWhere('nis', 'like', "%{$search}%");
+                })->orWhereHas('dudi', function($q) use ($search) {
+                    $q->where('nama', 'like', "%{$search}%");
+                })->orWhereHas('guru', function($q) use ($search) {
+                    $q->where('nama', 'like', "%{$search}%");
+                });
             });
         }
 
-        return $query->paginate(15);
+        $sortBy = $filters['sort_by'] ?? ($filters['sort_field'] ?? '');
+        $order = strtolower($filters['order'] ?? ($filters['sort'] ?? 'asc'));
+        if (!in_array($order, ['asc', 'desc'])) {
+            $order = 'asc';
+        }
+
+        if ($sortBy === 'nis') {
+            $query->join('murid', 'penempatan_pkl.murid_id', '=', 'murid.id')
+                  ->orderBy('murid.nis', $order);
+        } elseif ($sortBy === 'nama' || $sortBy === 'murid') {
+            $query->join('murid', 'penempatan_pkl.murid_id', '=', 'murid.id')
+                  ->orderBy('murid.nama', $order);
+        } elseif ($sortBy === 'kelas') {
+            $query->join('murid', 'penempatan_pkl.murid_id', '=', 'murid.id')
+                  ->leftJoin('kelas', 'murid.kelas_id', '=', 'kelas.id')
+                  ->orderBy('kelas.nama', $order);
+        } elseif ($sortBy === 'dudi' || $sortBy === 'tempat_dudi') {
+            $query->leftJoin('dudi', 'penempatan_pkl.dudi_id', '=', 'dudi.id')
+                  ->orderBy('dudi.nama', $order);
+        } elseif ($sortBy === 'guru' || $sortBy === 'guru_pembimbing') {
+            $query->leftJoin('guru', 'penempatan_pkl.guru_id', '=', 'guru.id')
+                  ->orderBy('guru.nama', $order);
+        } else {
+            $query->orderBy('penempatan_pkl.id', 'desc');
+        }
+
+        return $query->paginate(15)->appends(array_filter($filters));
     }
 
     public function findById(int $id)
@@ -61,18 +94,21 @@ class PlacementRepository implements PlacementRepositoryInterface
         }
 
         return DB::transaction(function() use ($muridIds, $dudiId, $guruId, $pembimbingIndustriId, $ta, $tglMulai, $tglSelesai) {
+            // Find which murid already have active placement in ONE single query
+            $existingMuridIds = PenempatanPkl::whereIn('murid_id', $muridIds)
+                ->where('tahun_ajaran_id', $ta->id)
+                ->where('status', 'aktif')
+                ->pluck('murid_id')
+                ->toArray();
+
+            $validMuridIds = array_diff($muridIds, $existingMuridIds);
+
+            if (empty($validMuridIds) && !empty($existingMuridIds)) {
+                throw new \Exception('Semua murid yang Anda pilih sudah memiliki penempatan PKL aktif pada tahun ajaran ini.');
+            }
+
             $created = [];
-            foreach ($muridIds as $muridId) {
-                // Ensure no active duplicate placement for this murid
-                $exists = PenempatanPkl::where('murid_id', $muridId)
-                    ->where('tahun_ajaran_id', $ta->id)
-                    ->where('status', 'aktif')
-                    ->exists();
-
-                if ($exists) {
-                    continue; // Skip or throw error depending on strictness
-                }
-
+            foreach ($validMuridIds as $muridId) {
                 $created[] = PenempatanPkl::create([
                     'murid_id' => $muridId,
                     'dudi_id' => $dudiId,
@@ -84,6 +120,7 @@ class PlacementRepository implements PlacementRepositoryInterface
                     'status' => 'aktif',
                 ]);
             }
+
             return $created;
         });
     }

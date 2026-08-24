@@ -17,23 +17,26 @@
     tambahanOpen: true
 }" class="g-sidenav-show">
     
+    <!-- Accessibility: Skip to Content Link -->
+    <a href="#main-content-area" class="visually-hidden-focusable p-2 bg-primary text-white position-absolute rounded shadow" style="top: 10px; left: 10px; z-index: 9999; text-decoration: none;">Lewati ke konten utama</a>
+
     <!-- Sidebar Backdrop for Mobile Overlay -->
     <div class="sidebar-backdrop" x-show="sidebarOpen" @click="sidebarOpen = false" x-transition.opacity style="display: none;"></div>
 
     <div class="wrapper">
         <!-- Sidebar -->
-        <nav id="sidebar" :class="{ 'collapsed': !sidebarOpen, 'show': sidebarOpen }">
+        <nav id="sidebar" aria-label="Navigasi Utama Sistem" :class="{ 'collapsed': !sidebarOpen, 'show': sidebarOpen }">
             <div class="sidebar-header d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center gap-2">
-                    <div class="p-2 rounded-3 text-primary d-flex align-items-center justify-content-center" style="background-color: rgba(79, 70, 229, 0.08) !important;">
+                    <div class="p-2 rounded-3 text-primary d-flex align-items-center justify-content-center bg-primary-light">
                         <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='var(--accent-primary)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' width="22" height="22"><path d='M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z'></path><path d='M12 11v6'></path><path d='M9 14h6'></path></svg>
                     </div>
                     <div>
                         <h5 class="m-0 font-heading fw-bold" style="color: var(--accent-primary); letter-spacing: -0.5px; line-height: 1.2;">PKLku</h5>
-                        <small class="text-muted" style="font-size: 12.5px; font-weight: 500; display: block; margin-top: 1px;">{{ $globalSettings['nama_sekolah'] ?? 'SMK N 1' }}</small>
+                        <small class="text-muted" style="font-size: 12px; font-weight: 500; display: block; margin-top: 1px;">{{ $globalSettings['nama_sekolah'] ?? 'SMK N 1' }}</small>
                     </div>
                 </div>
-                <button class="btn btn-sm d-md-none border-0 text-secondary" @click="sidebarOpen = false">
+                <button class="btn btn-sm d-md-none border-0 text-secondary" @click="sidebarOpen = false" aria-label="Tutup navigasi sidebar">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
@@ -52,7 +55,7 @@
 
                 @if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
                 <!-- Master Data Collapsible Section -->
-                <li class="sidebar-header-text d-flex justify-content-between align-items-center px-4 pt-3 pb-1 text-uppercase font-heading" style="font-size: 10px; font-weight: 700; color: var(--text-secondary); cursor: pointer; user-select: none;" @click="masterOpen = !masterOpen">
+                <li class="sidebar-header-text d-flex justify-content-between align-items-center px-4 pt-3 pb-1 text-uppercase font-heading" style="font-size: 11px; font-weight: 700; color: var(--text-secondary); cursor: pointer; user-select: none;" @click="masterOpen = !masterOpen">
                     <span>Master Data</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" :style="masterOpen ? 'transform: rotate(0deg); transition: transform 0.2s;' : 'transform: rotate(-90deg); transition: transform 0.2s;'" style="margin-right: 1.5rem;">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/>
@@ -137,7 +140,7 @@
                 @endif
 
                 <!-- Aktivitas PKL Collapsible Section -->
-                <li class="sidebar-header-text d-flex justify-content-between align-items-center px-4 pt-3 pb-1 text-uppercase font-heading" style="font-size: 10px; font-weight: 700; color: var(--text-secondary); cursor: pointer; user-select: none;" @click="aktivitasOpen = !aktivitasOpen">
+                <li class="sidebar-header-text d-flex justify-content-between align-items-center px-4 pt-3 pb-1 text-uppercase font-heading" style="font-size: 11px; font-weight: 700; color: var(--text-secondary); cursor: pointer; user-select: none;" @click="aktivitasOpen = !aktivitasOpen">
                     <span>Aktivitas PKL</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" :style="aktivitasOpen ? 'transform: rotate(0deg); transition: transform 0.2s;' : 'transform: rotate(-90deg); transition: transform 0.2s;'" style="margin-right: 1.5rem;">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/>
@@ -173,12 +176,12 @@
                 </li>
 
                 @if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
-                <li x-show="aktivitasOpen" class="{{ Request::is('monitoring*') ? 'active' : '' }}">
-                    <a href="{{ route('monitoring.index') }}">
+                <li x-show="aktivitasOpen" class="{{ Request::is('kunjungan*') ? 'active' : '' }}">
+                    <a href="{{ route('kunjungan.index') }}">
                         <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
                         </svg>
-                        Monitoring PKL
+                        Kunjungan ke DUDI
                     </a>
                 </li>
                 @endif
@@ -188,12 +191,12 @@
                         <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        Penilaian PKL
+                        {{ auth()->user()->role === 'murid' ? 'Nilai & Rapor PKL' : 'Penilaian PKL' }}
                     </a>
                 </li>
 
                 <!-- Tambahan Collapsible Section -->
-                <li class="sidebar-header-text d-flex justify-content-between align-items-center px-4 pt-3 pb-1 text-uppercase font-heading" style="font-size: 10px; font-weight: 700; color: var(--text-secondary); cursor: pointer; user-select: none;" @click="tambahanOpen = !tambahanOpen">
+                <li class="sidebar-header-text d-flex justify-content-between align-items-center px-4 pt-3 pb-1 text-uppercase font-heading" style="font-size: 11px; font-weight: 700; color: var(--text-secondary); cursor: pointer; user-select: none;" @click="tambahanOpen = !tambahanOpen">
                     <span>Tambahan</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" :style="tambahanOpen ? 'transform: rotate(0deg); transition: transform 0.2s;' : 'transform: rotate(-90deg); transition: transform 0.2s;'" style="margin-right: 1.5rem;">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/>
@@ -221,6 +224,15 @@
                 </li>
 
                 @if(auth()->user()->role === 'admin')
+                <li x-show="tambahanOpen" class="{{ Request::is('master/hari-libur*') ? 'active' : '' }}">
+                    <a href="{{ route('hari-libur.index') }}">
+                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        Hari Libur Nasional
+                    </a>
+                </li>
+
                 <li x-show="tambahanOpen" class="{{ Request::is('setting*') ? 'active' : '' }}">
                     <a href="{{ route('setting.index') }}">
                         <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -245,30 +257,35 @@
         <!-- Page Content -->
         <div id="content">
             <!-- Topbar -->
-            <nav class="topbar">
+            <nav class="topbar" style="background-color: var(--bg-card);">
                 <div class="d-flex align-items-center">
-                    <button class="btn border-0 text-secondary p-2 me-2 d-flex align-items-center justify-content-center" @click="sidebarOpen = !sidebarOpen" style="outline: none; box-shadow: none; min-width: 40px; min-height: 40px;">
+                    <button class="btn border-0 text-secondary p-2 me-2 d-flex align-items-center justify-content-center" @click="sidebarOpen = !sidebarOpen" style="outline: none; box-shadow: none; min-width: 40px; min-height: 40px;" aria-label="Toggle navigasi sidebar">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="pointer-events: none;">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
                     </button>
-                    <h5 class="m-0 d-none d-sm-block font-heading fw-bold">@yield('page_title', 'Sistem Informasi PKL')</h5>
+                    <h5 class="m-0 font-heading fw-bold text-truncate" style="font-size: 15px;">@yield('page_title', 'Sistem Informasi PKL')</h5>
                 </div>
 
-                <div class="d-flex align-items-center">
-                    <!-- Dark theme toggle removed -->
+                <div class="d-flex align-items-center gap-1">
+                    <!-- Quick Notification Bell -->
+                    <a href="{{ route('pengumuman.index') }}" class="btn btn-sm border-0 text-secondary p-2 d-flex align-items-center justify-content-center" style="min-width: 40px; min-height: 40px;" title="Pengumuman" aria-label="Lihat pengumuman sekolah">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                    </a>
 
                     <!-- User Dropdown -->
                     <div class="dropdown">
                         <button class="btn dropdown-toggle d-flex align-items-center border-0 text-secondary p-0" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
                             <img src="{{ auth()->user()->photo ? asset('storage/profiles/' . auth()->user()->photo) : 'https://www.gravatar.com/avatar/' . md5(auth()->user()->email) . '?d=mp' }}" alt="Foto Profile" class="rounded-circle me-2" width="32" height="32" style="object-fit: cover;">
-                            <span class="d-none d-md-inline text-dark dark-text-light" style="font-size: 14px; font-weight: 500;">{{ auth()->user()->name }}</span>
+                            <span class="d-none d-md-inline text-dark" style="font-size: 14px; font-weight: 500;">{{ auth()->user()->name }}</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="userMenu" style="background-color: var(--bg-card); border: 1px solid var(--border-color) !important;">
                             <li>
                                 <div class="px-3 py-2 border-bottom mb-1" style="border-bottom-color: var(--border-color) !important;">
-                                    <span class="d-block fw-bold text-dark dark-text-light" style="font-size: 13px;">{{ auth()->user()->name }}</span>
-                                    <small class="text-muted text-uppercase" style="font-size: 10px; font-weight: 700;">{{ auth()->user()->role }}</small>
+                                    <span class="d-block fw-bold text-dark" style="font-size: 13px;">{{ auth()->user()->name }}</span>
+                                    <span class="badge bg-primary-light text-primary text-uppercase" style="font-size: 10px; font-weight: 700;">{{ auth()->user()->role }}</span>
                                 </div>
                             </li>
                             <li><a class="dropdown-item py-2" href="{{ route('profile') }}">Profil Saya</a></li>
@@ -285,7 +302,7 @@
             </nav>
 
             <!-- Main Content Area -->
-            <main class="main-content">
+            <main id="main-content-area" class="main-content">
                 <!-- Alert Area -->
                 @if(session('success'))
                     <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert" style="background-color: rgba(16, 185, 129, 0.1); color: var(--success); border-left: 4px solid var(--success) !important;">
@@ -323,6 +340,90 @@
             </main>
         </div>
     </div>
+
+    <!-- Core UI/UX Interaction Helpers -->
+    <script>
+        // Global SweetAlert2 action helper
+        window.confirmAction = function (options) {
+            const defaultOptions = {
+                title: 'Apakah Anda yakin?',
+                text: 'Tindakan ini tidak dapat dibatalkan.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#4f46e5',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Ya, Lanjutkan',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+            };
+
+            const finalOptions = Object.assign({}, defaultOptions, options || {});
+            
+            if (typeof Swal !== 'undefined') {
+                return Swal.fire(finalOptions);
+            } else {
+                const confirmed = confirm((finalOptions.title || '') + (finalOptions.text ? '\n' + finalOptions.text : ''));
+                return Promise.resolve({ isConfirmed: confirmed });
+            }
+        };
+
+        // Global SweetAlert2 delete confirmation helper
+        window.confirmDelete = function (formOrCallback, itemName = 'data ini') {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Hapus ' + itemName + '?',
+                    text: 'Data yang dihapus tidak dapat dipulihkan kembali.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e11d48',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Ya, Hapus',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (typeof formOrCallback === 'function') {
+                            formOrCallback();
+                        } else if (formOrCallback && typeof formOrCallback.submit === 'function') {
+                            formOrCallback.submit();
+                        } else if (typeof formOrCallback === 'string') {
+                            const form = document.getElementById(formOrCallback);
+                            if (form) form.submit();
+                        }
+                    }
+                });
+            } else {
+                if (confirm('Apakah Anda yakin ingin menghapus ' + itemName + '?')) {
+                    if (typeof formOrCallback === 'function') {
+                        formOrCallback();
+                    } else if (formOrCallback && typeof formOrCallback.submit === 'function') {
+                        formOrCallback.submit();
+                    } else if (typeof formOrCallback === 'string') {
+                        const form = document.getElementById(formOrCallback);
+                        if (form) form.submit();
+                    }
+                }
+            }
+        };
+
+        // Form Submit Loading Feedback
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('form:not([data-no-loading])').forEach(function (form) {
+                form.addEventListener('submit', function (e) {
+                    if (form.checkValidity && !form.checkValidity()) {
+                        return;
+                    }
+                    const submitBtn = form.querySelector('button[type="submit"]:not([data-no-loading])');
+                    if (submitBtn && !submitBtn.disabled) {
+                        const loadingText = submitBtn.getAttribute('data-loading-text') || 'Menyimpan...';
+                        submitBtn.classList.add('btn-loading');
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${loadingText}`;
+                    }
+                });
+            });
+        });
+    </script>
 
     @yield('scripts')
 </body>

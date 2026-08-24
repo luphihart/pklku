@@ -7,6 +7,19 @@
 <div class="container-fluid p-0">
     <!-- Birthday Greeting (If applicable) -->
     @if(auth()->user()->tanggal_lahir && auth()->user()->tanggal_lahir->isBirthday())
+    @php
+        $birthdayMessages = [
+            "Met ultah ya! Semangat terus PKL-nya, semoga jurnal harianmu lancar di-ACC dan laporan PKL bebas revisi! 🎉🎂",
+            "Happy birthday, kawan! Kado terbaik tahun ini: Laporan PKL langsung di-ACC Pembimbing Industri tanpa drama revisi! Aamiin! 🥳✨",
+            "Selamat ulang tahun! Tambah umur, tambah dewasa, dan makin sukses karirnya. Jangan lupa traktiran abis pulang PKL ya! 😋🎁",
+            "Met ultah bro! Semoga jam kerja PKL terasa cepet, presensi selalu tepat waktu, dan sehat-sehat terus ya! 🚀",
+            "Jalan-jalan ke kota Palu, tak lupa beli duku. Met ultah kawan seperjuangan, tetap semangat raih cita-citamu! 🎈✨",
+            "Happy birthday! Semoga semua pengalaman & ilmu selama PKL ini jadi awal yang keren buat masa depanmu! 💪🎓",
+            "Met ultah! Tetap semangat walau tugas PKL numpuk, semoga selalu diberi kesehatan dan kelancaran setiap hari! 🔥🎉",
+            "Selamat ulang tahun! Semoga makin jago di tempat PKL, dapet nilai A, dan jalan menuju cita-citamu makin terbuka lebar! 🏆🌟",
+        ];
+        $randomBirthdayMsg = $birthdayMessages[array_rand($birthdayMessages)];
+    @endphp
     <div class="card-premium mb-4 text-white position-relative overflow-hidden" style="background: linear-gradient(135deg, #f43f5e 0%, #d946ef 100%); border: none;">
         <div class="position-absolute" style="right: -20px; top: -20px; opacity: 0.15; transform: rotate(15deg);">
             <svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" fill="currentColor" viewBox="0 0 16 16">
@@ -19,7 +32,7 @@
             </div>
             <div>
                 <h4 class="fw-bold font-heading m-0">Selamat Ulang Tahun, {{ auth()->user()->name }}! 🎂</h4>
-                <p class="m-0 mt-1" style="font-size: 13px; opacity: 0.9;">Semoga panjang umur, sehat selalu, dilancarkan segala urusannya, serta sukses dalam belajar dan berkarya!</p>
+                <p class="m-0 mt-1" style="font-size: 13px; opacity: 0.95; line-height: 1.5;">{{ $randomBirthdayMsg }}</p>
             </div>
         </div>
     </div>
@@ -68,13 +81,13 @@
         @if(auth()->user()->role === 'guru')
             <div class="row mb-4">
                 <!-- Count 1: Murid Bimbingan -->
-                <div class="col-md-4 col-sm-6 mb-3">
-                    <div class="card-premium d-flex align-items-center justify-content-between">
+                <div class="col-6 col-md-4 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between h-100">
                         <div>
                             <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Murid Bimbingan</span>
                             <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['murid'] ?? 0 }}</h3>
                         </div>
-                        <div class="p-3 rounded bg-light" style="color: var(--accent-primary); background-color: rgba(79, 70, 229, 0.1) !important;">
+                        <div class="p-3 rounded bg-light d-none d-sm-block" style="color: var(--accent-primary); background-color: rgba(79, 70, 229, 0.1) !important;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z"/>
                             </svg>
@@ -82,13 +95,13 @@
                     </div>
                 </div>
                 <!-- Count 2: Mitra DUDI Plotted -->
-                <div class="col-md-4 col-sm-6 mb-3">
-                    <div class="card-premium d-flex align-items-center justify-content-between">
+                <div class="col-6 col-md-4 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between h-100">
                         <div>
-                            <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Mitra DUDI Tempat Plotting</span>
+                            <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Mitra DUDI</span>
                             <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['dudi'] ?? 0 }}</h3>
                         </div>
-                        <div class="p-3 rounded bg-light" style="color: var(--warning); background-color: rgba(245, 158, 11, 0.1) !important;">
+                        <div class="p-3 rounded bg-light d-none d-sm-block" style="color: var(--warning); background-color: rgba(245, 158, 11, 0.1) !important;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                             </svg>
@@ -96,13 +109,13 @@
                     </div>
                 </div>
                 <!-- Count 3: Penempatan Aktif -->
-                <div class="col-md-4 col-sm-12 mb-3">
-                    <div class="card-premium d-flex align-items-center justify-content-between">
+                <div class="col-12 col-md-4 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between h-100">
                         <div>
                             <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Penempatan Aktif</span>
                             <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['penempatan_aktif'] ?? 0 }}</h3>
                         </div>
-                        <div class="p-3 rounded bg-light" style="color: var(--danger); background-color: rgba(225, 29, 72, 0.1) !important;">
+                        <div class="p-3 rounded bg-light d-none d-sm-block" style="color: var(--danger); background-color: rgba(225, 29, 72, 0.1) !important;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
                             </svg>
@@ -113,13 +126,13 @@
         @else
             <div class="row mb-4">
                 <!-- Count 1 -->
-                <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="card-premium d-flex align-items-center justify-content-between">
+                <div class="col-6 col-md-3 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between h-100">
                         <div>
                             <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Total Murid</span>
                             <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['murid'] ?? 0 }}</h3>
                         </div>
-                        <div class="p-3 rounded bg-light" style="color: var(--accent-primary); background-color: rgba(79, 70, 229, 0.1) !important;">
+                        <div class="p-3 rounded bg-light d-none d-sm-block" style="color: var(--accent-primary); background-color: rgba(79, 70, 229, 0.1) !important;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z"/>
                             </svg>
@@ -127,13 +140,13 @@
                     </div>
                 </div>
                 <!-- Count 2 -->
-                <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="card-premium d-flex align-items-center justify-content-between">
+                <div class="col-6 col-md-3 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between h-100">
                         <div>
                             <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Total Guru</span>
                             <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['guru'] ?? 0 }}</h3>
                         </div>
-                        <div class="p-3 rounded bg-light" style="color: var(--success); background-color: rgba(16, 185, 129, 0.1) !important;">
+                        <div class="p-3 rounded bg-light d-none d-sm-block" style="color: var(--success); background-color: rgba(16, 185, 129, 0.1) !important;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6m-6 4h6"/>
                             </svg>
@@ -141,13 +154,13 @@
                     </div>
                 </div>
                 <!-- Count 3 -->
-                <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="card-premium d-flex align-items-center justify-content-between">
+                <div class="col-6 col-md-3 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between h-100">
                         <div>
                             <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Mitra DUDI</span>
                             <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['dudi'] ?? 0 }}</h3>
                         </div>
-                        <div class="p-3 rounded bg-light" style="color: var(--warning); background-color: rgba(245, 158, 11, 0.1) !important;">
+                        <div class="p-3 rounded bg-light d-none d-sm-block" style="color: var(--warning); background-color: rgba(245, 158, 11, 0.1) !important;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                             </svg>
@@ -155,13 +168,13 @@
                     </div>
                 </div>
                 <!-- Count 4 -->
-                <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="card-premium d-flex align-items-center justify-content-between">
+                <div class="col-6 col-md-3 mb-3">
+                    <div class="card-premium d-flex align-items-center justify-content-between h-100">
                         <div>
                             <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Penempatan Aktif</span>
                             <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light">{{ $counts['penempatan_aktif'] ?? 0 }}</h3>
                         </div>
-                        <div class="p-3 rounded bg-light" style="color: var(--danger); background-color: rgba(225, 29, 72, 0.1) !important;">
+                        <div class="p-3 rounded bg-light d-none d-sm-block" style="color: var(--danger); background-color: rgba(225, 29, 72, 0.1) !important;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
                             </svg>
@@ -239,7 +252,7 @@
     <div class="row">
         <!-- Murid PKL Info -->
         <div class="col-md-6 mb-4">
-            <div class="card-premium">
+            <div class="card-premium h-100">
                 <h5 class="fw-bold font-heading mb-3 text-dark dark-text-light">Status Penempatan PKL</h5>
                 @php
                     $murid = auth()->user()->murid;
@@ -247,49 +260,175 @@
                 @endphp
 
                 @if($penempatan)
-                    <table class="table table-borderless m-0 mt-3" style="color: var(--text-primary);">
-                        <tr>
-                            <td class="text-muted p-1" style="width: 150px; font-size: 13px;">Tempat DUDI</td>
-                            <td class="p-1 font-heading fw-semibold">: {{ $penempatan->dudi->nama }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted p-1" style="font-size: 13px;">Guru Pembimbing</td>
-                            <td class="p-1">: {{ $penempatan->guru->nama }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted p-1" style="font-size: 13px;">Pembimbing Industri</td>
-                            <td class="p-1">: {{ $penempatan->pembimbingIndustri ? $penempatan->pembimbingIndustri->nama : ($penempatan->dudi->pic_nama ? $penempatan->dudi->pic_nama . ' (' . $penempatan->dudi->pic_phone . ')' : 'Belum di-assign') }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted p-1" style="font-size: 13px;">Tanggal PKL</td>
-                            <td class="p-1">: {{ \Carbon\Carbon::parse($penempatan->tanggal_mulai)->translatedFormat('d F Y') }} s/d {{ \Carbon\Carbon::parse($penempatan->tanggal_selesai)->translatedFormat('d F Y') }}</td>
-                        </tr>
-                    </table>
+                    <div class="d-flex flex-column gap-3 mt-3">
+                        <!-- Tempat DUDI -->
+                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background-color: var(--bg-canvas); border: 1px solid var(--border-color);">
+                            <div class="p-2 rounded bg-primary-light text-primary d-flex align-items-center justify-content-center flex-shrink-0" style="width: 42px; height: 42px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="text-muted d-block small mb-1 text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Tempat DUDI</span>
+                                <span class="font-heading fw-bold text-dark" style="font-size: 15px; line-height: 1.4;">{{ $penempatan->dudi->nama }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Guru Pembimbing -->
+                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background-color: var(--bg-canvas); border: 1px solid var(--border-color);">
+                            <div class="p-2 rounded bg-success-light text-success d-flex align-items-center justify-content-center flex-shrink-0" style="width: 42px; height: 42px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6m-6 4h6"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="text-muted d-block small mb-1 text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Guru Pembimbing</span>
+                                <span class="fw-semibold text-dark font-heading" style="font-size: 14px; line-height: 1.4;">{{ $penempatan->guru->nama }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Pembimbing Industri -->
+                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background-color: var(--bg-canvas); border: 1px solid var(--border-color);">
+                            <div class="p-2 rounded bg-warning-light text-warning d-flex align-items-center justify-content-center flex-shrink-0" style="width: 42px; height: 42px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="text-muted d-block small mb-1 text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Pembimbing Industri</span>
+                                <span class="fw-semibold text-dark font-heading" style="font-size: 14px; line-height: 1.4;">
+                                    {{ $penempatan->pembimbingIndustri ? $penempatan->pembimbingIndustri->nama : ($penempatan->dudi->pic_nama ? $penempatan->dudi->pic_nama . ' (' . $penempatan->dudi->pic_phone . ')' : 'Belum di-assign') }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Tanggal Pelaksanaan -->
+                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background-color: var(--bg-canvas); border: 1px solid var(--border-color);">
+                            <div class="p-2 rounded bg-indigo-light text-indigo d-flex align-items-center justify-content-center flex-shrink-0" style="width: 42px; height: 42px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="text-muted d-block small mb-1 text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Periode PKL</span>
+                                <span class="fw-semibold text-dark font-heading" style="font-size: 14px; line-height: 1.4;">
+                                    {{ \Carbon\Carbon::parse($penempatan->tanggal_mulai)->translatedFormat('d F Y') }} s/d {{ \Carbon\Carbon::parse($penempatan->tanggal_selesai)->translatedFormat('d F Y') }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 @else
-                    <div class="text-center py-4">
-                        <span class="text-muted d-block mb-2">Anda belum ditempatkan di DUDI manapun.</span>
-                        <small class="text-muted">Hubungi Admin Hubungan Industri untuk informasi plotting.</small>
+                    <div class="empty-state my-auto">
+                        <div class="empty-state-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                        </div>
+                        <h6 class="empty-state-title">Belum Ada Penempatan</h6>
+                        <p class="empty-state-text">Anda belum di-plotting ke mitra DUDI manapun. Hubungi Tim Hubungan Industri untuk informasi lebih lanjut.</p>
                     </div>
                 @endif
             </div>
         </div>
 
-        <!-- Presensi Harian Cepat -->
+        <!-- Presensi & Quick Action -->
         <div class="col-md-6 mb-4">
+            <div class="card-premium h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <h5 class="fw-bold font-heading mb-3 text-dark dark-text-light">Aktivitas Harian</h5>
+                    @if($penempatan)
+                        <p class="text-muted mb-4" style="font-size: 13.5px; line-height: 1.5;">
+                            Pastikan Anda melakukan <strong>Presensi Masuk & Pulang</strong> di area kantor DUDI serta mengisi <strong>Jurnal Kegiatan Harian</strong> beserta foto/dokumen bukti kerja.
+                        </p>
+                        
+                        <div class="d-flex flex-column gap-2">
+                            <a href="{{ route('presensi.index') }}" class="btn btn-primary py-3 font-heading fw-bold d-flex align-items-center justify-content-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                Buka Presensi GPS & Kamera
+                            </a>
+                            <a href="{{ route('jurnal.index') }}" class="btn btn-outline-primary py-3 font-heading fw-semibold d-flex align-items-center justify-content-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                </svg>
+                                Tulis Jurnal Kegiatan Harian
+                            </a>
+                        </div>
+                    @else
+                        <div class="empty-state my-auto">
+                            <div class="empty-state-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <h6 class="empty-state-title">Aktivitas Belum Aktif</h6>
+                            <p class="empty-state-text">Menu presensi harian dan jurnal kegiatan akan aktif otomatis saat status penempatan Anda telah ditentukan.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    @if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
+    <!-- Active Location Map (Peta Lokasi Aktif) -->
+    <div class="row mt-2">
+        <!-- Leaflet Map Column -->
+        <div class="col-lg-8 mb-4">
             <div class="card-premium">
-                <h5 class="fw-bold font-heading mb-3 text-dark dark-text-light">Presensi Hari Ini</h5>
-                @if($penempatan)
-                    <p class="text-muted mb-4" style="font-size: 13px;">Lakukan presensi langsung dari area kerja DUDI.</p>
-                    <div class="d-grid gap-2">
-                        <a href="{{ route('presensi.index') }}" class="btn btn-primary py-3 fw-bold font-heading">
-                            Buka Menu Presensi Harian
-                        </a>
-                    </div>
-                @else
-                    <div class="text-center py-4">
-                        <span class="text-muted">Fitur presensi tidak aktif (Belum ditempatkan).</span>
-                    </div>
-                @endif
+                <h5 class="fw-bold font-heading mb-3 text-dark">Peta Lokasi PKL Aktif</h5>
+                <div id="monitoringMap" style="height: 400px; border-radius: 0.5rem; border: 1px solid var(--border-color); z-index: 1;"></div>
+            </div>
+        </div>
+
+        <!-- DUDI List Column -->
+        <div class="col-lg-4 mb-4">
+            <div class="card-premium">
+                <h5 class="fw-bold font-heading mb-3 text-dark">
+                    {{ auth()->user()->role === 'guru' ? 'Daftar DUDI Bimbingan Anda' : 'Daftar Mitra DUDI Aktif' }}
+                </h5>
+                
+                <div class="pe-2" style="max-height: 400px; overflow-y: auto;">
+                    @forelse($dudiList as $dudiId => $dudiItem)
+                        <div class="p-3 mb-3 border rounded" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <span class="fw-bold text-primary font-heading" style="font-size: 14px;">{{ $dudiItem['dudi']->nama }}</span>
+                                <span class="badge bg-primary-light text-primary" style="font-size: 11px; font-weight: 700;">{{ count($dudiItem['placements']) }} Siswa</span>
+                            </div>
+                            <small class="text-muted d-block mt-1 mb-2" style="font-size: 12px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="align-middle me-1">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                </svg>{{ $dudiItem['dudi']->alamat }}
+                            </small>
+                            
+                            @if(auth()->user()->role === 'guru')
+                                <!-- Show details (like list of students) for Guru -->
+                                <div class="mt-2 pt-2 border-top" style="border-top-color: var(--border-color) !important;">
+                                    <span class="text-muted d-block mb-1 fw-semibold" style="font-size: 11px; text-uppercase;">Daftar Siswa Bimbingan:</span>
+                                    <ul class="ps-3 mb-0" style="font-size: 12px; color: var(--text-primary);">
+                                        @foreach($dudiItem['placements'] as $placement)
+                                            <li class="mb-1">
+                                                <strong>{{ $placement->murid->nama }}</strong> ({{ $placement->murid->kelas->nama }})
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                        </div>
+                    @empty
+                        <div class="empty-state py-4">
+                            <div class="empty-state-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                </svg>
+                            </div>
+                            <span class="empty-state-text d-block m-0">Belum ada bimbingan aktif di DUDI saat ini.</span>
+                        </div>
+                    @endforelse
+                </div>
             </div>
         </div>
     </div>
@@ -350,3 +489,176 @@
     </div>
 </div>
 @endsection
+
+@if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
+@section('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    #monitoringMap {
+        z-index: 1;
+    }
+    .leaflet-container {
+        font-family: inherit;
+    }
+</style>
+@endsection
+
+@section('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const mapContainer = document.getElementById('monitoringMap');
+        if (!mapContainer || typeof L === 'undefined') return;
+
+        // Fix Leaflet broken default marker icons
+        delete L.Icon.Default.prototype._getIconUrl;
+        L.Icon.Default.mergeOptions({
+            iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+            iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+            shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        });
+
+        // Define Custom DivIcons for premium visual styling
+        const dudiIcon = L.divIcon({
+            className: 'custom-dudi-marker',
+            html: `<div style="background-color: #4f46e5; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(15,23,42,0.35); display: flex; align-items: center; justify-content: center; color: white;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16"/>
+                    </svg>
+                   </div>`,
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
+        });
+
+        const studentIcon = L.divIcon({
+            className: 'custom-student-marker',
+            html: `<div style="background-color: #10b981; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(16,185,129,0.35); display: flex; align-items: center; justify-content: center; color: white;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                   </div>`,
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
+        });
+
+        const placements = @json($placements);
+        const todayPresensi = @json($todayPresensi);
+        const dudiGroups = {};
+
+        placements.forEach(p => {
+            if (p.dudi) {
+                const lat = parseFloat(p.dudi.latitude);
+                const lng = parseFloat(p.dudi.longitude);
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    if (!dudiGroups[p.dudi_id]) {
+                        dudiGroups[p.dudi_id] = {
+                            name: p.dudi.nama,
+                            alamat: p.dudi.alamat,
+                            lat: lat,
+                            lng: lng,
+                            students: []
+                        };
+                    }
+                    dudiGroups[p.dudi_id].students.push(p);
+                }
+            }
+        });
+
+        // Initialize map centered at first DUDI or default coordinate
+        let mapCenter = [-7.005145, 110.438125]; // Default Jawa Tengah
+        const dudiKeys = Object.keys(dudiGroups);
+        
+        if (dudiKeys.length > 0) {
+            mapCenter = [dudiGroups[dudiKeys[0]].lat, dudiGroups[dudiKeys[0]].lng];
+        }
+
+        const map = L.map('monitoringMap').setView(mapCenter, 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        const markers = [];
+        const isGuru = @json(auth()->user()->role === 'guru');
+
+        // Draw DUDI markers (shown for both Admin and Guru)
+        Object.values(dudiGroups).forEach(dudi => {
+            let tooltipContent = `<div class="p-1">` +
+                                 `<strong style="font-size: 12.5px; color: var(--accent-primary);">${dudi.name}</strong>` +
+                                 `<div class="text-muted mt-1" style="font-size: 11px; max-width: 200px; white-space: normal; line-height: 1.3;">` +
+                                 `<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="me-1" style="display:inline-block; vertical-align:middle;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>` +
+                                 `${dudi.alamat}</div>` +
+                                 `<div class="mt-1" style="font-size: 11px; font-weight: 600; color: var(--accent-primary);">` +
+                                 `Siswa Terplotting: ${dudi.students.length} Murid</div>` +
+                                 `</div>`;
+
+            const marker = L.marker([dudi.lat, dudi.lng], { icon: dudiIcon }).addTo(map)
+                .bindTooltip(tooltipContent, { direction: 'top', permanent: false });
+            
+            markers.push(marker);
+        });
+
+        // Draw student presensi markers (only for Guru)
+        if (isGuru && todayPresensi && todayPresensi.length > 0) {
+            todayPresensi.forEach(presensi => {
+                const placement = placements.find(pl => String(pl.id) === String(presensi.penempatan_pkl_id));
+                if (placement) {
+                    const studentName = placement.murid ? placement.murid.nama : 'Siswa';
+                    const kelasName = placement.murid && placement.murid.kelas ? placement.murid.kelas.nama : '-';
+                    
+                    // 1. Check-in Marker
+                    if (presensi.lat_masuk !== null && presensi.lat_masuk !== undefined && presensi.lng_masuk !== null && presensi.lng_masuk !== undefined) {
+                        const checkinLat = parseFloat(presensi.lat_masuk);
+                        const checkinLng = parseFloat(presensi.lng_masuk);
+                        
+                        if (!isNaN(checkinLat) && !isNaN(checkinLng) && checkinLat !== 0) {
+                            let checkinTooltip = `<div class="p-1">` +
+                                                 `<strong>${studentName}</strong> <small class="text-muted">(${kelasName})</small><br>` +
+                                                 `<span class="badge bg-success-soft mt-1 mb-1">Presensi Masuk</span><br>` +
+                                                 `<small class="text-muted">Jam: <strong>${presensi.jam_masuk || '-'}</strong> | Status: <strong>${presensi.status_masuk ? presensi.status_masuk.replace('_', ' ') : '-'}</strong></small>` +
+                                                 `</div>`;
+                            
+                            const checkinMarker = L.marker([checkinLat, checkinLng], { icon: studentIcon }).addTo(map)
+                                .bindTooltip(checkinTooltip, { direction: 'top', permanent: false });
+                            
+                            markers.push(checkinMarker);
+                        }
+                    }
+                    
+                    // 2. Check-out Marker
+                    if (presensi.lat_pulang !== null && presensi.lat_pulang !== undefined && presensi.lng_pulang !== null && presensi.lng_pulang !== undefined) {
+                        const checkoutLat = parseFloat(presensi.lat_pulang);
+                        const checkoutLng = parseFloat(presensi.lng_pulang);
+                        
+                        if (!isNaN(checkoutLat) && !isNaN(checkoutLng) && checkoutLat !== 0) {
+                            let checkoutTooltip = `<div class="p-1">` +
+                                                  `<strong>${studentName}</strong> <small class="text-muted">(${kelasName})</small><br>` +
+                                                  `<span class="badge bg-danger-soft mt-1 mb-1">Presensi Pulang</span><br>` +
+                                                  `<small class="text-muted">Jam: <strong>${presensi.jam_pulang || '-'}</strong> | Status: <strong>${presensi.status_pulang ? presensi.status_pulang.replace('_', ' ') : '-'}</strong></small>` +
+                                                  `</div>`;
+                            
+                            const checkoutMarker = L.marker([checkoutLat, checkoutLng], { icon: studentIcon }).addTo(map)
+                                .bindTooltip(checkoutTooltip, { direction: 'top', permanent: false });
+                            
+                            markers.push(checkoutMarker);
+                        }
+                    }
+                }
+            });
+        }
+
+        // Adjust bounds to fit all markers
+        if (markers.length > 0) {
+            const group = new L.featureGroup(markers);
+            map.fitBounds(group.getBounds().pad(0.15));
+        }
+
+        // Fix Leaflet tile loading when container sizes are calculated
+        setTimeout(function() {
+            map.invalidateSize();
+        }, 300);
+    });
+</script>
+@endsection
+@endif

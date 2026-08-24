@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Lembar Penilaian PKL - {{ $placement->murid->nama }}</title>
+    <title>Lembar Penilaian PKL - {{ $placement->murid?->nama ?? 'Siswa' }}</title>
     <style>
         @page {
             margin: 15mm 15mm 15mm 15mm;
@@ -149,27 +149,27 @@
         <tr>
             <td class="label">Nama Murid</td>
             <td class="separator">:</td>
-            <td class="value">{{ $placement->murid->nama }}</td>
+            <td class="value">{{ $placement->murid ? $placement->murid->nama : '-' }}</td>
         </tr>
         <tr>
             <td class="label">NIS</td>
             <td class="separator">:</td>
-            <td class="value">{{ $placement->murid->nis }}</td>
+            <td class="value">{{ $placement->murid ? $placement->murid->nis : '-' }}</td>
         </tr>
         <tr>
             <td class="label">Kelas / Jurusan</td>
             <td class="separator">:</td>
-            <td class="value">{{ $placement->murid->kelas ? $placement->murid->kelas->nama : '-' }} / {{ ($placement->murid->kelas && $placement->murid->kelas->jurusan) ? $placement->murid->kelas->jurusan->nama : '-' }}</td>
+            <td class="value">{{ ($placement->murid && $placement->murid->kelas) ? $placement->murid->kelas->nama : '-' }} / {{ ($placement->murid && $placement->murid->kelas && $placement->murid->kelas->jurusan) ? $placement->murid->kelas->jurusan->nama : '-' }}</td>
         </tr>
         <tr>
             <td class="label">Tempat PKL (DUDI)</td>
             <td class="separator">:</td>
-            <td class="value">{{ $placement->dudi->nama }}</td>
+            <td class="value">{{ $placement->dudi ? $placement->dudi->nama : '-' }}</td>
         </tr>
         <tr>
             <td class="label">Periode PKL</td>
             <td class="separator">:</td>
-            <td>{{ \Carbon\Carbon::parse($placement->tanggal_mulai)->translatedFormat('l, d F Y') }} s/d {{ \Carbon\Carbon::parse($placement->tanggal_selesai)->translatedFormat('l, d F Y') }}</td>
+            <td>{{ $placement->tanggal_mulai ? \Carbon\Carbon::parse($placement->tanggal_mulai)->translatedFormat('l, d F Y') : '-' }} s/d {{ $placement->tanggal_selesai ? \Carbon\Carbon::parse($placement->tanggal_selesai)->translatedFormat('l, d F Y') : '-' }}</td>
         </tr>
     </table>
 
@@ -261,18 +261,18 @@
             <tr>
                 <td style="width: 45%;"><strong>Rata-rata Evaluasi Sekolah (R1)</strong></td>
                 <td style="width: 3%;">:</td>
-                <td style="font-weight: bold;">{{ number_format($placement->penilaianPkl->rata_nilai_guru, 2) }}</td>
+                <td style="font-weight: bold;">{{ $placement->penilaianPkl ? number_format($placement->penilaianPkl->rata_nilai_guru, 2) : '-' }}</td>
             </tr>
             <tr>
                 <td><strong>Rata-rata Evaluasi Industri/DUDI (R2)</strong></td>
                 <td>:</td>
-                <td style="font-weight: bold;">{{ number_format($placement->penilaianPkl->rata_nilai_industri, 2) }}</td>
+                <td style="font-weight: bold;">{{ $placement->penilaianPkl ? number_format($placement->penilaianPkl->rata_nilai_industri, 2) : '-' }}</td>
             </tr>
             <tr>
                 <td><strong>Nilai Final Rapor PKL</strong></td>
                 <td>:</td>
                 <td style="font-size: 13px; font-weight: bold; color: #1a237e;">
-                    {{ number_format($placement->penilaianPkl->nilai_akhir, 2) }}
+                    {{ $placement->penilaianPkl ? number_format($placement->penilaianPkl->nilai_akhir, 2) : '-' }}
                 </td>
             </tr>
         </table>
@@ -331,14 +331,17 @@
         $today = \Carbon\Carbon::today();
         $lastDateToCount = $endDate->greaterThan($today) ? $today : $endDate;
         
+        $holidayDates = \App\Modules\MasterData\Models\HariLibur::getHolidayDatesBetween($startDate, $lastDateToCount);
+
         $totalWorkingDays = 0;
         $allWorkingDates = [];
         $current = $startDate->copy();
         while ($current->lessThanOrEqualTo($lastDateToCount)) {
             $dayNameIndo = $allowedDaysMap[$current->format('l')] ?? '';
-            if (in_array($dayNameIndo, $workingDays)) {
+            $dateString = $current->toDateString();
+            if (in_array($dayNameIndo, $workingDays) && !in_array($dateString, $holidayDates)) {
                 $totalWorkingDays++;
-                $allWorkingDates[] = $current->toDateString();
+                $allWorkingDates[] = $dateString;
             }
             $current->addDay();
         }
@@ -424,8 +427,8 @@
         <tr>
             <!-- Names and NIPs -->
             <td style="text-align: center; vertical-align: top; padding-right: 30px; font-size: 11px;">
-                <div class="signature-name">{{ $placement->guru->nama }}</div>
-                @if($placement->guru->nip)
+                <div class="signature-name">{{ $placement->guru ? $placement->guru->nama : '_______________________' }}</div>
+                @if($placement->guru && $placement->guru->nip)
                     <div style="font-size: 9.5px; margin-top: 2px;">NIP. {{ $placement->guru->nip }}</div>
                 @endif
             </td>

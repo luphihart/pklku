@@ -4,7 +4,6 @@ namespace App\Modules\PKL\Services;
 
 use App\Modules\PKL\Repositories\PlacementRepositoryInterface;
 use App\Modules\PKL\Models\KunjunganMonitoring;
-use Illuminate\Support\Facades\Auth;
 
 class PlacementService
 {
@@ -55,39 +54,40 @@ class PlacementService
         $filepath = null;
 
         if ($fotoFile) {
+            $dirPath = public_path('storage/kunjungan');
+            if (!file_exists($dirPath)) {
+                mkdir($dirPath, 0755, true);
+            }
             $filename = 'kunjungan_' . $placementId . '_' . time() . '.' . $fotoFile->getClientOriginalExtension();
-            $fotoFile->move(public_path('storage/kunjungan'), $filename);
+            $fotoFile->move($dirPath, $filename);
             $filepath = $filename;
         }
 
         $visitation = KunjunganMonitoring::create([
             'penempatan_pkl_id' => $placementId,
             'tanggal' => $data['tanggal'] ?? now()->toDateString(),
+            'jenis_kunjungan' => $data['jenis_kunjungan'] ?? null,
             'deskripsi_kunjungan' => $data['deskripsi_kunjungan'],
             'foto_kunjungan' => $filepath,
-            'latitude' => $data['latitude'] ?? null,
-            'longitude' => $data['longitude'] ?? null,
+            'latitude' => null,
+            'longitude' => null,
         ]);
 
-        $this->logActivity("Mencatat kunjungan monitoring guru pembimbing untuk penempatan ID: " . $placementId);
+        $this->logActivity("Mencatat kunjungan guru pembimbing untuk penempatan ID: " . $placementId);
         return $visitation;
     }
 
-    /**
-     * Audit log helper.
-     */
-    private function logActivity(string $aktivitas)
+    private function logActivity(string $aktivitas, ?int $userId = null): void
     {
+        $uId = $userId ?? \Illuminate\Support\Facades\Auth::id();
         try {
             \App\Modules\System\Models\AuditLog::create([
-                'user_id' => Auth::id(),
+                'user_id' => $uId,
                 'aktivitas' => $aktivitas,
                 'ip_address' => request()->ip() ?? '127.0.0.1',
                 'user_agent' => request()->userAgent() ?? 'Unknown',
                 'payload' => null,
             ]);
-        } catch (\Throwable $e) {
-            // Ignore
-        }
+        } catch (\Throwable $e) {}
     }
 }

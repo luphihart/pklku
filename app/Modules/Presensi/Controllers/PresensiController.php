@@ -44,8 +44,8 @@ class PresensiController extends Controller
         // Sisi Guru / Admin: List all attendance
         $query = Presensi::with(['penempatanPkl.murid.kelas', 'penempatanPkl.dudi']);
         
+        $guruId = $role === 'guru' ? (auth()->user()->guru?->id ?: -1) : null;
         if ($role === 'guru') {
-            $guruId = auth()->user()->guru->id;
             $query->whereHas('penempatanPkl', function($q) use ($guruId) {
                 $q->where('guru_id', $guruId);
             });
@@ -60,7 +60,6 @@ class PresensiController extends Controller
 
         $placementQuery = PenempatanPkl::with(['murid.kelas', 'dudi'])->where('status', 'aktif');
         if ($role === 'guru') {
-            $guruId = auth()->user()->guru->id;
             $placementQuery->where('guru_id', $guruId);
         }
         $activePlacements = $placementQuery->get();
@@ -80,6 +79,15 @@ class PresensiController extends Controller
             'longitude' => 'required|numeric',
             'photo' => 'required|string', // base64 string
         ]);
+
+        // Ownership check: murid hanya bisa presensi untuk penempatan miliknya sendiri
+        $user = auth()->user();
+        if ($user->role === 'murid') {
+            $muridPlacementId = $user->murid?->penempatanAktif?->id;
+            if ($muridPlacementId !== (int) $request->penempatan_pkl_id) {
+                return response()->json(['success' => false, 'message' => 'Anda tidak diizinkan presensi untuk penempatan ini.'], 403);
+            }
+        }
 
         try {
             $this->service->checkIn(
@@ -105,6 +113,15 @@ class PresensiController extends Controller
             'longitude' => 'required|numeric',
             'photo' => 'required|string', // base64 string
         ]);
+
+        // Ownership check: murid hanya bisa checkout untuk penempatan miliknya sendiri
+        $user = auth()->user();
+        if ($user->role === 'murid') {
+            $muridPlacementId = $user->murid?->penempatanAktif?->id;
+            if ($muridPlacementId !== (int) $request->penempatan_pkl_id) {
+                return response()->json(['success' => false, 'message' => 'Anda tidak diizinkan presensi untuk penempatan ini.'], 403);
+            }
+        }
 
         try {
             $this->service->checkOut(

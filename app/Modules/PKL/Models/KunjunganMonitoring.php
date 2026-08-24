@@ -11,6 +11,7 @@ class KunjunganMonitoring extends Model
     protected $fillable = [
         'penempatan_pkl_id',
         'tanggal',
+        'jenis_kunjungan',
         'deskripsi_kunjungan',
         'foto_kunjungan',
         'latitude',

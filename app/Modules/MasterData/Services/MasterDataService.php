@@ -3,7 +3,6 @@
 namespace App\Modules\MasterData\Services;
 
 use App\Modules\MasterData\Repositories\MasterDataRepositoryInterface;
-use Illuminate\Support\Facades\Auth;
 
 class MasterDataService
 {
@@ -40,7 +39,7 @@ class MasterDataService
     }
 
     // Guru Actions
-    public function listGuru() { return $this->repo->getAllGuru(); }
+    public function listGuru(array $filters = []) { return $this->repo->getAllGuru($filters); }
     public function getGuru(int $id) { return $this->repo->findGuruById($id); }
 
     public function saveGuru(array $data)
@@ -65,7 +64,7 @@ class MasterDataService
     }
 
     // Dudi Actions
-    public function listDudi() { return $this->repo->getAllDudi(); }
+    public function listDudi(array $filters = []) { return $this->repo->getAllDudi($filters); }
     public function getDudi(int $id) { return $this->repo->findDudiById($id); }
 
     public function saveDudi(array $data)
@@ -89,21 +88,17 @@ class MasterDataService
         return $result;
     }
 
-    /**
-     * Audit log helper.
-     */
-    private function logActivity(string $aktivitas)
+    private function logActivity(string $aktivitas, ?int $userId = null): void
     {
+        $uId = $userId ?? \Illuminate\Support\Facades\Auth::id();
         try {
             \App\Modules\System\Models\AuditLog::create([
-                'user_id' => Auth::id(),
+                'user_id' => $uId,
                 'aktivitas' => $aktivitas,
                 'ip_address' => request()->ip() ?? '127.0.0.1',
                 'user_agent' => request()->userAgent() ?? 'Unknown',
                 'payload' => null,
             ]);
-        } catch (\Throwable $e) {
-            // Ignore
-        }
+        } catch (\Throwable $e) {}
     }
 }

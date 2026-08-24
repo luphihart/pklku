@@ -3,7 +3,6 @@
 namespace App\Modules\Jurnal\Services;
 
 use App\Modules\Jurnal\Repositories\JournalRepositoryInterface;
-use Illuminate\Support\Facades\Auth;
 
 class JournalService
 {
@@ -25,8 +24,12 @@ class JournalService
     {
         $filename = null;
         if ($fotoFile) {
+            $dirPath = public_path('storage/jurnal');
+            if (!file_exists($dirPath)) {
+                mkdir($dirPath, 0755, true);
+            }
             $filename = 'jurnal_' . $placementId . '_' . time() . '.' . $fotoFile->getClientOriginalExtension();
-            $fotoFile->move(public_path('storage/jurnal'), $filename);
+            $fotoFile->move($dirPath, $filename);
         }
 
         $journal = $this->repo->createJournal([
@@ -58,13 +61,17 @@ class JournalService
         ];
 
         if ($fotoFile) {
+            $dirPath = public_path('storage/jurnal');
+            if (!file_exists($dirPath)) {
+                mkdir($dirPath, 0755, true);
+            }
             // Delete old photo
-            if ($journal->foto_kegiatan && file_exists(public_path('storage/jurnal/' . $journal->foto_kegiatan))) {
-                @unlink(public_path('storage/jurnal/' . $journal->foto_kegiatan));
+            if ($journal->foto_kegiatan && file_exists($dirPath . '/' . $journal->foto_kegiatan)) {
+                @unlink($dirPath . '/' . $journal->foto_kegiatan);
             }
 
             $filename = 'jurnal_' . $journal->penempatan_pkl_id . '_' . time() . '.' . $fotoFile->getClientOriginalExtension();
-            $fotoFile->move(public_path('storage/jurnal'), $filename);
+            $fotoFile->move($dirPath, $filename);
             $updateData['foto_kegiatan'] = $filename;
         }
 
@@ -90,21 +97,17 @@ class JournalService
         return $updated;
     }
 
-    /**
-     * Audit log helper.
-     */
-    private function logActivity(string $aktivitas)
+    private function logActivity(string $aktivitas, ?int $userId = null): void
     {
+        $uId = $userId ?? \Illuminate\Support\Facades\Auth::id();
         try {
             \App\Modules\System\Models\AuditLog::create([
-                'user_id' => Auth::id(),
+                'user_id' => $uId,
                 'aktivitas' => $aktivitas,
                 'ip_address' => request()->ip() ?? '127.0.0.1',
                 'user_agent' => request()->userAgent() ?? 'Unknown',
                 'payload' => null,
             ]);
-        } catch (\Throwable $e) {
-            // Ignore
-        }
+        } catch (\Throwable $e) {}
     }
 }

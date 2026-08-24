@@ -42,13 +42,18 @@ class JurusanController extends Controller
 
     public function destroy($id)
     {
-        $jurusan = Jurusan::findOrFail($id);
-        
-        if ($jurusan->kelas()->exists()) {
-            return redirect()->back()->with('error', 'Tidak dapat menghapus jurusan karena masih memiliki kelas terikat.');
-        }
+        try {
+            $jurusan = Jurusan::findOrFail($id);
+            
+            $activeKelasCount = $jurusan->kelas()->count();
+            if ($activeKelasCount > 0) {
+                return redirect()->back()->with('error', "Tidak dapat menghapus jurusan '{$jurusan->nama}' karena masih memiliki {$activeKelasCount} kelas terikat.");
+            }
 
-        $jurusan->delete();
-        return redirect()->route('jurusan.index')->with('success', 'Jurusan berhasil dihapus.');
+            $jurusan->delete();
+            return redirect()->route('jurusan.index')->with('success', "Jurusan '{$jurusan->nama}' berhasil dihapus.");
+        } catch (\Throwable $e) {
+            return redirect()->back()->with('error', 'Gagal menghapus jurusan: ' . $e->getMessage());
+        }
     }
 }
