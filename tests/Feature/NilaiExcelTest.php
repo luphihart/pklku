@@ -297,7 +297,7 @@ class NilaiExcelTest extends TestCase
         ]);
     }
 
-    public function test_admin_and_guru_can_create_manual_attendance()
+    public function test_admin_can_create_manual_attendance()
     {
         $admin = User::factory()->create(['role' => 'admin']);
         $tahun = TahunAjaran::create(['tahun' => '2025/2026', 'semester' => 'ganjil', 'status' => 'aktif']);
@@ -346,7 +346,7 @@ class NilaiExcelTest extends TestCase
         ]);
     }
 
-    public function test_admin_and_guru_can_update_manual_attendance()
+    public function test_admin_can_update_manual_attendance()
     {
         $admin = User::factory()->create(['role' => 'admin']);
         $tahun = TahunAjaran::create(['tahun' => '2025/2026', 'semester' => 'ganjil', 'status' => 'aktif']);
@@ -399,9 +399,10 @@ class NilaiExcelTest extends TestCase
         ]);
     }
 
-    public function test_student_cannot_create_or_update_manual_attendance()
+    public function test_student_and_guru_cannot_create_or_update_manual_attendance()
     {
         $student = User::factory()->create(['role' => 'murid']);
+        $guru = User::factory()->create(['role' => 'guru']);
         
         $response1 = $this->actingAs($student)
             ->post(route('presensi.store_manual'), [
@@ -412,6 +413,16 @@ class NilaiExcelTest extends TestCase
             ]);
 
         $response1->assertStatus(403); // Forbidden
+
+        $response2 = $this->actingAs($guru)
+            ->post(route('presensi.store_manual'), [
+                'penempatan_pkl_id' => 1,
+                'tanggal' => '2025-07-10',
+                'jam_masuk' => '07:15',
+                'status_masuk' => 'tepat_waktu',
+            ]);
+
+        $response2->assertStatus(403); // Forbidden
     }
 
     public function test_manual_attendance_checkin_only()
@@ -573,5 +584,163 @@ class NilaiExcelTest extends TestCase
             ]);
 
         $response->assertStatus(403);
+    }
+
+    public function test_download_nilai_pdf_with_null_scores()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $tahun = TahunAjaran::create(['tahun' => '2025/2026', 'semester' => 'ganjil', 'status' => 'aktif']);
+        $jurusan = Jurusan::create(['kode' => 'RPL', 'nama' => 'Rekayasa Perangkat Lunak']);
+        $kelas = Kelas::create(['nama' => 'XII RPL 1', 'jurusan_id' => $jurusan->id]);
+        
+        $muridUser = User::factory()->create(['role' => 'murid']);
+        $murid = Murid::create(['nis' => '17565', 'nama' => 'Nilai Murid PDF', 'kelas_id' => $kelas->id, 'user_id' => $muridUser->id]);
+        
+        $guruUser = User::factory()->create(['role' => 'guru']);
+        $guru = Guru::create(['user_id' => $guruUser->id, 'nip' => '9999', 'nama' => 'Nilai Guru PDF']);
+        
+        $dudi = Dudi::create([
+            'nama' => 'PT. Nilai Tech', 'alamat' => 'City', 'latitude' => 0.0, 'longitude' => 0.0, 'radius_meter' => 50,
+            'pic_nama' => 'PIC Tech', 'pic_phone' => '0812'
+        ]);
+
+        $placement = PenempatanPkl::create([
+            'murid_id' => $murid->id,
+            'dudi_id' => $dudi->id,
+            'guru_id' => $guru->id,
+            'tahun_ajaran_id' => $tahun->id,
+            'tanggal_mulai' => '2025-07-01',
+            'tanggal_selesai' => '2025-12-31',
+            'status' => 'aktif'
+        ]);
+
+        // Create PenilaianPkl with null average/final scores
+        $penilaian = \App\Modules\Penilaian\Models\PenilaianPkl::create([
+            'penempatan_pkl_id' => $placement->id,
+            'nilai_guru_json' => [],
+            'nilai_industri_json' => [],
+            'keterangan_tp_json' => [],
+            'rata_nilai_guru' => null,      // Null average
+            'rata_nilai_industri' => null,  // Null average
+            'nilai_akhir' => null,          // Null final score
+            'catatan' => 'Good performance',
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->get(route('laporan.nilai_pdf', $placement->id));
+
+        $response->assertStatus(200);
+    }
+
+    public function test_admin_can_update_placement()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $tahun = TahunAjaran::create(['tahun' => '2025/2026', 'semester' => 'ganjil', 'status' => 'aktif']);
+        $jurusan = Jurusan::create(['kode' => 'RPL', 'nama' => 'Rekayasa Perangkat Lunak']);
+        $kelas = Kelas::create(['nama' => 'XII RPL 1', 'jurusan_id' => $jurusan->id]);
+        
+        $muridUser = User::factory()->create(['role' => 'murid']);
+        $murid = Murid::create(['nis' => '17553', 'nama' => 'Abdul Test', 'kelas_id' => $kelas->id, 'user_id' => $muridUser->id]);
+
+        $dudi1 = Dudi::create(['nama' => 'PT. Coding Indonesia', 'alamat' => 'Yogyakarta', 'latitude' => 0.0, 'longitude' => 0.0, 'radius_meter' => 50, 'pic_nama' => 'PIC Budi', 'pic_phone' => '08123456789']);
+        $dudi2 = Dudi::create(['nama' => 'PT. Baru Indonesia', 'alamat' => 'Jakarta', 'latitude' => 0.0, 'longitude' => 0.0, 'radius_meter' => 50, 'pic_nama' => 'PIC Candra', 'pic_phone' => '08987654321']);
+
+        $guruUser = User::factory()->create(['role' => 'guru']);
+        $guru1 = Guru::create(['user_id' => $guruUser->id, 'nip' => '9999', 'nama' => 'Guru Lama']);
+        $guruUser2 = User::factory()->create(['role' => 'guru']);
+        $guru2 = Guru::create(['user_id' => $guruUser2->id, 'nip' => '8888', 'nama' => 'Guru Baru']);
+
+        $placement = PenempatanPkl::create([
+            'murid_id' => $murid->id,
+            'dudi_id' => $dudi1->id,
+            'guru_id' => $guru1->id,
+            'tahun_ajaran_id' => $tahun->id,
+            'tanggal_mulai' => '2025-07-01',
+            'tanggal_selesai' => '2025-12-31',
+            'status' => 'aktif'
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->put(route('penempatan.update', $placement->id), [
+                'dudi_id' => $dudi2->id,
+                'guru_id' => $guru2->id,
+                'tanggal_mulai' => '2025-08-01',
+                'tanggal_selesai' => '2025-11-30',
+            ]);
+
+        $response->assertRedirect(route('penempatan.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('penempatan_pkl', [
+            'id' => $placement->id,
+            'dudi_id' => $dudi2->id,
+            'guru_id' => $guru2->id,
+            'tanggal_mulai' => '2025-08-01',
+            'tanggal_selesai' => '2025-11-30',
+        ]);
+    }
+
+    public function test_admin_can_bulk_delete_placements()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $tahun = TahunAjaran::create(['tahun' => '2025/2026', 'semester' => 'ganjil', 'status' => 'aktif']);
+        $jurusan = Jurusan::create(['kode' => 'RPL', 'nama' => 'Rekayasa Perangkat Lunak']);
+        $kelas = Kelas::create(['nama' => 'XII RPL 1', 'jurusan_id' => $jurusan->id]);
+        
+        $m1 = Murid::create(['nis' => '1', 'nama' => 'M1', 'kelas_id' => $kelas->id, 'user_id' => User::factory()->create(['role' => 'murid'])->id]);
+        $m2 = Murid::create(['nis' => '2', 'nama' => 'M2', 'kelas_id' => $kelas->id, 'user_id' => User::factory()->create(['role' => 'murid'])->id]);
+
+        $dudi = Dudi::create(['nama' => 'PT. Code', 'alamat' => 'City', 'latitude' => 0.0, 'longitude' => 0.0, 'radius_meter' => 50, 'pic_nama' => 'B', 'pic_phone' => '1']);
+        $guru = Guru::create(['user_id' => User::factory()->create(['role' => 'guru'])->id, 'nip' => '1', 'nama' => 'G']);
+
+        $p1 = PenempatanPkl::create(['murid_id' => $m1->id, 'dudi_id' => $dudi->id, 'guru_id' => $guru->id, 'tahun_ajaran_id' => $tahun->id, 'tanggal_mulai' => '2025-07-01', 'tanggal_selesai' => '2025-12-31', 'status' => 'aktif']);
+        $p2 = PenempatanPkl::create(['murid_id' => $m2->id, 'dudi_id' => $dudi->id, 'guru_id' => $guru->id, 'tahun_ajaran_id' => $tahun->id, 'tanggal_mulai' => '2025-07-01', 'tanggal_selesai' => '2025-12-31', 'status' => 'aktif']);
+
+        $response = $this->actingAs($admin)
+            ->post(route('penempatan.destroy_bulk'), [
+                'ids' => [$p1->id, $p2->id]
+            ]);
+
+        $response->assertRedirect(route('penempatan.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseMissing('penempatan_pkl', ['id' => $p1->id]);
+        $this->assertDatabaseMissing('penempatan_pkl', ['id' => $p2->id]);
+    }
+
+    public function test_kunjungan_pdf_export()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $guruUser = User::factory()->create(['role' => 'guru']);
+        $guru = Guru::create(['user_id' => $guruUser->id, 'nip' => '12345678', 'nama' => 'Pak Guru Budi']);
+
+        $tahun = TahunAjaran::create(['tahun' => '2025/2026', 'semester' => 'ganjil', 'status' => 'aktif']);
+        $jurusan = Jurusan::create(['nama' => 'RPL', 'kode' => 'RPL', 'singkatan' => 'RPL']);
+        $kelas = Kelas::create(['nama' => 'XII RPL 1', 'jurusan_id' => $jurusan->id]);
+        $murid = Murid::create(['nis' => '123', 'nama' => 'Ahmad', 'kelas_id' => $kelas->id, 'user_id' => User::factory()->create(['role' => 'murid'])->id]);
+
+        $dudi = Dudi::create(['nama' => 'PT. Sukses', 'alamat' => 'Jakarta', 'latitude' => 0.0, 'longitude' => 0.0, 'radius_meter' => 50, 'pic_nama' => 'B', 'pic_phone' => '1']);
+
+        $placement = PenempatanPkl::create(['murid_id' => $murid->id, 'dudi_id' => $dudi->id, 'guru_id' => $guru->id, 'tahun_ajaran_id' => $tahun->id, 'tanggal_mulai' => '2025-07-01', 'tanggal_selesai' => '2025-12-31', 'status' => 'aktif']);
+
+        $kunjungan = \App\Modules\PKL\Models\KunjunganMonitoring::create([
+            'penempatan_pkl_id' => $placement->id,
+            'tanggal' => '2025-08-01',
+            'jenis_kunjungan' => 'Monitoring Berkala',
+            'deskripsi_kunjungan' => 'Semua berjalan lancar.',
+            'foto_kunjungan' => null
+        ]);
+
+        // Admin can export
+        $responseAdmin = $this->actingAs($admin)
+            ->get(route('kunjungan.export_pdf'));
+        $responseAdmin->assertStatus(200);
+        $responseAdmin->assertHeader('Content-Type', 'application/pdf');
+
+        // Guru can export
+        $responseGuru = $this->actingAs($guruUser)
+            ->get(route('kunjungan.export_pdf'));
+        $responseGuru->assertStatus(200);
+        $responseGuru->assertHeader('Content-Type', 'application/pdf');
     }
 }
