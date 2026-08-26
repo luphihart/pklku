@@ -458,6 +458,9 @@
                                     @endforeach
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
                     <!-- Step 6: Custom Weekly Holidays / Days Off -->
                     <div class="row">
                         <div class="col-md-12 mb-3">
