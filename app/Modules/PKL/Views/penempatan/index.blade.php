@@ -464,7 +464,6 @@
         </div>
     </div>
 </div>
-@endsection
 
 @foreach($placements as $p)
     <!-- Modal Edit -->
@@ -567,6 +566,7 @@
         @method('DELETE')
     </form>
 @endforeach
+@endsection
 
 @section('scripts')
 <script>
