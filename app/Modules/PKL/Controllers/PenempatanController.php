@@ -53,6 +53,7 @@ class PenempatanController extends Controller
             'tanggal_selesai' => 'required|date|after:tanggal_mulai',
             'tipe_kerja' => 'nullable|in:wfo,wfa,hybrid',
             'hari_wfa' => 'nullable|array',
+            'hari_libur' => 'nullable|array',
         ], [
             'murid_ids.required' => 'Pilih minimal satu murid untuk ditempatkan.',
             'tanggal_selesai.after' => 'Tanggal selesai harus setelah tanggal mulai.',
@@ -63,6 +64,10 @@ class PenempatanController extends Controller
             ? implode(',', $request->input('hari_wfa', []))
             : null;
 
+        $hariLibur = $request->has('hari_libur')
+            ? implode(',', $request->input('hari_libur', []))
+            : null;
+
         $this->service->saveMassPlacement(
             $request->murid_ids,
             $request->dudi_id,
@@ -71,7 +76,8 @@ class PenempatanController extends Controller
             $request->tanggal_mulai,
             $request->tanggal_selesai,
             $tipeKerja,
-            $hariWfa
+            $hariWfa,
+            $hariLibur
         );
 
         return redirect()->route('penempatan.index')->with('success', 'Plotting penempatan massal berhasil disimpan.');
@@ -93,6 +99,7 @@ class PenempatanController extends Controller
             'tanggal_selesai' => 'required|date|after:tanggal_mulai',
             'tipe_kerja' => 'nullable|in:wfo,wfa,hybrid',
             'hari_wfa' => 'nullable|array',
+            'hari_libur' => 'nullable|array',
         ], [
             'tanggal_selesai.after' => 'Tanggal selesai harus setelah tanggal mulai.',
         ]);
@@ -102,9 +109,14 @@ class PenempatanController extends Controller
             ? implode(',', $request->input('hari_wfa', []))
             : null;
 
+        $hariLibur = $request->has('hari_libur')
+            ? implode(',', $request->input('hari_libur', []))
+            : null;
+
         $updateData = $request->only('dudi_id', 'guru_id', 'pembimbing_industri_id', 'tanggal_mulai', 'tanggal_selesai');
         $updateData['tipe_kerja'] = $tipeKerja;
         $updateData['hari_wfa'] = $hariWfa;
+        $updateData['hari_libur'] = $hariLibur;
 
         $this->service->editPlacement($id, $updateData);
 

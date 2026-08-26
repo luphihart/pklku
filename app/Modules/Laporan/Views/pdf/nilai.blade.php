@@ -324,8 +324,6 @@
             'Saturday' => 'Sabtu',
             'Sunday' => 'Minggu',
         ];
-        $workingDays = array_map('trim', explode(',', $hariKerjaSetting));
-
         $startDate = \Carbon\Carbon::parse($placement->tanggal_mulai);
         $endDate = \Carbon\Carbon::parse($placement->tanggal_selesai);
         $today = \Carbon\Carbon::today();
@@ -337,9 +335,8 @@
         $allWorkingDates = [];
         $current = $startDate->copy();
         while ($current->lessThanOrEqualTo($lastDateToCount)) {
-            $dayNameIndo = $allowedDaysMap[$current->format('l')] ?? '';
             $dateString = $current->toDateString();
-            if (in_array($dayNameIndo, $workingDays) && !in_array($dateString, $holidayDates)) {
+            if (!$placement->isPlacementHoliday($dateString) && !in_array($dateString, $holidayDates)) {
                 $totalWorkingDays++;
                 $allWorkingDates[] = $dateString;
             }

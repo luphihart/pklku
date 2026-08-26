@@ -46,12 +46,7 @@ class AttendanceService
     private function verifyWorkingDay(int $placementId): void
     {
         $placement = \App\Modules\PKL\Models\PenempatanPkl::with('dudi')->find($placementId);
-        $hariKerja = ($placement && $placement->dudi && $placement->dudi->hari_kerja)
-            ? $placement->dudi->hari_kerja
-            : (Setting::where('key', 'hari_kerja')->value('value') ?: 'Senin,Selasa,Rabu,Kamis,Jumat');
-            
-        $allowedDays = array_map('trim', explode(',', $hariKerja));
-        
+
         $daysMap = [
             'Monday' => 'Senin',
             'Tuesday' => 'Selasa',
@@ -61,14 +56,14 @@ class AttendanceService
             'Saturday' => 'Sabtu',
             'Sunday' => 'Minggu',
         ];
-        
         $currentDayNameIndo = $daysMap[now()->format('l')];
 
-        if (!in_array($currentDayNameIndo, $allowedDays)) {
-            throw new \Exception("Presensi gagal! Hari ini (" . $currentDayNameIndo . ") adalah hari libur.");
+        // 1. Check Placement-specific custom day off (or DUDI/global working days fallback)
+        if ($placement && $placement->isPlacementHoliday()) {
+            throw new \Exception("Presensi ditutup! Hari ini (" . $currentDayNameIndo . ") adalah jadwal hari libur Anda.");
         }
 
-        // Check National / Custom Holiday
+        // 2. Check National Holiday
         $today = now()->toDateString();
         $holiday = \App\Modules\MasterData\Models\HariLibur::getHoliday($today);
         if ($holiday) {

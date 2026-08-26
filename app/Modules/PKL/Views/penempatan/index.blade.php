@@ -212,12 +212,17 @@
                                 <td>{{ $p->guru ? $p->guru->nama : 'Guru Terhapus' }}</td>
                                 <td>{{ $p->pembimbingIndustri ? $p->pembimbingIndustri->nama : ($p->dudi?->pic_nama ?? '-') }}</td>
                                 <td class="text-center">
-                                    @if(($p->tipe_kerja ?? 'wfo') === 'wfa')
-                                        <span class="badge bg-primary-light text-primary fw-semibold" title="100% WFA (Full Remote)">🏠 WFA</span>
-                                    @elseif(($p->tipe_kerja ?? 'wfo') === 'hybrid')
-                                        <span class="badge bg-info-light text-info fw-semibold" title="Hybrid: WFA pada {{ $p->hari_wfa }}">🔄 Hybrid ({{ $p->hari_wfa }})</span>
-                                    @else
-                                        <span class="badge bg-secondary-light text-secondary fw-semibold" title="100% WFO (Di Kantor DUDI)">🏢 WFO</span>
+                                    <div class="mb-1">
+                                        @if(($p->tipe_kerja ?? 'wfo') === 'wfa')
+                                            <span class="badge bg-primary-light text-primary fw-semibold" title="100% WFA (Full Remote)">🏠 WFA</span>
+                                        @elseif(($p->tipe_kerja ?? 'wfo') === 'hybrid')
+                                            <span class="badge bg-info-light text-info fw-semibold" title="Hybrid: WFA pada {{ $p->hari_wfa }}">🔄 Hybrid ({{ $p->hari_wfa }})</span>
+                                        @else
+                                            <span class="badge bg-secondary-light text-secondary fw-semibold" title="100% WFO (Di Kantor DUDI)">🏢 WFO</span>
+                                        @endif
+                                    </div>
+                                    @if(!empty($p->hari_libur))
+                                        <small class="text-muted d-block" style="font-size: 11px;">Libur: {{ $p->hari_libur }}</small>
                                     @endif
                                 </td>
                                 <td class="text-center text-muted">
@@ -453,6 +458,19 @@
                                     @endforeach
                                 </div>
                             </div>
+                    <!-- Step 6: Custom Weekly Holidays / Days Off -->
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label small fw-semibold">6. Pengaturan Hari Libur Rutin Mingguan Siswa</label>
+                            <small class="text-muted d-block mb-2" style="font-size: 12px;">Pilih hari ketika siswa <strong>libur (tidak wajib presensi & tidak terhitung Alpha)</strong>. <em>(Default: Sabtu & Minggu)</em></small>
+                            <div class="d-flex flex-wrap gap-3 p-2 border rounded" style="background-color: var(--bg-canvas);">
+                                @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'] as $hLibur)
+                                    <div class="form-check form-check-inline m-0">
+                                        <input class="form-check-input" type="checkbox" name="hari_libur[]" id="mass_libur_{{ $hLibur }}" value="{{ $hLibur }}" {{ in_array($hLibur, ['Sabtu', 'Minggu']) ? 'checked' : '' }}>
+                                        <label class="form-check-label small" for="mass_libur_{{ $hLibur }}">{{ $hLibur }}</label>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -548,6 +566,22 @@
                                         </div>
                                     @endforeach
                                 </div>
+                            </div>
+                        </div>
+
+                        @php
+                            $currentHariLibur = array_map('trim', explode(',', $p->hari_libur ?? 'Sabtu,Minggu'));
+                        @endphp
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Hari Libur Rutin Mingguan Siswa</label>
+                            <small class="text-muted d-block mb-2" style="font-size: 12px;">Pilih hari ketika siswa <strong>libur (bebas presensi & tidak terhitung Alpha)</strong>:</small>
+                            <div class="d-flex flex-wrap gap-3 p-2 border rounded" style="background-color: var(--bg-canvas);">
+                                @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'] as $hLibur)
+                                    <div class="form-check form-check-inline m-0">
+                                        <input class="form-check-input" type="checkbox" name="hari_libur[]" id="edit_libur_{{ $p->id }}_{{ $hLibur }}" value="{{ $hLibur }}" {{ in_array($hLibur, $currentHariLibur) ? 'checked' : '' }}>
+                                        <label class="form-check-label small" for="edit_libur_{{ $p->id }}_{{ $hLibur }}">{{ $hLibur }}</label>
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
                     </div>

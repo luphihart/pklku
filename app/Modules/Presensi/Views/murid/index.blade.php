@@ -52,6 +52,7 @@
     @else
         @php
             $todayHoliday = \App\Modules\MasterData\Models\HariLibur::getHoliday(now()->toDateString());
+            $isPlacementHoliday = $placement ? $placement->isPlacementHoliday() : false;
         @endphp
 
         @if($todayHoliday)
@@ -62,8 +63,19 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
                 </div>
-                <h5 class="fw-bold font-heading text-dark m-0">Hari Ini Libur: {{ $todayHoliday->nama }}</h5>
+                <h5 class="fw-bold font-heading text-dark m-0">Hari Ini Libur Nasional: {{ $todayHoliday->nama }}</h5>
                 <p class="text-secondary small mt-1 mb-0">{{ $todayHoliday->keterangan ?: 'Hari libur resmi nasional. Anda tidak perlu melakukan presensi kehadiran hari ini.' }}</p>
+            </div>
+        @elseif($isPlacementHoliday)
+            <!-- Weekly Day Off Hero Banner -->
+            <div class="card-premium mb-4 p-4 text-center" style="background-color: var(--bg-card); border-left: 4px solid #64748b !important;">
+                <div class="d-inline-flex p-3 rounded-circle bg-secondary-light text-secondary mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h5 class="fw-bold font-heading text-dark m-0">Hari Ini Jadwal Libur Mingguan Anda ({{ \Carbon\Carbon::now()->translatedFormat('l') }})</h5>
+                <p class="text-secondary small mt-1 mb-0">Hari ini merupakan jadwal libur rutin penempatan Anda. Anda tidak perlu melakukan presensi dan tidak terhitung Alpha.</p>
             </div>
         @else
             <!-- Daily Presence Status Hero Banner -->

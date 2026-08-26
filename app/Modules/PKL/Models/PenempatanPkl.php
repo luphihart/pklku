@@ -19,7 +19,43 @@ class PenempatanPkl extends Model
         'status',
         'tipe_kerja',
         'hari_wfa',
+        'hari_libur',
     ];
+
+    /**
+     * Check if a specific date (or today) is a regular weekly day off / holiday for this placement.
+     */
+    public function isPlacementHoliday(?string $date = null): bool
+    {
+        $dateObj = $date ? \Carbon\Carbon::parse($date) : now();
+        $daysMap = [
+            'Monday'    => 'Senin',
+            'Tuesday'   => 'Selasa',
+            'Wednesday' => 'Rabu',
+            'Thursday'  => 'Kamis',
+            'Friday'    => 'Jumat',
+            'Saturday'  => 'Sabtu',
+            'Sunday'    => 'Minggu',
+        ];
+        $dayNameIndo = $daysMap[$dateObj->format('l')] ?? '';
+
+        // 1. Placement specific custom regular holidays (e.g. 'Sabtu,Minggu' or 'Minggu' or 'Senin')
+        if (!empty($this->hari_libur)) {
+            $offDays = array_map('trim', explode(',', $this->hari_libur));
+            return in_array($dayNameIndo, $offDays);
+        }
+
+        // 2. Fallback to DUDI specific working days
+        if ($this->dudi && !empty($this->dudi->hari_kerja)) {
+            $dudiWorkingDays = array_map('trim', explode(',', $this->dudi->hari_kerja));
+            return !in_array($dayNameIndo, $dudiWorkingDays);
+        }
+
+        // 3. Fallback to Global Setting working days
+        $globalHariKerja = \App\Modules\Setting\Models\Setting::where('key', 'hari_kerja')->value('value') ?: 'Senin,Selasa,Rabu,Kamis,Jumat';
+        $globalWorkingDays = array_map('trim', explode(',', $globalHariKerja));
+        return !in_array($dayNameIndo, $globalWorkingDays);
+    }
 
     /**
      * Check if the placement is configured as WFA on a given date (or today).

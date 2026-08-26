@@ -61,14 +61,8 @@ class MarkAbsentStudents extends Command
         $countSkipped = 0;
 
         foreach ($placements as $placement) {
-            // Determine working days for this DUDI
-            $dudiHariKerja = $placement->dudi?->hari_kerja;
-            $allowedDays = $dudiHariKerja 
-                ? array_map('trim', explode(',', $dudiHariKerja)) 
-                : $globalAllowedDays;
-
-            // 1. Skip if today is NOT a working day for this DUDI
-            if (!in_array($currentDayIndo, $allowedDays)) {
+            // 1. Skip if today is a holiday / day off for this placement
+            if ($placement->isPlacementHoliday($today)) {
                 $countSkipped++;
                 continue;
             }
