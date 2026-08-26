@@ -51,10 +51,17 @@ class PenempatanController extends Controller
             'pembimbing_industri_id' => 'nullable|exists:pembimbing_industri,id',
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after:tanggal_mulai',
+            'tipe_kerja' => 'nullable|in:wfo,wfa,hybrid',
+            'hari_wfa' => 'nullable|array',
         ], [
             'murid_ids.required' => 'Pilih minimal satu murid untuk ditempatkan.',
             'tanggal_selesai.after' => 'Tanggal selesai harus setelah tanggal mulai.',
         ]);
+
+        $tipeKerja = $request->input('tipe_kerja', 'wfo');
+        $hariWfa = ($tipeKerja === 'hybrid' && $request->has('hari_wfa'))
+            ? implode(',', $request->input('hari_wfa', []))
+            : null;
 
         $this->service->saveMassPlacement(
             $request->murid_ids,
@@ -62,7 +69,9 @@ class PenempatanController extends Controller
             $request->guru_id,
             $request->pembimbing_industri_id,
             $request->tanggal_mulai,
-            $request->tanggal_selesai
+            $request->tanggal_selesai,
+            $tipeKerja,
+            $hariWfa
         );
 
         return redirect()->route('penempatan.index')->with('success', 'Plotting penempatan massal berhasil disimpan.');
@@ -82,11 +91,22 @@ class PenempatanController extends Controller
             'pembimbing_industri_id' => 'nullable|exists:pembimbing_industri,id',
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after:tanggal_mulai',
+            'tipe_kerja' => 'nullable|in:wfo,wfa,hybrid',
+            'hari_wfa' => 'nullable|array',
         ], [
             'tanggal_selesai.after' => 'Tanggal selesai harus setelah tanggal mulai.',
         ]);
 
-        $this->service->editPlacement($id, $request->only('dudi_id', 'guru_id', 'pembimbing_industri_id', 'tanggal_mulai', 'tanggal_selesai'));
+        $tipeKerja = $request->input('tipe_kerja', 'wfo');
+        $hariWfa = ($tipeKerja === 'hybrid' && $request->has('hari_wfa'))
+            ? implode(',', $request->input('hari_wfa', []))
+            : null;
+
+        $updateData = $request->only('dudi_id', 'guru_id', 'pembimbing_industri_id', 'tanggal_mulai', 'tanggal_selesai');
+        $updateData['tipe_kerja'] = $tipeKerja;
+        $updateData['hari_wfa'] = $hariWfa;
+
+        $this->service->editPlacement($id, $updateData);
 
         return redirect()->route('penempatan.index')->with('success', 'Detail penempatan murid berhasil diperbarui.');
     }

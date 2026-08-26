@@ -36,7 +36,8 @@ Pelaksanaan PKL di SMK sering menghadapi kendala klasik:
 
 ### 📍 A. Presensi Geofence & Foto Selfie Real-Time
 * **Validasi Lokasi 2 Lapis (Haversine Formula)**: Presensi divalidasi berdasarkan titik GPS DUDI dengan radius yang dapat disesuaikan per industri atau menggunakan radius default global sekolah.
-* **Foto Selfie Anti-Kecurangan**: Pengambilan foto langsung dari kamera perangkat dengan watermarking waktu, nama, koordinat GPS, dan kompresi otomatis.
+* **Model Kerja Fleksibel (Hybrid WFO-WFA)** *(Terbaru)*: Mendukung penempatan siswa dengan model kerja `100% WFO`, `100% WFA (Full Remote)`, maupun `Hybrid (Kombinasi Hari Tertentu)`. Pada hari WFA siswa, validasi radius geofence dibebaskan (*bypassed*) secara otomatis sementara foto selfie & koordinat GPS tetap tercatat.
+* **Foto Selfie Anti-Kecurangan**: Pengambilan foto langsung dari kamera perangkat dengan watermarking waktu, nama, koordinat GPS, status model kerja (`WFO`/`WFA`), dan kompresi otomatis.
 * **Deteksi Keterlambatan**: Status otomatis *Tepat Waktu*, *Terlambat*, atau *Pulang Cepat* berdasarkan konfigurasi jam kerja sekolah/DUDI.
 
 ### 📅 B. Manajemen Hari Libur & Tanggal Merah Nasional *(Terbaru)*
@@ -213,12 +214,13 @@ Atau jalankan perintah langsung:
 
 ---
 
-## 11. Logika Presensi Geofence & Hari Libur
+## 11. Logika Presensi Geofence, WFA & Hari Libur
 
 ### Hierarki Penentuan Radius Presensi:
-1. **Radius Khusus DUDI**: Diatur per DUDI di menu *Master Data > Mitra DUDI*.
-2. **Radius Global Sekolah**: Diatur di *Tambahan > Setting Sekolah* (jika radius khusus DUDI tidak diisi).
-3. **Formula Jarak**: Menggunakan *Haversine Formula* untuk menghitung jarak akurat dalam satuan meter antara GPS siswa dan titik DUDI.
+1. **Pengecekan Mode WFA**: Jika siswa diset `100% WFA` atau jadwal hari ini adalah hari WFA pada skema `Hybrid`, validasi radius kantor **dibebaskan (*bypass*)**. Siswa dapat presensi dari koordinat mana pun dengan tetap mengirim foto selfie & koordinat GPS.
+2. **Radius Khusus DUDI**: Untuk siswa pada jadwal WFO, sistem memeriksa radius spesifik per DUDI di menu *Master Data > Mitra DUDI*.
+3. **Radius Global Sekolah**: Digunakan jika radius khusus DUDI tidak ditentukan (diatur di *Tambahan > Setting Sekolah*).
+4. **Formula Jarak**: Menggunakan *Haversine Formula* untuk menghitung jarak akurat dalam satuan meter antara GPS siswa dan titik DUDI.
 
 ### Logika Hari Libur Nasional:
 - Jika tanggal hari ini terdaftar di tabel `hari_libur`, sistem otomatis:
@@ -229,6 +231,14 @@ Atau jalankan perintah langsung:
 ---
 
 ## 12. Changelog
+
+### Versi 2.2.0 (Agustus 2026)
+* ✨ **Fitur Baru: Model Kerja Fleksibel (Hybrid WFO-WFA per Siswa & per Hari)**:
+  * Pengaturan skema kerja fleksibel pada Plotting Penempatan (`100% WFO`, `100% WFA`, atau `Hybrid` dengan pilihan hari WFA tertentu).
+  * Validasi geofence otomatis membebaskan radius pada hari WFA siswa.
+  * Antarmuka presensi murid cerdas yang menampilkan status mode kerja dan GPS realtime.
+  * Watermark foto selfie otomatis menyertakan label status `(WFA)` atau `(WFO)`.
+  * Tabel monitoring presensi admin & guru dilengkapi badge indikator `Presensi WFA` / `Presensi WFO`.
 
 ### Versi 2.1.0 (Agustus 2026)
 * ✨ **Fitur Baru: Modul Manajemen Hari Libur & Tanggal Merah Nasional**:

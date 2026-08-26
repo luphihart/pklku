@@ -21,6 +21,7 @@ class Presensi extends Model
         'foto_pulang',
         'status_masuk',
         'status_pulang',
+        'is_wfa',
     ];
 
     public function penempatanPkl()

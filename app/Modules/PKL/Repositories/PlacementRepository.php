@@ -86,14 +86,14 @@ class PlacementRepository implements PlacementRepositoryInterface
         ]));
     }
 
-    public function createMassPlacement(array $muridIds, int $dudiId, int $guruId, ?int $pembimbingIndustriId, string $tglMulai, string $tglSelesai)
+    public function createMassPlacement(array $muridIds, int $dudiId, int $guruId, ?int $pembimbingIndustriId, string $tglMulai, string $tglSelesai, string $tipeKerja = 'wfo', ?string $hariWfa = null)
     {
         $ta = TahunAjaran::where('is_aktif', true)->first();
         if (!$ta) {
             throw new \Exception('Tidak ada Tahun Ajaran aktif.');
         }
 
-        return DB::transaction(function() use ($muridIds, $dudiId, $guruId, $pembimbingIndustriId, $ta, $tglMulai, $tglSelesai) {
+        return DB::transaction(function() use ($muridIds, $dudiId, $guruId, $pembimbingIndustriId, $ta, $tglMulai, $tglSelesai, $tipeKerja, $hariWfa) {
             // Find which murid already have active placement in ONE single query
             $existingMuridIds = PenempatanPkl::whereIn('murid_id', $muridIds)
                 ->where('tahun_ajaran_id', $ta->id)
@@ -118,6 +118,8 @@ class PlacementRepository implements PlacementRepositoryInterface
                     'tanggal_mulai' => $tglMulai,
                     'tanggal_selesai' => $tglSelesai,
                     'status' => 'aktif',
+                    'tipe_kerja' => $tipeKerja,
+                    'hari_wfa' => $hariWfa,
                 ]);
             }
 

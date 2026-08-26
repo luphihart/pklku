@@ -196,6 +196,7 @@
                                 </a>
                             </th>
                             <th>Pembimbing Industri</th>
+                            <th class="text-center">Model Kerja</th>
                             <th class="text-center">Tanggal Pelaksanaan</th>
                             <th class="text-center pe-4" style="width: 120px;">Aksi</th>
                         </tr>
@@ -210,6 +211,15 @@
                                 <td><span class="fw-semibold text-primary">{{ $p->dudi ? $p->dudi->nama : 'DUDI Terhapus' }}</span></td>
                                 <td>{{ $p->guru ? $p->guru->nama : 'Guru Terhapus' }}</td>
                                 <td>{{ $p->pembimbingIndustri ? $p->pembimbingIndustri->nama : ($p->dudi?->pic_nama ?? '-') }}</td>
+                                <td class="text-center">
+                                    @if(($p->tipe_kerja ?? 'wfo') === 'wfa')
+                                        <span class="badge bg-primary-light text-primary fw-semibold" title="100% WFA (Full Remote)">🏠 WFA</span>
+                                    @elseif(($p->tipe_kerja ?? 'wfo') === 'hybrid')
+                                        <span class="badge bg-info-light text-info fw-semibold" title="Hybrid: WFA pada {{ $p->hari_wfa }}">🔄 Hybrid ({{ $p->hari_wfa }})</span>
+                                    @else
+                                        <span class="badge bg-secondary-light text-secondary fw-semibold" title="100% WFO (Di Kantor DUDI)">🏢 WFO</span>
+                                    @endif
+                                </td>
                                 <td class="text-center text-muted">
                                     {{ \Carbon\Carbon::parse($p->tanggal_mulai)->format('d/m/y') }} s/d {{ \Carbon\Carbon::parse($p->tanggal_selesai)->format('d/m/y') }}
                                 </td>
@@ -230,7 +240,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center py-4">
+                                <td colspan="10" class="text-center py-4">
                                     <div class="empty-state py-4">
                                         <div class="empty-state-icon">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -407,6 +417,44 @@
                             <input type="date" name="tanggal_selesai" id="tanggal_selesai" class="form-control form-control-sm" required>
                         </div>
                     </div>
+
+                    <!-- Step 5: Work Model (WFO/WFA/Hybrid) -->
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label small fw-semibold">5. Model Kerja Siswa</label>
+                            <div class="d-flex gap-3 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_kerja" id="mass_tipe_wfo" value="wfo" checked onchange="toggleMassHybridDays(this.value)">
+                                    <label class="form-check-label small" for="mass_tipe_wfo">
+                                        🏢 100% WFO (Di Kantor DUDI)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_kerja" id="mass_tipe_wfa" value="wfa" onchange="toggleMassHybridDays(this.value)">
+                                    <label class="form-check-label small" for="mass_tipe_wfa">
+                                        🏠 100% WFA (Full Remote)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_kerja" id="mass_tipe_hybrid" value="hybrid" onchange="toggleMassHybridDays(this.value)">
+                                    <label class="form-check-label small" for="mass_tipe_hybrid">
+                                        🔄 Hybrid (Kombinasi)
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="massHybridDaysContainer" class="p-2 border rounded bg-light" style="display: none;">
+                                <span class="small text-muted d-block mb-1 fw-semibold">Pilih Hari Saat Siswa WFA (Bebas Radius):</span>
+                                <div class="d-flex flex-wrap gap-3">
+                                    @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $hari)
+                                        <div class="form-check form-check-inline m-0">
+                                            <input class="form-check-input" type="checkbox" name="hari_wfa[]" id="mass_hari_{{ $hari }}" value="{{ $hari }}">
+                                            <label class="form-check-label small" for="mass_hari_{{ $hari }}">{{ $hari }}</label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer border-top" style="border-top-color: var(--border-color) !important;">
                     <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -464,6 +512,45 @@
                                 <input type="date" name="tanggal_selesai" id="tglSelesai_{{ $p->id }}" class="form-control form-control-sm" value="{{ $p->tanggal_selesai }}" required>
                             </div>
                         </div>
+
+                        @php
+                            $currentTipe = $p->tipe_kerja ?? 'wfo';
+                            $currentHariWfa = array_map('trim', explode(',', $p->hari_wfa ?? ''));
+                        @endphp
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Model Kerja Siswa</label>
+                            <div class="d-flex gap-3 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_kerja" id="edit_tipe_wfo_{{ $p->id }}" value="wfo" {{ $currentTipe === 'wfo' ? 'checked' : '' }} onchange="toggleEditHybridDays({{ $p->id }}, this.value)">
+                                    <label class="form-check-label small" for="edit_tipe_wfo_{{ $p->id }}">
+                                        🏢 WFO
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_kerja" id="edit_tipe_wfa_{{ $p->id }}" value="wfa" {{ $currentTipe === 'wfa' ? 'checked' : '' }} onchange="toggleEditHybridDays({{ $p->id }}, this.value)">
+                                    <label class="form-check-label small" for="edit_tipe_wfa_{{ $p->id }}">
+                                        🏠 WFA (Full)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_kerja" id="edit_tipe_hybrid_{{ $p->id }}" value="hybrid" {{ $currentTipe === 'hybrid' ? 'checked' : '' }} onchange="toggleEditHybridDays({{ $p->id }}, this.value)">
+                                    <label class="form-check-label small" for="edit_tipe_hybrid_{{ $p->id }}">
+                                        🔄 Hybrid
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="editHybridDaysContainer_{{ $p->id }}" class="p-2 border rounded bg-light" style="{{ $currentTipe === 'hybrid' ? '' : 'display: none;' }}">
+                                <span class="small text-muted d-block mb-1 fw-semibold">Pilih Hari Saat Siswa WFA (Bebas Radius):</span>
+                                <div class="d-flex flex-wrap gap-3">
+                                    @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $hari)
+                                        <div class="form-check form-check-inline m-0">
+                                            <input class="form-check-input" type="checkbox" name="hari_wfa[]" id="edit_hari_{{ $p->id }}_{{ $hari }}" value="{{ $hari }}" {{ in_array($hari, $currentHariWfa) ? 'checked' : '' }}>
+                                            <label class="form-check-label small" for="edit_hari_{{ $p->id }}_{{ $hari }}">{{ $hari }}</label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer border-top" style="border-top-color: var(--border-color) !important;">
                         <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -483,6 +570,20 @@
 
 @section('scripts')
 <script>
+    function toggleMassHybridDays(val) {
+        const el = document.getElementById('massHybridDaysContainer');
+        if (el) {
+            el.style.display = (val === 'hybrid') ? 'block' : 'none';
+        }
+    }
+
+    function toggleEditHybridDays(placementId, val) {
+        const el = document.getElementById('editHybridDaysContainer_' + placementId);
+        if (el) {
+            el.style.display = (val === 'hybrid') ? 'block' : 'none';
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", function() {
         // --- 1. SEARCHABLE SELECT HELPER (DUDI & GURU) ---
         function initSearchableSelect(wrapperId, inputId, listId, selectId, toggleId) {

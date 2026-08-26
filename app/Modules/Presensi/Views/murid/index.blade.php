@@ -102,18 +102,44 @@
             </div>
         @endif
 
+        @php
+            $isWfaToday = $placement ? $placement->isWfaToday() : false;
+        @endphp
+
         <div class="row">
             <!-- Camera & Maps panel -->
             <div class="col-md-7 mb-4">
                 <div class="card-premium">
-                    <h5 class="fw-bold font-heading mb-3 text-dark dark-text-light">Panel Presensi Mandiri</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold font-heading m-0 text-dark dark-text-light">Panel Presensi Mandiri</h5>
+                        @if($isWfaToday)
+                            <span class="badge bg-primary-light text-primary fw-semibold px-2 py-1" style="font-size: 12px;">
+                                🏠 Mode WFA (Bebas Radius)
+                            </span>
+                        @else
+                            <span class="badge bg-secondary-light text-secondary fw-semibold px-2 py-1" style="font-size: 12px;">
+                                🏢 Mode WFO (Di Kantor DUDI)
+                            </span>
+                        @endif
+                    </div>
                     
                     <!-- DUDI Info -->
-                    <div class="alert alert-info border-0 mb-3" style="background-color: rgba(79, 70, 229, 0.08); color: var(--accent-primary);">
-                        <strong class="font-heading" style="font-size: 14px;">DUDI: {{ $placement->dudi->nama }}</strong><br>
-                        <small class="d-block mt-1" style="font-size: 12px;">Koordinat Target: {{ $placement->dudi->latitude }}, {{ $placement->dudi->longitude }}</small>
-                        <small class="d-block" style="font-size: 12px;">Radius Aman: {{ $placement->dudi->radius_meter }} Meter | Jarak Anda: <span class="fw-bold" x-text="distanceString">Mendeteksi...</span></small>
-                    </div>
+                    @if($isWfaToday)
+                        <div class="alert alert-primary border-0 mb-3" style="background-color: rgba(59, 130, 246, 0.08); color: #2563eb;">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <strong class="font-heading" style="font-size: 14px;">DUDI: {{ $placement->dudi->nama }}</strong>
+                                <span class="badge bg-primary text-white" style="font-size: 11px;">Jadwal Hari Ini: WFA</span>
+                            </div>
+                            <small class="d-block" style="font-size: 12px;">🏠 <strong>Mode Bebas Radius Aktif:</strong> Anda dapat melakukan presensi dari mana saja hari ini.</small>
+                            <small class="d-block text-muted mt-1" style="font-size: 11px;">Status GPS Anda: <span class="fw-bold text-dark" x-text="distanceString">Mendeteksi...</span></small>
+                        </div>
+                    @else
+                        <div class="alert alert-info border-0 mb-3" style="background-color: rgba(79, 70, 229, 0.08); color: var(--accent-primary);">
+                            <strong class="font-heading" style="font-size: 14px;">DUDI: {{ $placement->dudi->nama }}</strong><br>
+                            <small class="d-block mt-1" style="font-size: 12px;">Koordinat Target: {{ $placement->dudi->latitude }}, {{ $placement->dudi->longitude }}</small>
+                            <small class="d-block" style="font-size: 12px;">Radius Aman: {{ $placement->dudi->radius_meter }} Meter | Jarak Anda: <span class="fw-bold" x-text="distanceString">Mendeteksi...</span></small>
+                        </div>
+                    @endif
 
                     <!-- Leaflet map -->
                     <div id="map"></div>
@@ -153,7 +179,7 @@
                         </div>
                     </div>
                     
-                    <div class="mt-3 text-center" x-show="!inRadius">
+                    <div class="mt-3 text-center" x-show="!isWfa && !inRadius">
                         <span class="text-danger small fw-bold">⚠️ Anda tidak berada di dalam wilayah DUDI. Tombol absen dinonaktifkan.</span>
                     </div>
                 </div>
@@ -248,6 +274,7 @@
             dudiLat: {{ $placement->dudi->latitude }},
             dudiLng: {{ $placement->dudi->longitude }},
             allowedRadius: {{ $placement->dudi->radius_meter }},
+            isWfa: {{ $placement && $placement->isWfaToday() ? 'true' : 'false' }},
             
             userLat: null,
             userLng: null,
@@ -310,8 +337,13 @@
                             
                             // Calculate Distance
                             this.distance = this.calculateDistance(this.userLat, this.userLng, this.dudiLat, this.dudiLng);
-                            this.distanceString = Math.round(this.distance) + ' Meter';
-                            this.inRadius = this.distance <= this.allowedRadius;
+                            if (this.isWfa) {
+                                this.distanceString = 'GPS Terkunci (Mode WFA - Bebas Radius)';
+                                this.inRadius = true;
+                            } else {
+                                this.distanceString = Math.round(this.distance) + ' Meter';
+                                this.inRadius = this.distance <= this.allowedRadius;
+                            }
 
                             // Update Map Marker for user
                             if (this.userMarker) {

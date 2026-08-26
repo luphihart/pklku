@@ -109,15 +109,19 @@ class AttendanceService
 
         $placement = \App\Modules\PKL\Models\PenempatanPkl::with(['dudi', 'murid'])->findOrFail($placementId);
         
-        // 1. Verify Geofence (Prioritise DUDI specific radius)
-        $distance = $this->calculateDistance($lat, $lng, $placement->dudi->latitude, $placement->dudi->longitude);
-        $allowedRadius = $placement->dudi->radius_meter ?: (int)$settings->get('radius_presensi', 100);
-        if (!$allowedRadius) {
-            $allowedRadius = 100; // ultimate fallback
-        }
+        $isWfaToday = $placement->isWfaToday();
 
-        if ($distance > $allowedRadius) {
-            throw new \Exception("Presensi gagal! Anda berada di luar radius wilayah DUDI (" . round($distance) . " meter dari lokasi, batas radius: " . $allowedRadius . " meter).");
+        // 1. Verify Geofence (Prioritise DUDI specific radius) if NOT WFA
+        if (!$isWfaToday) {
+            $distance = $this->calculateDistance($lat, $lng, $placement->dudi->latitude, $placement->dudi->longitude);
+            $allowedRadius = $placement->dudi->radius_meter ?: (int)$settings->get('radius_presensi', 100);
+            if (!$allowedRadius) {
+                $allowedRadius = 100; // ultimate fallback
+            }
+
+            if ($distance > $allowedRadius) {
+                throw new \Exception("Presensi gagal! Hari ini adalah jadwal WFO dan Anda berada di luar radius wilayah DUDI (" . round($distance) . " meter dari lokasi, batas radius: " . $allowedRadius . " meter).");
+            }
         }
 
         // 2. Decode, Compress & Watermark Photo (cPanel safe direct public path writing)
@@ -127,12 +131,14 @@ class AttendanceService
             mkdir(public_path('storage/attendance'), 0777, true);
         }
 
+        $watermarkType = 'CHECK IN' . ($isWfaToday ? ' (WFA)' : ' (WFO)');
+
         $this->processSelfiePhoto(
             $photoBase64, 
             $fullPath, 
             $lat, 
             $lng, 
-            'CHECK IN', 
+            $watermarkType, 
             $placement->murid->nama, 
             $placement->dudi->nama
         );
@@ -149,6 +155,7 @@ class AttendanceService
             'lng_masuk' => $lng,
             'foto_masuk' => $filename,
             'status_masuk' => $statusMasuk,
+            'is_wfa' => $isWfaToday ? 1 : 0,
         ]);
     }
 
@@ -184,15 +191,19 @@ class AttendanceService
 
         $placement = \App\Modules\PKL\Models\PenempatanPkl::with(['dudi', 'murid'])->findOrFail($placementId);
         
-        // 1. Verify Geofence (Prioritise DUDI specific radius)
-        $distance = $this->calculateDistance($lat, $lng, $placement->dudi->latitude, $placement->dudi->longitude);
-        $allowedRadius = $placement->dudi->radius_meter ?: (int)$settings->get('radius_presensi', 100);
-        if (!$allowedRadius) {
-            $allowedRadius = 100; // ultimate fallback
-        }
+        $isWfaToday = $placement->isWfaToday();
 
-        if ($distance > $allowedRadius) {
-            throw new \Exception("Presensi gagal! Anda berada di luar radius wilayah DUDI (" . round($distance) . " meter dari lokasi, batas radius: " . $allowedRadius . " meter).");
+        // 1. Verify Geofence (Prioritise DUDI specific radius) if NOT WFA
+        if (!$isWfaToday) {
+            $distance = $this->calculateDistance($lat, $lng, $placement->dudi->latitude, $placement->dudi->longitude);
+            $allowedRadius = $placement->dudi->radius_meter ?: (int)$settings->get('radius_presensi', 100);
+            if (!$allowedRadius) {
+                $allowedRadius = 100; // ultimate fallback
+            }
+
+            if ($distance > $allowedRadius) {
+                throw new \Exception("Presensi gagal! Hari ini adalah jadwal WFO dan Anda berada di luar radius wilayah DUDI (" . round($distance) . " meter dari lokasi, batas radius: " . $allowedRadius . " meter).");
+            }
         }
 
         // 2. Decode, Compress & Watermark Photo (cPanel safe direct public path writing)
@@ -202,12 +213,14 @@ class AttendanceService
             mkdir(public_path('storage/attendance'), 0777, true);
         }
 
+        $watermarkType = 'CHECK OUT' . ($isWfaToday ? ' (WFA)' : ' (WFO)');
+
         $this->processSelfiePhoto(
             $photoBase64, 
             $fullPath, 
             $lat, 
             $lng, 
-            'CHECK OUT', 
+            $watermarkType, 
             $placement->murid->nama, 
             $placement->dudi->nama
         );

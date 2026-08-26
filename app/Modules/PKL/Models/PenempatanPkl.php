@@ -17,7 +17,42 @@ class PenempatanPkl extends Model
         'tanggal_mulai',
         'tanggal_selesai',
         'status',
+        'tipe_kerja',
+        'hari_wfa',
     ];
+
+    /**
+     * Check if the placement is configured as WFA on a given date (or today).
+     */
+    public function isWfaToday(?string $date = null): bool
+    {
+        $tipe = $this->tipe_kerja ?? 'wfo';
+        if ($tipe === 'wfa') {
+            return true;
+        }
+        if ($tipe === 'wfo') {
+            return false;
+        }
+
+        // Hybrid: check hari_wfa
+        if ($tipe === 'hybrid' && !empty($this->hari_wfa)) {
+            $dateObj = $date ? \Carbon\Carbon::parse($date) : now();
+            $daysMap = [
+                'Monday'    => 'Senin',
+                'Tuesday'   => 'Selasa',
+                'Wednesday' => 'Rabu',
+                'Thursday'  => 'Kamis',
+                'Friday'    => 'Jumat',
+                'Saturday'  => 'Sabtu',
+                'Sunday'    => 'Minggu',
+            ];
+            $dayNameIndo = $daysMap[$dateObj->format('l')] ?? '';
+            $wfaDays = array_map('trim', explode(',', $this->hari_wfa));
+            return in_array($dayNameIndo, $wfaDays);
+        }
+
+        return false;
+    }
 
     public function murid()
     {

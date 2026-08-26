@@ -24,9 +24,9 @@ class PlacementService
         return $placement;
     }
 
-    public function saveMassPlacement(array $muridIds, int $dudiId, int $guruId, ?int $pembimbingIndustriId, string $tglMulai, string $tglSelesai)
+    public function saveMassPlacement(array $muridIds, int $dudiId, int $guruId, ?int $pembimbingIndustriId, string $tglMulai, string $tglSelesai, string $tipeKerja = 'wfo', ?string $hariWfa = null)
     {
-        $placements = $this->repo->createMassPlacement($muridIds, $dudiId, $guruId, $pembimbingIndustriId, $tglMulai, $tglSelesai);
+        $placements = $this->repo->createMassPlacement($muridIds, $dudiId, $guruId, $pembimbingIndustriId, $tglMulai, $tglSelesai, $tipeKerja, $hariWfa);
         $count = count($placements);
         $this->logActivity("Melakukan penempatan PKL massal untuk {$count} murid");
         return $placements;
