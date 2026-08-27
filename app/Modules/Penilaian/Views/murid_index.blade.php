@@ -140,7 +140,7 @@
     @else
         <!-- Student Input Form for DUDI Marks & Evidence -->
         <div class="row">
-            <div class="col-lg-8 mx-auto mb-4">
+            <div class="col-lg-10 mx-auto mb-4">
                 @if($evaluation && $evaluation->status_nilai_industri === 'diajukan')
                     <div class="alert alert-info border-0 shadow-sm d-flex align-items-center gap-3 mb-4" role="alert" style="background-color: rgba(79, 70, 229, 0.1); color: var(--accent-primary); border-left: 4px solid var(--accent-primary) !important;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -148,7 +148,7 @@
                         </svg>
                         <div>
                             <strong>Nilai DUDI Telah Dikirim</strong>
-                            <div class="small">Nilai DUDI dan bukti lembar fisik berhasil dikirim. Guru Pembimbing Sekolah saat ini sedang memeriksa dan memverifikasi nilai Anda sebelum diterbitkan rapor kelulusan. Anda masih dapat memperbarui data jika terdapat kesalahan.</div>
+                            <div class="small">Nilai DUDI, keterangan TP, dan bukti lembar fisik berhasil dikirim. Guru Pembimbing Sekolah saat ini sedang memeriksa dan memverifikasi nilai Anda sebelum diterbitkan rapor kelulusan. Anda masih dapat memperbarui data jika terdapat kesalahan.</div>
                         </div>
                     </div>
                 @endif
@@ -157,7 +157,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
                         <div>
                             <h5 class="fw-bold font-heading m-0 text-dark">Input Nilai Pembimbing DUDI / Industri</h5>
-                            <small class="text-muted">Masukkan nilai sesuai lembar fisik/sertifikat yang diberikan oleh instruktur DUDI Anda.</small>
+                            <small class="text-muted">Masukkan nilai dan keterangan sesuai lembar fisik/sertifikat yang diberikan oleh instruktur DUDI Anda.</small>
                         </div>
                         <span class="badge bg-primary-light text-primary font-heading px-3 py-1">Mitra: {{ $placement->dudi?->nama }}</span>
                     </div>
@@ -165,16 +165,17 @@
                     <form action="{{ route('penilaian.store_murid') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         
-                        <!-- List Indikator DUDI -->
+                        <!-- List Indikator DUDI & Keterangan TP -->
                         <div class="mb-4">
-                            <h6 class="fw-bold font-heading text-dark mb-3">1. Isian Nilai Indikator Industri (Skala 0 - 100)</h6>
+                            <h6 class="fw-bold font-heading text-dark mb-3">1. Isian Nilai Indikator Industri & Keterangan Capaian TP</h6>
                             <div class="table-responsive border rounded mb-3">
-                                <table class="table table-hover align-middle mb-0" style="font-size: 13px;">
+                                <table class="table table-bordered table-hover align-middle mb-0" style="font-size: 13px;">
                                     <thead class="table-light">
-                                        <tr>
-                                            <th style="width: 10%; text-align: center;">No.</th>
-                                            <th style="width: 65%;">Indikator Penilaian DUDI</th>
-                                            <th style="width: 25%; text-align: center;">Nilai Angka (0-100)</th>
+                                        <tr class="font-heading small">
+                                            <th style="width: 8%; text-align: center;">No.</th>
+                                            <th style="width: 44%;">Tujuan Pembelajaran / Indikator DUDI</th>
+                                            <th style="width: 18%; text-align: center;">Nilai Angka (0-100)</th>
+                                            <th style="width: 30%;">Keterangan Capaian TP</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -182,10 +183,15 @@
                                         @foreach($tps as $tp)
                                             @php
                                                 $dudiIndikators = $tp->indikators->filter(fn($i) => $i->tipe === 'industri');
+                                                $existingTpDesc = $evaluation && isset($evaluation->keterangan_tp_json[$tp->id]) ? $evaluation->keterangan_tp_json[$tp->id] : '';
                                             @endphp
                                             @if($dudiIndikators->count() > 0)
-                                                <tr class="table-secondary fw-bold">
-                                                    <td colspan="3" class="ps-3 text-secondary" style="font-size: 12px;">TP: {{ $tp->nama }}</td>
+                                                <tr class="table-secondary fw-bold" style="background-color: rgba(15, 23, 42, 0.05);">
+                                                    <td style="text-align: center;">{{ $tp->nomor }}</td>
+                                                    <td colspan="2" class="ps-2 text-dark">{{ $tp->nama }}</td>
+                                                    <td rowspan="{{ 1 + $dudiIndikators->count() }}" style="vertical-align: top; background-color: var(--bg-card);">
+                                                        <textarea name="keterangan_tp[{{ $tp->id }}]" class="form-control form-control-sm h-100" style="min-height: 90px; resize: vertical;" placeholder="Tulis keterangan/catatan capaian DUDI untuk TP {{ $tp->nomor }} di sini...">{{ old('keterangan_tp.' . $tp->id, $existingTpDesc) }}</textarea>
+                                                    </td>
                                                 </tr>
                                                 @foreach($dudiIndikators as $ind)
                                                     @php

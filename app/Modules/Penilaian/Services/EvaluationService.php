@@ -27,9 +27,9 @@ class EvaluationService
     }
 
     /**
-     * Student saves DUDI marks + uploads physical certificate/proof.
+     * Student saves DUDI marks + uploads physical certificate/proof + TP descriptions.
      */
-    public function saveMuridEvaluation(int $placementId, array $nilaiIndustriRaw, $uploadedFile)
+    public function saveMuridEvaluation(int $placementId, array $nilaiIndustriRaw, $uploadedFile, array $keteranganTp = [])
     {
         if (!$this->isMasaPenilaianOpen()) {
             throw new \Exception("Masa input penilaian PKL saat ini sedang ditutup oleh Admin.");
@@ -66,9 +66,15 @@ class EvaluationService
 
         // Get existing record if any
         $existing = $this->repo->findByPlacementId($placementId);
+        $mergedKeterangan = array_merge(
+            $existing ? ($existing->keterangan_tp_json ?? []) : [],
+            $keteranganTp
+        );
+
         $payload = [
             'penempatan_pkl_id' => $placementId,
             'nilai_industri_json' => $nilaiIndustriJson,
+            'keterangan_tp_json' => $mergedKeterangan,
             'rata_nilai_industri' => round($avgIndustri, 2),
             'status_nilai_industri' => 'diajukan',
         ];

@@ -103,6 +103,8 @@ class PenilaianController extends Controller
         $request->validate([
             'nilai_industri' => 'required|array|min:1',
             'nilai_industri.*' => 'required|numeric|min:0|max:100',
+            'keterangan_tp' => 'nullable|array',
+            'keterangan_tp.*' => 'nullable|string',
             'foto_bukti' => ($hasProof ? 'nullable' : 'required') . '|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ], [
             'nilai_industri.required' => 'Semua nilai indikator DUDI wajib diisi.',
@@ -112,8 +114,13 @@ class PenilaianController extends Controller
         ]);
 
         try {
-            $this->service->saveMuridEvaluation($placement->id, $request->input('nilai_industri'), $request->file('foto_bukti'));
-            return redirect()->route('penilaian.index')->with('success', 'Nilai DUDI dan bukti lembar fisik berhasil dikirim. Menunggu verifikasi dari Guru Pembimbing.');
+            $this->service->saveMuridEvaluation(
+                $placement->id,
+                $request->input('nilai_industri', []),
+                $request->file('foto_bukti'),
+                $request->input('keterangan_tp', [])
+            );
+            return redirect()->route('penilaian.index')->with('success', 'Nilai DUDI, keterangan TP, dan bukti lembar fisik berhasil dikirim. Menunggu verifikasi dari Guru Pembimbing.');
         } catch (\Throwable $e) {
             return redirect()->back()->with('error', 'Gagal menyimpan nilai: ' . $e->getMessage());
         }
