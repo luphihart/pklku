@@ -268,12 +268,72 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-1">
-                    <!-- Quick Notification Bell -->
-                    <a href="{{ route('pengumuman.index') }}" class="btn btn-sm border-0 text-secondary p-2 d-flex align-items-center justify-content-center" style="min-width: 40px; min-height: 40px;" title="Pengumuman" aria-label="Lihat pengumuman sekolah">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                        </svg>
-                    </a>
+                    <!-- Interactive Notification Bell Dropdown -->
+                    @php
+                        $notifs = $navbarNotifications ?? collect();
+                        $notifCount = $notifs->count();
+                    @endphp
+                    <div class="dropdown me-1">
+                        <button class="btn btn-sm border-0 text-secondary p-2 d-flex align-items-center justify-content-center position-relative" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="min-width: 40px; min-height: 40px; border-radius: 8px;" title="Notifikasi & Pemberitahuan" aria-label="Lihat Notifikasi">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                            </svg>
+                            @if($notifCount > 0)
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 10px; font-weight: 700; transform: translate(-45%, 25%) !important;">
+                                    {{ $notifCount > 9 ? '9+' : $notifCount }}
+                                    <span class="visually-hidden">notifikasi baru</span>
+                                </span>
+                            @endif
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-0" aria-labelledby="notificationDropdown" style="width: 320px; max-width: 90vw; background-color: var(--bg-card); border: 1px solid var(--border-color) !important; border-radius: 12px; overflow: hidden;">
+                            <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="border-bottom-color: var(--border-color) !important; background-color: rgba(14, 165, 233, 0.04);">
+                                <div class="d-flex align-items-center gap-2">
+                                    <h6 class="fw-bold m-0 font-heading text-dark" style="font-size: 14px;">Notifikasi</h6>
+                                    @if($notifCount > 0)
+                                        <span class="badge bg-primary-light text-primary font-heading" style="font-size: 11px;">{{ $notifCount }} Baru</span>
+                                    @endif
+                                </div>
+                                <a href="{{ route('pengumuman.index') }}" class="small text-decoration-none text-muted" style="font-size: 11px;">Lihat Pengumuman</a>
+                            </div>
+
+                            <div class="notification-list" style="max-height: 360px; overflow-y: auto;">
+                                @forelse($notifs as $item)
+                                    <a href="{{ $item['url'] }}" class="dropdown-item p-3 border-bottom d-flex align-items-start gap-2 text-wrap" style="border-bottom-color: var(--border-color) !important; transition: background-color 0.15s ease;">
+                                        <div class="p-2 rounded-circle {{ $item['badge_bg'] ?? 'bg-primary-light text-primary' }} flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">
+                                            @if(($item['icon'] ?? '') === 'cake')
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M3 21h18a1 1 0 001-1v-5.5a1 1 0 00-1-1H3a1 1 0 00-1 1V20a1 1 0 001 1z"/></svg>
+                                            @elseif(($item['icon'] ?? '') === 'pencil')
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                            @elseif(($item['icon'] ?? '') === 'clipboard')
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                                            @elseif(($item['icon'] ?? '') === 'star')
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                                            @else
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                                            @endif
+                                        </div>
+                                        <div class="flex-grow-1" style="min-width: 0;">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <strong class="text-dark d-block font-heading text-truncate" style="font-size: 12px;">{{ $item['title'] }}</strong>
+                                                <small class="text-muted ms-1 flex-shrink-0" style="font-size: 10px;">{{ $item['time'] }}</small>
+                                            </div>
+                                            <p class="text-secondary small m-0 text-truncate-2" style="font-size: 11px; line-height: 1.4;">{{ $item['message'] }}</p>
+                                        </div>
+                                    </a>
+                                @empty
+                                    <div class="text-center py-4 px-3">
+                                        <div class="p-2 rounded-circle bg-light text-muted d-inline-flex mb-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                                            </svg>
+                                        </div>
+                                        <span class="d-block small fw-bold text-dark font-heading" style="font-size: 12px;">Tidak Ada Notifikasi Baru</span>
+                                        <small class="text-muted" style="font-size: 11px;">Semua tugas dan pengumuman Anda telah terpantau.</small>
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- User Dropdown -->
                     <div class="dropdown">

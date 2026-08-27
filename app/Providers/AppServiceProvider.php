@@ -47,5 +47,20 @@ class AppServiceProvider extends ServiceProvider
             }
             $view->with('globalSettings', $globalSettings);
         });
+
+        // Share user notifications to layout views
+        View::composer(['layouts.admin', 'layouts.*'], function ($view) {
+            try {
+                if (\Illuminate\Support\Facades\Auth::check()) {
+                    $notifService = app(\App\Services\NotificationService::class);
+                    $notifications = $notifService->getNotificationsForUser();
+                    $view->with('navbarNotifications', $notifications);
+                } else {
+                    $view->with('navbarNotifications', collect());
+                }
+            } catch (\Throwable $e) {
+                $view->with('navbarNotifications', collect());
+            }
+        });
     }
 }
