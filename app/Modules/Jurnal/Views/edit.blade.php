@@ -19,7 +19,23 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="deskripsi_aktivitas" class="form-label small fw-semibold">Rincian Aktivitas Harian</label>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label for="deskripsi_aktivitas" class="form-label small fw-semibold m-0">Rincian Aktivitas Harian</label>
+                        <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 11px;">Kaidah 5W + 1H</span>
+                    </div>
+
+                    <div class="p-2 mb-2 rounded border" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important; font-size: 11.5px; line-height: 1.5;">
+                        <span class="fw-bold text-dark d-block mb-1">💡 Panduan Penulisan Jurnal (5W + 1H):</span>
+                        <ul class="mb-0 ps-3 text-secondary">
+                            <li><strong>What (Apa):</strong> Tugas / materi / modul yang dikerjakan.</li>
+                            <li><strong>Why (Mengapa):</strong> Tujuan atau manfaat pekerjaan tersebut.</li>
+                            <li><strong>Where (Di mana):</strong> Divisi / lokasi kerja atau tools/software yang dipakai.</li>
+                            <li><strong>When (Kapan):</strong> Waktu atau durasi pengerjaan aktivitas.</li>
+                            <li><strong>Who (Siapa):</strong> Pembimbing industri / rekan yang terlibat.</li>
+                            <li><strong>How (Bagaimana):</strong> Langkah pengerjaan, hasil, kendala & cara mengatasinya.</li>
+                        </ul>
+                    </div>
+
                     <textarea name="deskripsi_aktivitas" id="deskripsi_aktivitas" class="form-control @error('deskripsi_aktivitas') is-invalid @enderror" rows="6" required>{{ old('deskripsi_aktivitas', $journal->deskripsi_aktivitas) }}</textarea>
                     @error('deskripsi_aktivitas')
                         <div class="invalid-feedback">{{ $message }}</div>
