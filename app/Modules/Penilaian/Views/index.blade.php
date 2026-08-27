@@ -217,8 +217,7 @@
                                                                     @foreach($tps as $tp)
                                                                         @php
                                                                             $existingTpDesc = $p->penilaianPkl && isset($p->penilaianPkl->keterangan_tp_json[$tp->id]) ? $p->penilaianPkl->keterangan_tp_json[$tp->id] : '';
-                                                                            $hasDivider = $tp->indikators->contains(fn($ind) => $ind->nomor_urut === '3.7');
-                                                                            $rowspan = 1 + count($tp->indikators) + ($hasDivider ? 1 : 0);
+                                                                            $rowspan = 1 + count($tp->indikators);
                                                                         @endphp
                                                                         <tr class="table-secondary fw-bold" style="background-color: rgba(15, 23, 42, 0.05);">
                                                                             <td style="text-align: center;">{{ $tp->nomor }}</td>
@@ -230,11 +229,6 @@
                                                                         </tr>
                                                                         
                                                                         @forelse($tp->indikators as $ind)
-                                                                            @if($ind->nomor_urut == '3.7')
-                                                                                <tr class="table-info fw-bold text-center small text-secondary">
-                                                                                    <td colspan="3" style="font-size: 11px;">Point 3.7 kebawah, diisi oleh sekolah (Guru Pembimbing)</td>
-                                                                                </tr>
-                                                                            @endif
 
                                                                             @php
                                                                                 $isGuru = $ind->tipe === 'guru';

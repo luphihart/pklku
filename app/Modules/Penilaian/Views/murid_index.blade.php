@@ -87,8 +87,7 @@
                                 @foreach($tps as $tp)
                                     @php
                                         $tpComment = $evaluation && isset($evaluation->keterangan_tp_json[$tp->id]) ? $evaluation->keterangan_tp_json[$tp->id] : '-';
-                                        $hasDivider = $tp->indikators->contains(fn($ind) => $ind->nomor_urut === '3.7');
-                                        $rowspan = 1 + count($tp->indikators) + ($hasDivider ? 1 : 0);
+                                        $rowspan = 1 + count($tp->indikators);
                                     @endphp
                                     <tr class="table-secondary fw-bold text-dark" style="background-color: rgba(15, 23, 42, 0.05);">
                                         <td style="text-align: center;">{{ $tp->nomor }}</td>
@@ -97,14 +96,7 @@
                                         <td rowspan="{{ $rowspan }}" style="vertical-align: top; background-color: #fff;" class="text-secondary small">{{ $tpComment }}</td>
                                     </tr>
                                     
-                                    @php $pushedDivider = false; @endphp
                                     @foreach($tp->indikators as $ind)
-                                        @if($ind->nomor_urut == '3.7' && !$pushedDivider)
-                                            <tr class="table-info fw-bold text-center small text-secondary">
-                                                <td colspan="3" style="font-size: 11px;">Point 3.7 kebawah, diisi oleh sekolah (Guru Pembimbing)</td>
-                                            </tr>
-                                            @php $pushedDivider = true; @endphp
-                                        @endif
                                         
                                         @php
                                             $isGuru = $ind->tipe === 'guru';
