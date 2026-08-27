@@ -6,6 +6,8 @@ use App\Modules\Penilaian\Controllers\PenilaianController;
 Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/penilaian', [PenilaianController::class, 'index'])->name('penilaian.index');
     Route::post('/penilaian', [PenilaianController::class, 'store'])->name('penilaian.store')->middleware('role:admin,guru');
+    Route::post('/penilaian/murid', [PenilaianController::class, 'storeMurid'])->name('penilaian.store_murid')->middleware('role:murid');
+    Route::post('/penilaian/toggle-status', [PenilaianController::class, 'toggleMasaPenilaian'])->name('penilaian.toggle_status')->middleware('role:admin');
     Route::get('/penilaian/template', [PenilaianController::class, 'downloadTemplate'])->name('penilaian.template')->middleware('role:admin,guru');
     Route::post('/penilaian/import', [PenilaianController::class, 'import'])->name('penilaian.import')->middleware('role:admin,guru');
     Route::delete('/penilaian/{id}', [PenilaianController::class, 'destroy'])->name('penilaian.destroy')->middleware('role:admin');

@@ -13,6 +13,8 @@ class PenilaianPkl extends Model
         'nilai_guru_json',
         'nilai_industri_json',
         'keterangan_tp_json',
+        'bukti_nilai_industri',
+        'status_nilai_industri',
         'rata_nilai_guru',
         'rata_nilai_industri',
         'nilai_akhir',

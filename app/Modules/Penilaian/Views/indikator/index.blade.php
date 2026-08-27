@@ -40,11 +40,12 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="tipe" class="form-label small fw-semibold">Tipe Penilai</label>
+                        <label for="tipe" class="form-label small fw-semibold">Diinputkan / Dinilai Oleh Siapa?</label>
                         <select name="tipe" id="tipe" class="form-select form-select-sm" required>
-                            <option value="guru">Guru Sekolah (Internal)</option>
-                            <option value="industri">Pembimbing DUDI (Eksternal)</option>
+                            <option value="industri">🏢 Pembimbing DUDI / Industri (Diinput oleh Murid)</option>
+                            <option value="guru">🎓 Guru Pembimbing Sekolah (Diinput oleh Guru)</option>
                         </select>
+                        <small class="text-muted" style="font-size: 11px;">Indikator DUDI akan diisi murid berdasarkan lembar nilai fisik, sedangkan indikator sekolah diisi langsung oleh guru.</small>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-sm w-100 font-heading">Simpan Indikator</button>
@@ -63,8 +64,8 @@
                         </a>
                         <div class="d-flex gap-1 border-start ps-2" style="border-start-color: var(--border-color) !important;">
                             <a href="{{ route('indikator.index') }}" class="btn btn-xs {{ !$tipe ? 'btn-primary' : 'btn-outline-primary' }}" style="font-size: 11px;">Semua</a>
-                            <a href="{{ route('indikator.index', ['tipe' => 'guru']) }}" class="btn btn-xs {{ $tipe === 'guru' ? 'btn-primary' : 'btn-outline-primary' }}" style="font-size: 11px;">Guru</a>
-                            <a href="{{ route('indikator.index', ['tipe' => 'industri']) }}" class="btn btn-xs {{ $tipe === 'industri' ? 'btn-primary' : 'btn-outline-primary' }}" style="font-size: 11px;">DUDI</a>
+                            <a href="{{ route('indikator.index', ['tipe' => 'industri']) }}" class="btn btn-xs {{ $tipe === 'industri' ? 'btn-primary' : 'btn-outline-primary' }}" style="font-size: 11px;">DUDI (Murid)</a>
+                            <a href="{{ route('indikator.index', ['tipe' => 'guru']) }}" class="btn btn-xs {{ $tipe === 'guru' ? 'btn-primary' : 'btn-outline-primary' }}" style="font-size: 11px;">Guru Sekolah</a>
                         </div>
                     </div>
                 </div>
@@ -77,7 +78,7 @@
                                 <th style="width: 90px;">No. Urut</th>
                                 <th>Nama Indikator</th>
                                 <th>Tujuan Pembelajaran</th>
-                                <th>Tipe Penilai</th>
+                                <th>Penilai</th>
                                 <th class="text-center pe-4" style="width: 100px;">Aksi</th>
                             </tr>
                         </thead>
@@ -90,9 +91,9 @@
                                     <td class="small text-muted">{{ $ind->tujuanPembelajaran ? $ind->tujuanPembelajaran->nama : '-' }}</td>
                                     <td>
                                         @if($ind->tipe === 'guru')
-                                            <span class="badge bg-success">Guru Sekolah</span>
+                                            <span class="badge bg-success-light text-success">Guru Sekolah</span>
                                         @else
-                                            <span class="badge bg-warning text-dark">Pembimbing DUDI</span>
+                                            <span class="badge bg-warning-light text-warning">DUDI (Murid)</span>
                                         @endif
                                     </td>
                                     <td class="text-center pe-4">
@@ -150,10 +151,10 @@
                                                                 <textarea name="deskripsi" class="form-control form-control-sm" rows="3" placeholder="Jelaskan kriteria penilaian indikator ini...">{{ $ind->deskripsi }}</textarea>
                                                             </div>
                                                             <div class="mb-3">
-                                                                <label class="form-label small fw-semibold">Tipe Penilai</label>
+                                                                <label class="form-label small fw-semibold">Diinputkan / Dinilai Oleh Siapa?</label>
                                                                 <select name="tipe" class="form-select form-select-sm" required>
-                                                                    <option value="guru" {{ $ind->tipe === 'guru' ? 'selected' : '' }}>Guru Sekolah (Internal)</option>
-                                                                    <option value="industri" {{ $ind->tipe === 'industri' ? 'selected' : '' }}>Pembimbing DUDI (Eksternal)</option>
+                                                                    <option value="industri" {{ $ind->tipe === 'industri' ? 'selected' : '' }}>🏢 Pembimbing DUDI / Industri (Diinput oleh Murid)</option>
+                                                                    <option value="guru" {{ $ind->tipe === 'guru' ? 'selected' : '' }}>🎓 Guru Pembimbing Sekolah (Diinput oleh Guru)</option>
                                                                 </select>
                                                             </div>
                                                         </div>
