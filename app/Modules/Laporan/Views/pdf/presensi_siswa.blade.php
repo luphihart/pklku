@@ -72,12 +72,12 @@
         .table-data {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-size: 10px;
         }
         .table-data th, .table-data td {
             border: 1px solid #444;
-            padding: 6px 8px;
+            padding: 5px 7px;
         }
         .table-data th {
             background-color: #e8e8e8;
@@ -98,9 +98,28 @@
             color: #856404;
             font-weight: bold;
         }
+        .badge-izin {
+            color: #0c5460;
+            font-weight: bold;
+        }
+        .badge-sakit {
+            color: #721c24;
+            font-weight: bold;
+        }
+        .summary-box {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 10px;
+        }
+        .summary-box td {
+            border: 1px solid #666;
+            padding: 6px 10px;
+            text-align: center;
+        }
         .footer {
             width: 100%;
-            margin-top: 35px;
+            margin-top: 30px;
             font-size: 11px;
         }
         .footer td {
@@ -156,11 +175,12 @@
     <table class="table-data">
         <thead>
             <tr>
-                <th style="width: 6%;">No</th>
-                <th style="width: 28%;">Tanggal</th>
-                <th style="width: 15%;">Jam Masuk</th>
-                <th style="width: 15%;">Jam Pulang</th>
-                <th style="width: 36%;">Status Kehadiran</th>
+                <th style="width: 5%;">No</th>
+                <th style="width: 25%;">Tanggal</th>
+                <th style="width: 12%;">Jam Masuk</th>
+                <th style="width: 12%;">Jam Pulang</th>
+                <th style="width: 22%;">Status Kehadiran</th>
+                <th style="width: 24%;">Keterangan</th>
             </tr>
         </thead>
         <tbody>
@@ -171,19 +191,42 @@
                     <td>{{ $p->jam_masuk ? substr($p->jam_masuk, 0, 5) : '-' }}</td>
                     <td>{{ $p->jam_pulang ? substr($p->jam_pulang, 0, 5) : '-' }}</td>
                     <td>
-                        @if($p->status_masuk === 'tepat_waktu')
+                        @if($p->type === 'hadir')
                             <span class="badge-hadir">Hadir (Tepat Waktu)</span>
-                        @else
+                        @elseif($p->type === 'terlambat')
                             <span class="badge-terlambat">Terlambat</span>
+                        @elseif($p->type === 'izin')
+                            <span class="badge-izin">Izin (Disetujui)</span>
+                        @elseif($p->type === 'sakit')
+                            <span class="badge-sakit">Sakit (Disetujui)</span>
+                        @else
+                            <span>{{ $p->status }}</span>
                         @endif
                     </td>
+                    <td style="text-align: left;">{{ $p->keterangan ?? '-' }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5">Belum ada riwayat kehadiran.</td>
+                    <td colspan="6">Belum ada riwayat kehadiran.</td>
                 </tr>
             @endforelse
         </tbody>
+    </table>
+
+    <!-- Ringkasan Rekapitulasi -->
+    <table class="summary-box">
+        <tr style="background-color: #f2f2f2; font-weight: bold;">
+            <td style="width: 25%;">Hadir Tepat Waktu</td>
+            <td style="width: 25%;">Terlambat</td>
+            <td style="width: 25%;">Izin Disetujui</td>
+            <td style="width: 25%;">Sakit Disetujui</td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold; color: #155724;">{{ $summary['total_hadir'] ?? 0 }} Hari</td>
+            <td style="font-weight: bold; color: #856404;">{{ $summary['total_terlambat'] ?? 0 }} Hari</td>
+            <td style="font-weight: bold; color: #0c5460;">{{ $summary['total_izin'] ?? 0 }} Hari</td>
+            <td style="font-weight: bold; color: #721c24;">{{ $summary['total_sakit'] ?? 0 }} Hari</td>
+        </tr>
     </table>
 
     <table class="footer">

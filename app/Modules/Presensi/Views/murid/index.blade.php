@@ -193,6 +193,19 @@
                             </span>
                         </div>
                     </div>
+                                 <!-- Today Leave Banner -->
+                    @if(isset($todayLeave) && $todayLeave)
+                        <div class="alert alert-warning border-0 mb-3" style="background-color: rgba(245, 158, 11, 0.12); color: #b45309; border-left: 4px solid #f59e0b !important;">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="badge {{ $todayLeave->tipe === 'sakit' ? 'bg-danger' : 'bg-primary' }} text-white">
+                                    {{ $todayLeave->tipe === 'sakit' ? '🏥 Sakit' : '📝 Izin' }} (Disetujui)
+                                </span>
+                                <strong class="font-heading" style="font-size: 13px;">Anda Sedang Izin/Sakit Hari Ini</strong>
+                            </div>
+                            <small class="d-block" style="font-size: 12px;">Alasan: <strong>{{ $todayLeave->alasan }}</strong></small>
+                            <small class="d-block text-muted mt-1" style="font-size: 11px;">Periode: {{ \Carbon\Carbon::parse($todayLeave->tanggal_mulai)->format('d/m/Y') }} s/d {{ \Carbon\Carbon::parse($todayLeave->tanggal_selesai)->format('d/m/Y') }}. Anda tidak perlu presensi hari ini.</small>
+                        </div>
+                    @endif
 
                     <!-- Actions -->
                     <div class="row g-2">
@@ -248,35 +261,67 @@
                                     <tr>
                                         <td>{{ \Carbon\Carbon::parse($h->tanggal)->translatedFormat('d M Y') }}</td>
                                         <td>
-                                            <span class="text-success fw-semibold">{{ $h->jam_masuk ? substr($h->jam_masuk, 0, 5) : '-' }}</span>
-                                            @if($h->foto_masuk)
-                                                <div class="mt-1">
-                                                    <a href="{{ asset('storage/attendance/' . $h->foto_masuk) }}" target="_blank">
-                                                        <img src="{{ asset('storage/attendance/' . $h->foto_masuk) }}" class="rounded border" width="30" height="30" style="object-fit: cover;" title="Foto Check In" alt="Foto Masuk">
-                                                    </a>
-                                                </div>
+                                            @if($h->type === 'izin' || $h->type === 'sakit')
+                                                <span class="text-muted" style="font-size: 11px;">-</span>
+                                            @else
+                                                <span class="text-success fw-semibold">{{ $h->jam_masuk ? substr($h->jam_masuk, 0, 5) : '-' }}</span>
+                                                @if($h->foto_masuk)
+                                                    <div class="mt-1">
+                                                        <a href="{{ asset('storage/attendance/' . $h->foto_masuk) }}" target="_blank">
+                                                            <img src="{{ asset('storage/attendance/' . $h->foto_masuk) }}" class="rounded border" width="30" height="30" style="object-fit: cover;" title="Foto Check In" alt="Foto Masuk">
+                                                        </a>
+                                                    </div>
+                                                @endif
                                             @endif
                                         </td>
                                         <td>
-                                            <span class="text-warning fw-semibold">{{ $h->jam_pulang ? substr($h->jam_pulang, 0, 5) : '-' }}</span>
-                                            @if($h->foto_pulang)
-                                                <div class="mt-1">
-                                                    <a href="{{ asset('storage/attendance/' . $h->foto_pulang) }}" target="_blank">
-                                                        <img src="{{ asset('storage/attendance/' . $h->foto_pulang) }}" class="rounded border" width="30" height="30" style="object-fit: cover;" title="Foto Check Out" alt="Foto Pulang">
-                                                    </a>
-                                                </div>
+                                            @if($h->type === 'izin' || $h->type === 'sakit')
+                                                <span class="text-muted" style="font-size: 11px;">-</span>
+                                            @else
+                                                <span class="text-warning fw-semibold">{{ $h->jam_pulang ? substr($h->jam_pulang, 0, 5) : '-' }}</span>
+                                                @if($h->foto_pulang)
+                                                    <div class="mt-1">
+                                                        <a href="{{ asset('storage/attendance/' . $h->foto_pulang) }}" target="_blank">
+                                                            <img src="{{ asset('storage/attendance/' . $h->foto_pulang) }}" class="rounded border" width="30" height="30" style="object-fit: cover;" title="Foto Check Out" alt="Foto Pulang">
+                                                        </a>
+                                                    </div>
+                                                @endif
                                             @endif
                                         </td>
                                         <td class="text-end">
-                                            <span class="status-badge {{ $h->status_masuk === 'tepat_waktu' ? 'bg-success-light text-success' : 'bg-danger-light text-danger' }}">
-                                                @if($h->status_masuk === 'tepat_waktu')
+                                            @if($h->type === 'izin')
+                                                <span class="badge bg-info-light text-info fw-semibold py-1 px-2" style="background-color: rgba(14, 165, 233, 0.12); color: #0284c7; font-size: 11px;" title="{{ $h->keterangan }}">
+                                                    📝 Izin
+                                                </span>
+                                                @if($h->surat_pendukung)
+                                                    <div class="mt-1">
+                                                        <a href="{{ asset('storage/izin/' . $h->surat_pendukung) }}" target="_blank" class="badge bg-light text-muted border text-decoration-none" style="font-size: 10px;">
+                                                            📄 Surat
+                                                        </a>
+                                                    </div>
+                                                @endif
+                                            @elseif($h->type === 'sakit')
+                                                <span class="badge bg-danger-light text-danger fw-semibold py-1 px-2" style="background-color: rgba(239, 68, 68, 0.12); color: #dc2626; font-size: 11px;" title="{{ $h->keterangan }}">
+                                                    🏥 Sakit
+                                                </span>
+                                                @if($h->surat_pendukung)
+                                                    <div class="mt-1">
+                                                        <a href="{{ asset('storage/izin/' . $h->surat_pendukung) }}" target="_blank" class="badge bg-light text-muted border text-decoration-none" style="font-size: 10px;">
+                                                            📄 Surat
+                                                        </a>
+                                                    </div>
+                                                @endif
+                                            @elseif($h->status_masuk === 'tepat_waktu')
+                                                <span class="status-badge bg-success-light text-success">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                                                     Hadir
-                                                @else
+                                                </span>
+                                            @else
+                                                <span class="status-badge bg-danger-light text-danger">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                                     Terlambat
-                                                @endif
-                                            </span>
+                                                </span>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty

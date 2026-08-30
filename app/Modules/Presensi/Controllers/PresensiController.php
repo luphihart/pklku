@@ -32,13 +32,15 @@ class PresensiController extends Controller
             
             $history = [];
             $today = null;
+            $todayLeave = null;
 
             if ($placement) {
                 $history = $this->service->getHistory($placement->id);
                 $today = $this->service->getToday($placement->id);
+                $todayLeave = $this->service->getTodayLeave($placement->id);
             }
 
-            return view('presensi::murid.index', compact('placement', 'history', 'today'));
+            return view('presensi::murid.index', compact('placement', 'history', 'today', 'todayLeave'));
         }
 
         // Sisi Guru / Admin: List all attendance

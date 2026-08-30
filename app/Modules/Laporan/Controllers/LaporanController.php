@@ -153,15 +153,60 @@ class LaporanController extends Controller
             return redirect()->back()->with('error', 'Data penempatan PKL tidak ditemukan.');
         }
 
-        $presensis = \App\Modules\Presensi\Models\Presensi::where('penempatan_pkl_id', $placement->id)
+        $presensiList = \App\Modules\Presensi\Models\Presensi::where('penempatan_pkl_id', $placement->id)
             ->select(['id', 'penempatan_pkl_id', 'tanggal', 'jam_masuk', 'jam_pulang', 'status_masuk', 'status_pulang'])
-            ->orderBy('tanggal', 'asc')
             ->get();
+
+        $leaves = \App\Modules\Presensi\Models\IzinSakit::where('penempatan_pkl_id', $placement->id)
+            ->where('status_approval', 'disetujui')
+            ->get();
+
+        $attendanceRecords = collect();
+
+        foreach ($presensiList as $p) {
+            $attendanceRecords->push((object)[
+                'tanggal' => $p->tanggal,
+                'jam_masuk' => $p->jam_masuk,
+                'jam_pulang' => $p->jam_pulang,
+                'status' => $p->status_masuk === 'tepat_waktu' ? 'Hadir (Tepat Waktu)' : 'Terlambat',
+                'type' => $p->status_masuk === 'tepat_waktu' ? 'hadir' : 'terlambat',
+                'keterangan' => '-',
+            ]);
+        }
+
+        foreach ($leaves as $l) {
+            $start = \Carbon\Carbon::parse($l->tanggal_mulai);
+            $end = \Carbon\Carbon::parse($l->tanggal_selesai);
+            $curr = $start->copy();
+            while ($curr->lessThanOrEqualTo($end)) {
+                $dateStr = $curr->toDateString();
+                if (!$attendanceRecords->firstWhere('tanggal', $dateStr)) {
+                    $attendanceRecords->push((object)[
+                        'tanggal' => $dateStr,
+                        'jam_masuk' => null,
+                        'jam_pulang' => null,
+                        'status' => ucfirst($l->tipe) . ' (Disetujui)',
+                        'type' => $l->tipe, // 'izin' or 'sakit'
+                        'keterangan' => ucfirst($l->tipe) . ': ' . $l->alasan,
+                    ]);
+                }
+                $curr->addDay();
+            }
+        }
+
+        $presensis = $attendanceRecords->sortBy('tanggal')->values();
+
+        $summary = [
+            'total_hadir' => $presensis->where('type', 'hadir')->count(),
+            'total_terlambat' => $presensis->where('type', 'terlambat')->count(),
+            'total_izin' => $presensis->where('type', 'izin')->count(),
+            'total_sakit' => $presensis->where('type', 'sakit')->count(),
+        ];
 
         $branding = $this->getBranding();
         $nama = $placement->murid?->nama ?? 'siswa';
 
-        $pdf = Pdf::loadView('laporan::pdf.presensi_siswa', compact('placement', 'presensis', 'branding'));
+        $pdf = Pdf::loadView('laporan::pdf.presensi_siswa', compact('placement', 'presensis', 'summary', 'branding'));
         return $pdf->download('laporan_presensi_' . strtolower(str_replace(' ', '_', $nama)) . '.pdf');
     }
 

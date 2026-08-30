@@ -6,6 +6,7 @@ interface AttendanceRepositoryInterface
 {
     public function getStudentAttendanceHistory(int $placementId);
     public function getTodayAttendance(int $placementId);
+    public function getTodayApprovedLeave(int $placementId);
     public function saveAttendance(array $data);
     public function updateAttendance(int $id, array $data);
     

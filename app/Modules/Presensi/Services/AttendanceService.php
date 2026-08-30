@@ -19,6 +19,7 @@ class AttendanceService
 
     public function getHistory(int $placementId) { return $this->repo->getStudentAttendanceHistory($placementId); }
     public function getToday(int $placementId) { return $this->repo->getTodayAttendance($placementId); }
+    public function getTodayLeave(int $placementId) { return $this->repo->getTodayApprovedLeave($placementId); }
 
     /**
      * Calculate distance between two coordinates using Haversine formula.
