@@ -296,21 +296,21 @@
                                 </span>
                             @endif
                         </button>
-                        <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-0" aria-labelledby="notificationDropdown" style="width: 320px; max-width: 90vw; background-color: var(--bg-card); border: 1px solid var(--border-color) !important; border-radius: 12px; overflow: hidden;">
+                        <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-0" aria-labelledby="notificationDropdown" style="width: 360px; max-width: 92vw; background-color: var(--bg-card); border: 1px solid var(--border-color) !important; border-radius: 12px; overflow: hidden;">
                             <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="border-bottom-color: var(--border-color) !important; background-color: rgba(14, 165, 233, 0.04);">
                                 <div class="d-flex align-items-center gap-2">
                                     <h6 class="fw-bold m-0 font-heading text-dark" style="font-size: 14px;">Notifikasi</h6>
                                     @if($notifCount > 0)
-                                        <span class="badge bg-primary-light text-primary font-heading" style="font-size: 11px;">{{ $notifCount }} Baru</span>
+                                        <span class="badge bg-primary-light text-primary font-heading px-2 py-1" style="font-size: 11px; line-height: 1.2;">{{ $notifCount }} Baru</span>
                                     @endif
                                 </div>
                                 <a href="{{ route('pengumuman.index') }}" class="small text-decoration-none text-muted" style="font-size: 11px;">Lihat Pengumuman</a>
                             </div>
 
-                            <div class="notification-list" style="max-height: 360px; overflow-y: auto;">
+                            <div class="notification-list" style="max-height: 380px; overflow-y: auto;">
                                 @forelse($notifs as $item)
-                                    <a href="{{ $item['url'] }}" class="dropdown-item p-3 border-bottom d-flex align-items-start gap-2 text-wrap" style="border-bottom-color: var(--border-color) !important; transition: background-color 0.15s ease;">
-                                        <div class="p-2 rounded-circle {{ $item['badge_bg'] ?? 'bg-primary-light text-primary' }} flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">
+                                    <a href="{{ $item['url'] }}" class="dropdown-item p-3 border-bottom d-flex align-items-start gap-2" style="border-bottom-color: var(--border-color) !important; transition: background-color 0.15s ease; white-space: normal;">
+                                        <div class="p-2 rounded-circle {{ $item['badge_bg'] ?? 'bg-primary-light text-primary' }} flex-shrink-0 d-flex align-items-center justify-content-center mt-1" style="width: 34px; height: 34px;">
                                             @if(($item['icon'] ?? '') === 'cake')
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M3 21h18a1 1 0 001-1v-5.5a1 1 0 00-1-1H3a1 1 0 00-1 1V20a1 1 0 001 1z"/></svg>
                                             @elseif(($item['icon'] ?? '') === 'pencil')
@@ -324,11 +324,11 @@
                                             @endif
                                         </div>
                                         <div class="flex-grow-1" style="min-width: 0;">
-                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                <strong class="text-dark d-block font-heading text-truncate" style="font-size: 12px;">{{ $item['title'] }}</strong>
-                                                <small class="text-muted ms-1 flex-shrink-0" style="font-size: 10px;">{{ $item['time'] }}</small>
+                                            <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                                                <strong class="text-dark d-block font-heading" style="font-size: 12px; line-height: 1.35;">{{ $item['title'] }}</strong>
+                                                <small class="text-muted flex-shrink-0" style="font-size: 10px; white-space: nowrap;">{{ $item['time'] }}</small>
                                             </div>
-                                            <p class="text-secondary small m-0 text-truncate-2" style="font-size: 11px; line-height: 1.4;">{{ $item['message'] }}</p>
+                                            <p class="text-secondary small m-0" style="font-size: 11px; line-height: 1.45; word-break: break-word;">{{ $item['message'] }}</p>
                                         </div>
                                     </a>
                                 @empty
