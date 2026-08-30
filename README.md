@@ -256,6 +256,10 @@ Atau jalankan perintah langsung:
   * Direct route link notifikasi siswa bimbingan ultah untuk guru langsung menuju halaman `/monitoring`.
 * 🔔 **Redesain Dropdown Notifikasi**:
   * Lebar dropdown diperluas menjadi `360px`, penghapusan truncate berlebih pada nama siswa, dan perbaikan padding vertikal badge.
+* 📄 **Fitur Baru: Ekspor Rekapitulasi Presensi & Jurnal Kegiatan ke PDF Resmi**:
+  * Opsi ekspor Rekapitulasi Presensi dalam format **PDF Document (.pdf)** (Portrait untuk Harian, Landscape untuk Mingguan/Bulanan/Kustom) di samping format **Excel Spreadsheet (.xlsx)**.
+  * Modul ekspor Rekapitulasi Jurnal Kegiatan Siswa ke format PDF (per periode atau per siswa spesifik).
+  * Tabel aksi cepat unduhan dokumen siswa (Presensi PDF, Jurnal PDF, dan Rapor Nilai PDF) pada Pusat Laporan.
 * 🛡️ **Audit Keamanan, Stabilitas & Performa**:
   * Peningkatan presisi koordinat Latitude & Longitude DUDI menjadi `DECIMAL(10, 7)`.
   * Proteksi null-pointer menyeluruh pada relasi murid, DUDI, guru pembimbing, dan pembimbing industri.
