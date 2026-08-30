@@ -507,8 +507,9 @@
                         <div class="col-md-12 mb-3">
                             <label class="form-label small fw-semibold">7. Pengaturan Shift & Jam Kerja Siswa</label>
                             <small class="text-muted d-block mb-2" style="font-size: 12px;">Pilih template shift standar sekolah atau atur jam kerja mandiri khusus untuk penempatan ini:</small>
-                            <div class="row g-2 mb-2">
-                                <div class="col-md-4 col-6">
+                            <div class="d-flex flex-column gap-2 mb-3">
+                                <!-- Baris 1: Reguler -->
+                                <div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_reguler" value="reguler" checked onchange="toggleMassShiftCustom(this.value)">
                                         <label class="form-check-label small fw-semibold" for="mass_shift_reguler">
@@ -516,23 +517,20 @@
                                         </label>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-6">
+                                <!-- Baris 2: Shift Pagi, Siang, Sore -->
+                                <div class="d-flex flex-wrap align-items-center gap-4">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_pagi" value="pagi" onchange="toggleMassShiftCustom(this.value)">
                                         <label class="form-check-label small fw-semibold" for="mass_shift_pagi">
                                             🌅 Shift Pagi
                                         </label>
                                     </div>
-                                </div>
-                                <div class="col-md-4 col-6">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_siang" value="siang" onchange="toggleMassShiftCustom(this.value)">
                                         <label class="form-check-label small fw-semibold" for="mass_shift_siang">
                                             🌆 Shift Siang
                                         </label>
                                     </div>
-                                </div>
-                                <div class="col-md-4 col-6">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_sore" value="sore" onchange="toggleMassShiftCustom(this.value)">
                                         <label class="form-check-label small fw-semibold" for="mass_shift_sore">
@@ -540,15 +538,14 @@
                                         </label>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-6">
+                                <!-- Baris 3: Rolling, Kustom Jam -->
+                                <div class="d-flex flex-wrap align-items-center gap-4">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_rolling" value="rolling" onchange="toggleMassShiftCustom(this.value)">
                                         <label class="form-check-label small fw-semibold" for="mass_shift_rolling">
                                             🔄 Rolling (Auto-Detect)
                                         </label>
                                     </div>
-                                </div>
-                                <div class="col-md-4 col-6">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_custom" value="custom" onchange="toggleMassShiftCustom(this.value)">
                                         <label class="form-check-label small fw-semibold" for="mass_shift_custom">
@@ -700,8 +697,9 @@
                         <div class="mb-3">
                             <label class="form-label small fw-semibold">Pengaturan Shift & Jam Kerja Siswa</label>
                             <small class="text-muted d-block mb-2" style="font-size: 12px;">Pilih template shift standar sekolah atau atur jam kerja mandiri khusus:</small>
-                            <div class="row g-2 mb-2">
-                                <div class="col-md-4 col-6">
+                            <div class="d-flex flex-column gap-2 mb-3">
+                                <!-- Baris 1: Reguler -->
+                                <div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_reguler_{{ $p->id }}" value="reguler" {{ $currentShift === 'reguler' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
                                         <label class="form-check-label small fw-semibold" for="edit_shift_reguler_{{ $p->id }}">
@@ -709,23 +707,20 @@
                                         </label>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-6">
+                                <!-- Baris 2: Shift Pagi, Siang, Sore -->
+                                <div class="d-flex flex-wrap align-items-center gap-4">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_pagi_{{ $p->id }}" value="pagi" {{ $currentShift === 'pagi' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
                                         <label class="form-check-label small fw-semibold" for="edit_shift_pagi_{{ $p->id }}">
                                             🌅 Shift Pagi
                                         </label>
                                     </div>
-                                </div>
-                                <div class="col-md-4 col-6">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_siang_{{ $p->id }}" value="siang" {{ $currentShift === 'siang' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
                                         <label class="form-check-label small fw-semibold" for="edit_shift_siang_{{ $p->id }}">
                                             🌆 Shift Siang
                                         </label>
                                     </div>
-                                </div>
-                                <div class="col-md-4 col-6">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_sore_{{ $p->id }}" value="sore" {{ $currentShift === 'sore' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
                                         <label class="form-check-label small fw-semibold" for="edit_shift_sore_{{ $p->id }}">
@@ -733,15 +728,14 @@
                                         </label>
                                     </div>
                                 </div>
-                                <div class="col-md-4 col-6">
+                                <!-- Baris 3: Rolling, Kustom Jam -->
+                                <div class="d-flex flex-wrap align-items-center gap-4">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_rolling_{{ $p->id }}" value="rolling" {{ $currentShift === 'rolling' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
                                         <label class="form-check-label small fw-semibold" for="edit_shift_rolling_{{ $p->id }}">
                                             🔄 Rolling (Auto-Detect)
                                         </label>
                                     </div>
-                                </div>
-                                <div class="col-md-4 col-6">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_custom_{{ $p->id }}" value="custom" {{ $currentShift === 'custom' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
                                         <label class="form-check-label small fw-semibold" for="edit_shift_custom_{{ $p->id }}">
