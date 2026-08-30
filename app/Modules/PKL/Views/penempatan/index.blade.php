@@ -235,11 +235,13 @@
                                             $shiftInfo = $p->getEffectiveShiftHours();
                                         @endphp
                                         @if(($p->tipe_shift ?? 'reguler') === 'rolling')
-                                            <span class="badge bg-purple-light text-purple fw-semibold" style="background-color: rgba(147, 51, 234, 0.12); color: #9333ea;" title="Rolling Shift (Auto-Detect Pagi/Siang)">🔄 Rolling</span>
+                                            <span class="badge bg-purple-light text-purple fw-semibold" style="background-color: rgba(147, 51, 234, 0.12); color: #9333ea;" title="Rolling Shift (Auto-Detect)">🔄 Rolling</span>
                                         @elseif(($p->tipe_shift ?? 'reguler') === 'pagi')
                                             <span class="badge bg-success-light text-success fw-semibold" title="{{ $shiftInfo['label'] }}">🌅 Pagi</span>
                                         @elseif(($p->tipe_shift ?? 'reguler') === 'siang')
                                             <span class="badge bg-warning-light text-warning fw-semibold" title="{{ $shiftInfo['label'] }}">🌆 Siang</span>
+                                        @elseif(($p->tipe_shift ?? 'reguler') === 'sore')
+                                            <span class="badge bg-orange-light text-orange fw-semibold" style="background-color: rgba(249, 115, 22, 0.12); color: #ea580c;" title="{{ $shiftInfo['label'] }}">🌇 Sore</span>
                                         @elseif(($p->tipe_shift ?? 'reguler') === 'custom')
                                             <span class="badge bg-indigo-light text-indigo fw-semibold" style="background-color: rgba(79, 70, 229, 0.1); color: #4f46e5;" title="Kustom: {{ $shiftInfo['jam_masuk'] }} - {{ $shiftInfo['jam_pulang'] }}">⚙️ {{ $shiftInfo['jam_masuk'] }}-{{ $shiftInfo['jam_pulang'] }}</span>
                                         @endif
@@ -521,13 +523,19 @@
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_siang" value="siang" onchange="toggleMassShiftCustom(this.value)">
                                     <label class="form-check-label small" for="mass_shift_siang">
-                                        🌆 Shift Siang ({{ substr($globalSettings['shift_siang_masuk'] ?? '13:00', 0, 5) }} - {{ substr($globalSettings['shift_siang_pulang'] ?? '21:00', 0, 5) }})
+                                        🌆 Shift Siang ({{ substr($globalSettings['shift_siang_masuk'] ?? '11:00', 0, 5) }} - {{ substr($globalSettings['shift_siang_pulang'] ?? '19:00', 0, 5) }})
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_sore" value="sore" onchange="toggleMassShiftCustom(this.value)">
+                                    <label class="form-check-label small" for="mass_shift_sore">
+                                        🌇 Shift Sore ({{ substr($globalSettings['shift_sore_masuk'] ?? '15:00', 0, 5) }} - {{ substr($globalSettings['shift_sore_pulang'] ?? '21:00', 0, 5) }})
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_rolling" value="rolling" onchange="toggleMassShiftCustom(this.value)">
                                     <label class="form-check-label small" for="mass_shift_rolling">
-                                        🔄 Rolling (Auto-Detect Pagi/Siang)
+                                        🔄 Rolling (Auto-Detect)
                                     </label>
                                 </div>
                                 <div class="form-check">
@@ -697,6 +705,12 @@
                                     <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_siang_{{ $p->id }}" value="siang" {{ $currentShift === 'siang' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
                                     <label class="form-check-label small" for="edit_shift_siang_{{ $p->id }}">
                                         🌆 Shift Siang
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_sore_{{ $p->id }}" value="sore" {{ $currentShift === 'sore' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
+                                    <label class="form-check-label small" for="edit_shift_sore_{{ $p->id }}">
+                                        🌇 Shift Sore
                                     </label>
                                 </div>
                                 <div class="form-check">

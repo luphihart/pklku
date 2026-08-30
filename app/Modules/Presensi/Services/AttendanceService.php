@@ -94,27 +94,41 @@ class AttendanceService
         if ($placement->tipe_shift === 'rolling') {
             $settings = Setting::whereIn('key', [
                 'shift_pagi_masuk', 'shift_pagi_terlambat', 'shift_pagi_pulang', 'shift_pagi_tutup_pulang',
-                'shift_siang_masuk', 'shift_siang_terlambat', 'shift_siang_pulang', 'shift_siang_tutup_pulang'
+                'shift_siang_masuk', 'shift_siang_terlambat', 'shift_siang_pulang', 'shift_siang_tutup_pulang',
+                'shift_sore_masuk', 'shift_sore_terlambat', 'shift_sore_pulang', 'shift_sore_tutup_pulang'
             ])->pluck('value', 'key');
 
             $pagiMasuk       = ($settings->get('shift_pagi_masuk') ?: '06:30') . ':00';
             $pagiTerlambat   = ($settings->get('shift_pagi_terlambat') ?: '07:15') . ':00';
             $pagiTutupPulang = ($settings->get('shift_pagi_tutup_pulang') ?: '21:00') . ':00';
 
-            $siangMasuk       = ($settings->get('shift_siang_masuk') ?: '13:00') . ':00';
-            $siangTerlambat   = ($settings->get('shift_siang_terlambat') ?: '13:30') . ':00';
-            $siangTutupPulang = ($settings->get('shift_siang_tutup_pulang') ?: '23:59') . ':59';
+            $siangMasuk       = ($settings->get('shift_siang_masuk') ?: '11:00') . ':00';
+            $siangTerlambat   = ($settings->get('shift_siang_terlambat') ?: '11:30') . ':00';
+            $siangTutupPulang = ($settings->get('shift_siang_tutup_pulang') ?: '22:00') . ':59';
+
+            $hasSore = $settings->has('shift_sore_masuk') && !empty($settings->get('shift_sore_masuk'));
+            $soreMasuk       = ($settings->get('shift_sore_masuk') ?: '15:00') . ':00';
+            $soreTerlambat   = ($settings->get('shift_sore_terlambat') ?: '15:30') . ':00';
+            $soreTutupPulang = ($settings->get('shift_sore_tutup_pulang') ?: '23:59') . ':59';
 
             if ($nowTime >= $pagiMasuk && $nowTime < $siangMasuk) {
                 $detectedShift = 'pagi';
                 $batasTerlambat = $pagiTerlambat;
                 $shiftLabel = 'Shift Pagi';
-            } elseif ($nowTime >= $siangMasuk && $nowTime <= $siangTutupPulang) {
+            } elseif ($hasSore && $nowTime >= $siangMasuk && $nowTime < $soreMasuk) {
+                $detectedShift = 'siang';
+                $batasTerlambat = $siangTerlambat;
+                $shiftLabel = 'Shift Siang';
+            } elseif ($hasSore && $nowTime >= $soreMasuk && $nowTime <= $soreTutupPulang) {
+                $detectedShift = 'sore';
+                $batasTerlambat = $soreTerlambat;
+                $shiftLabel = 'Shift Sore';
+            } elseif (!$hasSore && $nowTime >= $siangMasuk && $nowTime <= $siangTutupPulang) {
                 $detectedShift = 'siang';
                 $batasTerlambat = $siangTerlambat;
                 $shiftLabel = 'Shift Siang';
             } else {
-                throw new \Exception("Presensi Check-In ditolak! Jam saat ini (" . substr($nowTime, 0, 5) . ") belum masuk jam buka Shift Pagi (" . substr($pagiMasuk, 0, 5) . ") maupun Shift Siang (" . substr($siangMasuk, 0, 5) . ").");
+                throw new \Exception("Presensi Check-In ditolak! Jam saat ini (" . substr($nowTime, 0, 5) . ") berada di luar jadwal buka shift yang ditentukan.");
             }
         } else {
             $shiftHours = $placement->getEffectiveShiftHours();

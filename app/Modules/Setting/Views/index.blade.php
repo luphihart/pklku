@@ -168,33 +168,59 @@
                             </div>
                         </div>
 
-                        <!-- Section 3: Shift Siang / Sore -->
+                        <!-- Section 3: Shift Siang -->
                         <div class="card p-3 mb-4 border" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
                             <h6 class="fw-bold font-heading mb-3 d-flex align-items-center gap-2 text-dark">
                                 <span class="badge bg-warning-light text-warning">3</span>
-                                Jam Kerja Shift Siang / Sore (Standar Sekolah)
+                                Jam Kerja Shift Siang (Standar Sekolah)
                             </h6>
                             <div class="row">
                                 <div class="col-md-3 col-6 mb-3">
                                     <label for="shift_siang_masuk" class="form-label small fw-semibold">Buka Jam Masuk</label>
-                                    <input type="text" name="shift_siang_masuk" id="shift_siang_masuk" class="form-control form-control-sm" placeholder="13:00" value="{{ $settings['shift_siang_masuk'] ?? '13:00' }}">
+                                    <input type="text" name="shift_siang_masuk" id="shift_siang_masuk" class="form-control form-control-sm" placeholder="11:00" value="{{ $settings['shift_siang_masuk'] ?? '11:00' }}">
                                 </div>
                                 <div class="col-md-3 col-6 mb-3">
                                     <label for="shift_siang_terlambat" class="form-label small fw-semibold">Batas Terlambat</label>
-                                    <input type="text" name="shift_siang_terlambat" id="shift_siang_terlambat" class="form-control form-control-sm" placeholder="13:30" value="{{ $settings['shift_siang_terlambat'] ?? '13:30' }}">
+                                    <input type="text" name="shift_siang_terlambat" id="shift_siang_terlambat" class="form-control form-control-sm" placeholder="11:30" value="{{ $settings['shift_siang_terlambat'] ?? '11:30' }}">
                                 </div>
                                 <div class="col-md-3 col-6 mb-3">
                                     <label for="shift_siang_pulang" class="form-label small fw-semibold">Buka Jam Pulang</label>
-                                    <input type="text" name="shift_siang_pulang" id="shift_siang_pulang" class="form-control form-control-sm" placeholder="21:00" value="{{ $settings['shift_siang_pulang'] ?? '21:00' }}">
+                                    <input type="text" name="shift_siang_pulang" id="shift_siang_pulang" class="form-control form-control-sm" placeholder="19:00" value="{{ $settings['shift_siang_pulang'] ?? '19:00' }}">
                                 </div>
                                 <div class="col-md-3 col-6 mb-3">
                                     <label for="shift_siang_tutup_pulang" class="form-label small fw-semibold">Tutup Jam Pulang</label>
-                                    <input type="text" name="shift_siang_tutup_pulang" id="shift_siang_tutup_pulang" class="form-control form-control-sm" placeholder="23:59" value="{{ $settings['shift_siang_tutup_pulang'] ?? '23:59' }}">
+                                    <input type="text" name="shift_siang_tutup_pulang" id="shift_siang_tutup_pulang" class="form-control form-control-sm" placeholder="22:00" value="{{ $settings['shift_siang_tutup_pulang'] ?? '22:00' }}">
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Section 4: Geofence -->
+                        <!-- Section 4: Shift Sore -->
+                        <div class="card p-3 mb-4 border" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                            <h6 class="fw-bold font-heading mb-3 d-flex align-items-center gap-2 text-dark">
+                                <span class="badge bg-orange-light text-orange" style="background-color: rgba(249, 115, 22, 0.12); color: #ea580c;">4</span>
+                                Jam Kerja Shift Sore (Standar Sekolah)
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-3 col-6 mb-3">
+                                    <label for="shift_sore_masuk" class="form-label small fw-semibold">Buka Jam Masuk</label>
+                                    <input type="text" name="shift_sore_masuk" id="shift_sore_masuk" class="form-control form-control-sm" placeholder="15:00" value="{{ $settings['shift_sore_masuk'] ?? '15:00' }}">
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <label for="shift_sore_terlambat" class="form-label small fw-semibold">Batas Terlambat</label>
+                                    <input type="text" name="shift_sore_terlambat" id="shift_sore_terlambat" class="form-control form-control-sm" placeholder="15:30" value="{{ $settings['shift_sore_terlambat'] ?? '15:30' }}">
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <label for="shift_sore_pulang" class="form-label small fw-semibold">Buka Jam Pulang</label>
+                                    <input type="text" name="shift_sore_pulang" id="shift_sore_pulang" class="form-control form-control-sm" placeholder="21:00" value="{{ $settings['shift_sore_pulang'] ?? '21:00' }}">
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <label for="shift_sore_tutup_pulang" class="form-label small fw-semibold">Tutup Jam Pulang</label>
+                                    <input type="text" name="shift_sore_tutup_pulang" id="shift_sore_tutup_pulang" class="form-control form-control-sm" placeholder="23:59" value="{{ $settings['shift_sore_tutup_pulang'] ?? '23:59' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 5: Geofence -->
                         <div class="card p-3 mb-3 border" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
                             <h6 class="fw-bold font-heading mb-3 text-dark">Jarak Radius Geofence</h6>
                             <div class="row">

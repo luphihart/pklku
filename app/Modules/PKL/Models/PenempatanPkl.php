@@ -86,10 +86,10 @@ class PenempatanPkl extends Model
         }
 
         if ($tipe === 'siang') {
-            $siangMasuk       = $this->jam_masuk ?: ($settings['shift_siang_masuk'] ?? '13:00');
-            $siangTerlambat   = $this->batas_terlambat ?: ($settings['shift_siang_terlambat'] ?? '13:30');
-            $siangPulang      = $this->jam_pulang ?: ($settings['shift_siang_pulang'] ?? '21:00');
-            $siangTutupPulang = $this->tutup_jam_pulang ?: ($settings['shift_siang_tutup_pulang'] ?? '23:59');
+            $siangMasuk       = $this->jam_masuk ?: ($settings['shift_siang_masuk'] ?? '11:00');
+            $siangTerlambat   = $this->batas_terlambat ?: ($settings['shift_siang_terlambat'] ?? '11:30');
+            $siangPulang      = $this->jam_pulang ?: ($settings['shift_siang_pulang'] ?? '19:00');
+            $siangTutupPulang = $this->tutup_jam_pulang ?: ($settings['shift_siang_tutup_pulang'] ?? '22:00');
 
             return [
                 'tipe'             => 'siang',
@@ -98,6 +98,22 @@ class PenempatanPkl extends Model
                 'batas_terlambat'   => substr($siangTerlambat, 0, 5),
                 'jam_pulang'       => substr($siangPulang, 0, 5),
                 'tutup_jam_pulang' => substr($siangTutupPulang, 0, 5),
+            ];
+        }
+
+        if ($tipe === 'sore') {
+            $soreMasuk       = $this->jam_masuk ?: ($settings['shift_sore_masuk'] ?? '15:00');
+            $soreTerlambat   = $this->batas_terlambat ?: ($settings['shift_sore_terlambat'] ?? '15:30');
+            $sorePulang      = $this->jam_pulang ?: ($settings['shift_sore_pulang'] ?? '21:00');
+            $soreTutupPulang = $this->tutup_jam_pulang ?: ($settings['shift_sore_tutup_pulang'] ?? '23:59');
+
+            return [
+                'tipe'             => 'sore',
+                'label'            => 'Shift Sore (' . substr($soreMasuk, 0, 5) . ' - ' . substr($sorePulang, 0, 5) . ')',
+                'jam_masuk'        => substr($soreMasuk, 0, 5),
+                'batas_terlambat'   => substr($soreTerlambat, 0, 5),
+                'jam_pulang'       => substr($sorePulang, 0, 5),
+                'tutup_jam_pulang' => substr($soreTutupPulang, 0, 5),
             ];
         }
 
@@ -118,10 +134,10 @@ class PenempatanPkl extends Model
                 ];
             }
             if ($detectedShift === 'siang') {
-                $siangMasuk       = $settings['shift_siang_masuk'] ?? '13:00';
-                $siangTerlambat   = $settings['shift_siang_terlambat'] ?? '13:30';
-                $siangPulang      = $settings['shift_siang_pulang'] ?? '21:00';
-                $siangTutupPulang = $settings['shift_siang_tutup_pulang'] ?? '23:59';
+                $siangMasuk       = $settings['shift_siang_masuk'] ?? '11:00';
+                $siangTerlambat   = $settings['shift_siang_terlambat'] ?? '11:30';
+                $siangPulang      = $settings['shift_siang_pulang'] ?? '19:00';
+                $siangTutupPulang = $settings['shift_siang_tutup_pulang'] ?? '22:00';
                 return [
                     'tipe'             => 'rolling',
                     'active_shift'     => 'siang',
@@ -132,15 +148,30 @@ class PenempatanPkl extends Model
                     'tutup_jam_pulang' => substr($siangTutupPulang, 0, 5),
                 ];
             }
+            if ($detectedShift === 'sore') {
+                $soreMasuk       = $settings['shift_sore_masuk'] ?? '15:00';
+                $soreTerlambat   = $settings['shift_sore_terlambat'] ?? '15:30';
+                $sorePulang      = $settings['shift_sore_pulang'] ?? '21:00';
+                $soreTutupPulang = $settings['shift_sore_tutup_pulang'] ?? '23:59';
+                return [
+                    'tipe'             => 'rolling',
+                    'active_shift'     => 'sore',
+                    'label'            => 'Rolling: Shift Sore (' . substr($soreMasuk, 0, 5) . ' - ' . substr($sorePulang, 0, 5) . ')',
+                    'jam_masuk'        => substr($soreMasuk, 0, 5),
+                    'batas_terlambat'   => substr($soreTerlambat, 0, 5),
+                    'jam_pulang'       => substr($sorePulang, 0, 5),
+                    'tutup_jam_pulang' => substr($soreTutupPulang, 0, 5),
+                ];
+            }
 
             return [
                 'tipe'             => 'rolling',
                 'active_shift'     => null,
-                'label'            => 'Rolling (Auto-Detect Pagi/Siang)',
+                'label'            => 'Rolling (Auto-Detect)',
                 'jam_masuk'        => substr($settings['shift_pagi_masuk'] ?? '06:30', 0, 5),
                 'batas_terlambat'   => substr($settings['shift_pagi_terlambat'] ?? '07:15', 0, 5),
                 'jam_pulang'       => substr($settings['shift_pagi_pulang'] ?? '14:30', 0, 5),
-                'tutup_jam_pulang' => substr($settings['shift_siang_tutup_pulang'] ?? '23:59', 0, 5),
+                'tutup_jam_pulang' => substr($settings['shift_sore_tutup_pulang'] ?? ($settings['shift_siang_tutup_pulang'] ?? '23:59'), 0, 5),
             ];
         }
 

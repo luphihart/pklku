@@ -65,6 +65,8 @@
                                         <span class="badge bg-success-light text-success" style="font-size: 11px;">🌅 Shift Pagi</span>
                                     @elseif($p->shift_harian === 'siang')
                                         <span class="badge bg-warning-light text-warning" style="font-size: 11px;">🌆 Shift Siang</span>
+                                    @elseif($p->shift_harian === 'sore')
+                                        <span class="badge bg-orange-light text-orange" style="font-size: 11px; background-color: rgba(249, 115, 22, 0.12); color: #ea580c;">🌇 Shift Sore</span>
                                     @endif
                                 </div>
                             </td>
