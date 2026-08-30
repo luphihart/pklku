@@ -74,11 +74,19 @@ class NotificationService
         try {
             // (a) Self birthday
             if ($user->tanggal_lahir && $user->tanggal_lahir->month === $today->month && $user->tanggal_lahir->day === $today->day) {
+                if ($user->role === 'murid') {
+                    $selfMsg = 'Happy Birthday! Semoga PKL lancar, jurnal sat-set di-ACC, dan sukses selalu! 🎉';
+                } elseif ($user->role === 'guru') {
+                    $selfMsg = 'Selamat ulang tahun, Bapak/Ibu! Semoga berkah usia, senantiasa sehat, dan dimudahkan dalam membimbing para siswa.';
+                } else {
+                    $selfMsg = 'Happy Birthday, Min! Semoga sehat selalu, sistem PKLku aman terkendali, dan sukses terus!';
+                }
+
                 $notifications->push([
                     'id' => 'ultah_self_' . $user->id,
                     'type' => 'ultah',
                     'title' => '🎉 Selamat Ulang Tahun!',
-                    'message' => 'Selamat ulang tahun untukmu! Semoga selalu diberikan kesehatan, kelancaran, & kesuksesan dalam studi dan PKL.',
+                    'message' => $selfMsg,
                     'url' => route('profile'),
                     'time' => 'Hari ini',
                     'created_at' => $today->copy()->setTime(0, 0, 1),
@@ -106,7 +114,7 @@ class NotificationService
                             'id' => 'ultah_murid_' . $bm->id,
                             'type' => 'ultah',
                             'title' => '🎂 Ulang Tahun: ' . $bm->nama,
-                            'message' => 'Siswa bimbingan Anda (' . ($bm->kelas?->nama ?? 'Siswa') . ') berulang tahun hari ini.',
+                            'message' => 'Siswa bimbingan Anda (' . ($bm->kelas?->nama ?? 'Siswa') . ') berulang tahun hari ini. Berikan doa & semangat!',
                             'url' => route('penempatan.index'),
                             'time' => 'Hari ini',
                             'created_at' => $today->copy()->setTime(0, 0, 2),
@@ -131,7 +139,7 @@ class NotificationService
                             'id' => 'ultah_teman_' . $bf->id,
                             'type' => 'ultah',
                             'title' => '🎂 Ulang Tahun: ' . $bf->nama,
-                            'message' => 'Teman sekelas Anda berulang tahun hari ini.',
+                            'message' => 'Teman sekelasmu lagi ultah hari ini nih. Jangan lupa beri selamat & tagih traktirannya! 😋',
                             'url' => route('dashboard'),
                             'time' => 'Hari ini',
                             'created_at' => $today->copy()->setTime(0, 0, 2),
@@ -152,7 +160,7 @@ class NotificationService
                         'id' => 'ultah_user_' . $bu->id,
                         'type' => 'ultah',
                         'title' => '🎂 Ulang Tahun: ' . $bu->name,
-                        'message' => ucfirst($bu->role) . ' sekolah berulang tahun hari ini.',
+                        'message' => ucfirst($bu->role) . ' (' . $bu->name . ') berulang tahun hari ini.',
                         'url' => $bu->role === 'guru' ? route('guru.index') : route('murid.index'),
                         'time' => 'Hari ini',
                         'created_at' => $today->copy()->setTime(0, 0, 2),

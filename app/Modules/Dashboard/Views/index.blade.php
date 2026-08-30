@@ -8,16 +8,55 @@
     <!-- Birthday Greeting (If applicable) -->
     @if(auth()->user()->tanggal_lahir && auth()->user()->tanggal_lahir->isBirthday())
     @php
-        $birthdayMessages = [
-            "Met ultah ya! Semangat terus PKL-nya, semoga jurnal harianmu lancar di-ACC dan laporan PKL bebas revisi! 🎉🎂",
-            "Happy birthday, kawan! Kado terbaik tahun ini: Laporan PKL langsung di-ACC Pembimbing Industri tanpa drama revisi! Aamiin! 🥳✨",
-            "Selamat ulang tahun! Tambah umur, tambah dewasa, dan makin sukses karirnya. Jangan lupa traktiran abis pulang PKL ya! 😋🎁",
-            "Met ultah bro! Semoga jam kerja PKL terasa cepet, presensi selalu tepat waktu, dan sehat-sehat terus ya! 🚀",
-            "Jalan-jalan ke kota Palu, tak lupa beli duku. Met ultah kawan seperjuangan, tetap semangat raih cita-citamu! 🎈✨",
-            "Happy birthday! Semoga semua pengalaman & ilmu selama PKL ini jadi awal yang keren buat masa depanmu! 💪🎓",
-            "Met ultah! Tetap semangat walau tugas PKL numpuk, semoga selalu diberi kesehatan dan kelancaran setiap hari! 🔥🎉",
-            "Selamat ulang tahun! Semoga makin jago di tempat PKL, dapet nilai A, dan jalan menuju cita-citamu makin terbuka lebar! 🏆🌟",
+        $role = auth()->user()->role;
+
+        // Ucapan Murid (Gaya Gen Z, santai, seputar PKL, laporan, jurnal, doa & humor)
+        $muridBirthdayMessages = [
+            "HBD ya! Manifesting jurnal harian langsung di-ACC sat-set, laporan no revisi-revisi club, dan dapet nilai PKL super gacor! Tetap menyala! 🔥🎂",
+            "Met ultah! Semoga makin slay di tempat PKL, presensi selalu on time no telat-telat, dan dapet pembimbing industri yang chill abis! 🎉✨",
+            "Happy birthday bro/sis! Kado terindah tahun ini: Dapet tugas PKL yang seru, snack kantor melimpah, dan laporan langsung ACC tanpa drama! 🥳🍰",
+            "Met berkurang umur! Doa terbaik buat kamu: sehat selalu, skill makin nambah, dan ga kena plot twist pembimbing galak haha. Traktirannya spill dong! 😋🎁",
+            "Happy level up day! Semoga perjalanan PKL kamu lancar jaya, mental aman ga gampang burnout, dan masa depan makin cerah menyala! 🚀🎓",
+            "Met ultah kawan seper-PKL-an! Semoga hari ini ga ada revisian jurnal, presensi anti radius error, dan jalan rezekimu makin deras! 🎈🌟",
+            "Happy birthday! Tetap semangat walau deadline laporan menanti. Semoga selalu dikelilingi circle positif dan impianmu terkabul satu per satu! 💪🎉",
+            "Selamat ulang tahun! Jangan overthinking mikirin laporan hari ini, nikmati harimu dulu. Semoga sukses selalu dan dapet nilai A mutlak! 🏆🎂",
         ];
+
+        // Ucapan Guru (Gaya Milenial, sedikit formal, seputar bimbingan, monitoring, doa berkah & humor ringan)
+        $guruBirthdayMessages = [
+            "Selamat ulang tahun, Bapak/Ibu Guru! Semoga panjang umur, berkah rezeki, dan selalu dilimpahi kesehatan. Semoga murid bimbingan PKL selalu tertib dan rajin setor laporan tanpa perlu diingatkan berkali-kali! 🎂✨",
+            "Barakallah fii umrik! Semoga segala dedikasi dan ilmu yang Bapak/Ibu bagikan menjadi amal jariyah yang abadi. Doa terbaik untuk karir, keluarga, dan semoga monitoring PKL selalu lancar tanpa kendala! 🤲🌸",
+            "Selamat bertambah usia! Semoga senantiasa diberikan kesabaran ekstra, work-life balance yang harmonis, dan murid-murid PKL yang taat aturan serta berakhlak mulia. Jangan lupa luangkan waktu untuk self-reward hari ini! ☕🍰",
+            "Selamat ulang tahun Bapak/Ibu Guru terhebat! Semoga sehat walafiat, rezeki berkah melimpah, dan proses validasi jurnal serta nilai PKL selalu sat-set tanpa drama administrasi! 🎉💐",
+            "Happy birthday, Bapak/Ibu! Semoga di usia yang baru ini makin sukses menginspirasi generasi muda. Bonus doa: semoga agenda monitoring PKL selalu pas dengan jadwal kulineran enak di sekitar DUDI! 🚗🍽️",
+            "Selamat ulang tahun! Terima kasih atas dedikasi tanpa lelah membimbing siswa. Semoga hari ini penuh berkah, bahagia, dan bebas dari tumpukan notifikasi revisi jurnal! 🎁🌟",
+            "Barakallah fii umrik, Bapak/Ibu Guru! Semoga selalu diberi energi positif, kebahagiaan bersama keluarga tercinta, dan seluruh siswa bimbingan lulus PKL dengan predikat membanggakan! 🏆🎈",
+            "Selamat hari lahir! Semoga langkah Bapak/Ibu selalu dimudahkan, senantiasa dilindungi Allah SWT, dan tetap semangat mendidik calon penerus bangsa dengan senyuman terbaik! 🎂🎉",
+        ];
+
+        // Ucapan Admin (Gaya Milenial santai, seputar server, plotting, database, doa & humor IT/admin)
+        $adminBirthdayMessages = [
+            "Happy birthday, Min! Semoga panjang umur, sehat selalu, dan server PKLku selalu adem ayem uptime 99.99% tanpa drama error 500! 🚀🎂",
+            "Met ultah, pahlawan di balik layar! Doa terbaik buat karir dan rezekimu. Semoga plotting massal selalu lancar, import Excel ga pernah corrupt, dan kopi selalu hangat! ☕✨",
+            "Selamat ulang tahun! Semoga makin berkah usianya, hidup makin terstruktur kayak database yang ternormalisasi, dan bebas dari komplain user yang lupa password! 💾🥳",
+            "Happy level up, Admin andalan! Semoga rezekinya auto-increment, beban kerja scalable, dan segala urusan plotting penempatan murid beres dalam sekali klik! 🏆🎁",
+            "Met ultah bro/sis! Semoga hari ini full senyum, server anti-down, query database secepat kilat, dan ada yang ngirimin pizza atau kopi ke ruang admin! 🍕💻",
+            "Selamat bertambah usia! Semoga sehat walafiat, terhindar dari bug misterius di hari Senin, dan ekosistem PKLku makin solid di tangan dinginmu! 🔥🎉",
+            "Happy birthday! Tetap santai dan jangan panik walau tiket bantuan masuk bertubi-tubi. Semoga selalu dilancarkan segala urusan dunia dan akhirat! 🎈🌟",
+            "Met ulang tahun! Doa spesial: semoga sistem bebas bug, data siswa selalu rapi, dan bonus tahunan turun tepat waktu tanpa pending! 🍰💸",
+        ];
+
+        if ($role === 'murid') {
+            $birthdayMessages = $muridBirthdayMessages;
+            $titleGreeting = "Selamat Ulang Tahun, " . auth()->user()->name . "! 🎂";
+        } elseif ($role === 'guru') {
+            $birthdayMessages = $guruBirthdayMessages;
+            $titleGreeting = "Selamat Ulang Tahun, Bapak/Ibu " . auth()->user()->name . "! 🎂";
+        } else {
+            $birthdayMessages = $adminBirthdayMessages;
+            $titleGreeting = "Selamat Ulang Tahun, " . auth()->user()->name . " (Admin)! 🎂";
+        }
+
         $randomBirthdayMsg = $birthdayMessages[array_rand($birthdayMessages)];
     @endphp
     <div class="card-premium mb-4 text-white position-relative overflow-hidden" style="background: linear-gradient(135deg, #f43f5e 0%, #d946ef 100%); border: none;">
@@ -31,7 +70,7 @@
                 🎉
             </div>
             <div>
-                <h4 class="fw-bold font-heading m-0">Selamat Ulang Tahun, {{ auth()->user()->name }}! 🎂</h4>
+                <h4 class="fw-bold font-heading m-0">{{ $titleGreeting }}</h4>
                 <p class="m-0 mt-1" style="font-size: 13px; opacity: 0.95; line-height: 1.5;">{{ $randomBirthdayMsg }}</p>
             </div>
         </div>
