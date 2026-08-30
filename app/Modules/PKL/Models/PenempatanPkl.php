@@ -35,7 +35,7 @@ class PenempatanPkl extends Model
      * 3. Shift Siang defined by Admin in Settings (if tipe_shift == 'siang')
      * 4. Regular Global School Settings (fallback)
      */
-    public function getEffectiveShiftHours(): array
+    public function getEffectiveShiftHours(?string $detectedShift = null): array
     {
         $tipe = $this->tipe_shift ?? 'reguler';
         
