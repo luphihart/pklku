@@ -68,6 +68,9 @@ flowchart TD
    - Menentukan tipe kerja: **WFO (Work From Office)**, **WFA (Work From Anywhere)**, atau **Hybrid**.
    - Jika **Hybrid**, tentukan hari-hari siswa bekerja secara WFA (misal: *Rabu, Jumat*).
    - Menentukan jadwal **Hari Libur Rutin Siswa** (misal: *Sabtu & Minggu* untuk industri 5 hari kerja, atau *Minggu saja* untuk industri 6 hari kerja, atau hari kerja dinamis lainnya).
+3. **Pengaturan Shift & Jam Kerja Siswa**:
+   - Memilih template shift: **Shift Reguler**, **Shift Pagi**, **Shift Siang**, atau **Kustom Jam Khusus**.
+   - Jika industri memiliki jam kerja khusus (misal: ritel/hotel `14:00 - 21:00`), Admin dapat mengetikkan jam masuk, batas toleransi terlambat, dan jam pulang secara mandiri tanpa terikat jam standar sekolah.
 
 ### Tahap 4: Pengumuman & Pengawasan Operasional
 1. **Penerbitan Pengumuman**:

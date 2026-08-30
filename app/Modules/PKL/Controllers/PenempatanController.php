@@ -60,6 +60,11 @@ class PenempatanController extends Controller
             'tipe_kerja' => 'nullable|in:wfo,wfa,hybrid',
             'hari_wfa' => 'nullable|array',
             'hari_libur' => 'nullable|array',
+            'tipe_shift' => 'nullable|in:reguler,pagi,siang,custom',
+            'jam_masuk' => 'nullable|string|max:5',
+            'batas_terlambat' => 'nullable|string|max:5',
+            'jam_pulang' => 'nullable|string|max:5',
+            'tutup_jam_pulang' => 'nullable|string|max:5',
         ], [
             'murid_ids.required' => 'Pilih minimal satu murid untuk ditempatkan.',
             'tanggal_selesai.after' => 'Tanggal selesai harus setelah tanggal mulai.',
@@ -74,6 +79,12 @@ class PenempatanController extends Controller
             ? implode(',', $request->input('hari_libur', []))
             : null;
 
+        $tipeShift = $request->input('tipe_shift', 'reguler');
+        $jamMasuk = $tipeShift === 'custom' ? $request->input('jam_masuk') : null;
+        $batasTerlambat = $tipeShift === 'custom' ? $request->input('batas_terlambat') : null;
+        $jamPulang = $tipeShift === 'custom' ? $request->input('jam_pulang') : null;
+        $tutupJamPulang = $tipeShift === 'custom' ? $request->input('tutup_jam_pulang') : null;
+
         $this->service->saveMassPlacement(
             $request->murid_ids,
             $request->dudi_id,
@@ -83,7 +94,12 @@ class PenempatanController extends Controller
             $request->tanggal_selesai,
             $tipeKerja,
             $hariWfa,
-            $hariLibur
+            $hariLibur,
+            $tipeShift,
+            $jamMasuk,
+            $batasTerlambat,
+            $jamPulang,
+            $tutupJamPulang
         );
 
         return redirect()->route('penempatan.index')->with('success', 'Plotting penempatan massal berhasil disimpan.');
@@ -106,6 +122,11 @@ class PenempatanController extends Controller
             'tipe_kerja' => 'nullable|in:wfo,wfa,hybrid',
             'hari_wfa' => 'nullable|array',
             'hari_libur' => 'nullable|array',
+            'tipe_shift' => 'nullable|in:reguler,pagi,siang,custom',
+            'jam_masuk' => 'nullable|string|max:5',
+            'batas_terlambat' => 'nullable|string|max:5',
+            'jam_pulang' => 'nullable|string|max:5',
+            'tutup_jam_pulang' => 'nullable|string|max:5',
         ], [
             'tanggal_selesai.after' => 'Tanggal selesai harus setelah tanggal mulai.',
         ]);
@@ -119,10 +140,21 @@ class PenempatanController extends Controller
             ? implode(',', $request->input('hari_libur', []))
             : null;
 
+        $tipeShift = $request->input('tipe_shift', 'reguler');
+        $jamMasuk = $tipeShift === 'custom' ? $request->input('jam_masuk') : null;
+        $batasTerlambat = $tipeShift === 'custom' ? $request->input('batas_terlambat') : null;
+        $jamPulang = $tipeShift === 'custom' ? $request->input('jam_pulang') : null;
+        $tutupJamPulang = $tipeShift === 'custom' ? $request->input('tutup_jam_pulang') : null;
+
         $updateData = $request->only('dudi_id', 'guru_id', 'pembimbing_industri_id', 'tanggal_mulai', 'tanggal_selesai');
         $updateData['tipe_kerja'] = $tipeKerja;
         $updateData['hari_wfa'] = $hariWfa;
         $updateData['hari_libur'] = $hariLibur;
+        $updateData['tipe_shift'] = $tipeShift;
+        $updateData['jam_masuk'] = $jamMasuk;
+        $updateData['batas_terlambat'] = $batasTerlambat;
+        $updateData['jam_pulang'] = $jamPulang;
+        $updateData['tutup_jam_pulang'] = $tutupJamPulang;
 
         $this->service->editPlacement($id, $updateData);
 

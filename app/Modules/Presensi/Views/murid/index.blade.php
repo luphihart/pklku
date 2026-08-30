@@ -116,6 +116,7 @@
 
         @php
             $isWfaToday = $placement ? $placement->isWfaToday() : false;
+            $shiftInfo = $placement ? $placement->getEffectiveShiftHours() : null;
         @endphp
 
         <div class="row">
@@ -134,6 +135,20 @@
                             </span>
                         @endif
                     </div>
+
+                    <!-- Shift & Schedule Info Banner -->
+                    @if($shiftInfo)
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 p-2 px-3 rounded" style="background-color: var(--bg-canvas); border: 1px solid var(--border-color);">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-indigo-light text-indigo fw-semibold" style="font-size: 12px; background-color: rgba(79, 70, 229, 0.12); color: #4f46e5;">
+                                    ⏱️ {{ $shiftInfo['label'] }}
+                                </span>
+                            </div>
+                            <div class="small text-muted" style="font-size: 12px;">
+                                Batas Tepat Waktu: <strong class="text-dark">{{ $shiftInfo['batas_terlambat'] }}</strong> | Mulai Pulang: <strong class="text-dark">{{ $shiftInfo['jam_pulang'] }}</strong>
+                            </div>
+                        </div>
+                    @endif
                     
                     <!-- DUDI Info -->
                     @if($isWfaToday)

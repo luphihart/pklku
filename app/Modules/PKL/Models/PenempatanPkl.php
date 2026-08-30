@@ -20,7 +20,97 @@ class PenempatanPkl extends Model
         'tipe_kerja',
         'hari_wfa',
         'hari_libur',
+        'tipe_shift',
+        'jam_masuk',
+        'batas_terlambat',
+        'jam_pulang',
+        'tutup_jam_pulang',
     ];
+
+    /**
+     * Get the effective shift hours for this placement.
+     * Resolves cascading priority:
+     * 1. Custom override hours defined on this placement (if tipe_shift == 'custom')
+     * 2. Shift Pagi defined by Admin in Settings (if tipe_shift == 'pagi')
+     * 3. Shift Siang defined by Admin in Settings (if tipe_shift == 'siang')
+     * 4. Regular Global School Settings (fallback)
+     */
+    public function getEffectiveShiftHours(): array
+    {
+        $tipe = $this->tipe_shift ?? 'reguler';
+        
+        static $settings = null;
+        if ($settings === null) {
+            try {
+                $settings = \App\Modules\Setting\Models\Setting::pluck('value', 'key')->all();
+            } catch (\Throwable $e) {
+                $settings = [];
+            }
+        }
+
+        $regMasuk       = $settings['jam_masuk'] ?? '07:00';
+        $regTerlambat   = $settings['batas_terlambat'] ?? '07:30';
+        $regPulang      = $settings['jam_pulang'] ?? '15:00';
+        $regTutupPulang = $settings['tutup_jam_pulang'] ?? '21:00';
+
+        if ($tipe === 'custom') {
+            $cMasuk       = $this->jam_masuk ? substr($this->jam_masuk, 0, 5) : substr($regMasuk, 0, 5);
+            $cTerlambat   = $this->batas_terlambat ? substr($this->batas_terlambat, 0, 5) : substr($regTerlambat, 0, 5);
+            $cPulang      = $this->jam_pulang ? substr($this->jam_pulang, 0, 5) : substr($regPulang, 0, 5);
+            $cTutupPulang = $this->tutup_jam_pulang ? substr($this->tutup_jam_pulang, 0, 5) : substr($regTutupPulang, 0, 5);
+
+            return [
+                'tipe'             => 'custom',
+                'label'            => 'Kustom (' . $cMasuk . ' - ' . $cPulang . ')',
+                'jam_masuk'        => $cMasuk,
+                'batas_terlambat'   => $cTerlambat,
+                'jam_pulang'       => $cPulang,
+                'tutup_jam_pulang' => $cTutupPulang,
+            ];
+        }
+
+        if ($tipe === 'pagi') {
+            $pagiMasuk       = $this->jam_masuk ?: ($settings['shift_pagi_masuk'] ?? '07:00');
+            $pagiTerlambat   = $this->batas_terlambat ?: ($settings['shift_pagi_terlambat'] ?? '07:30');
+            $pagiPulang      = $this->jam_pulang ?: ($settings['shift_pagi_pulang'] ?? '15:00');
+            $pagiTutupPulang = $this->tutup_jam_pulang ?: ($settings['shift_pagi_tutup_pulang'] ?? '21:00');
+
+            return [
+                'tipe'             => 'pagi',
+                'label'            => 'Shift Pagi (' . substr($pagiMasuk, 0, 5) . ' - ' . substr($pagiPulang, 0, 5) . ')',
+                'jam_masuk'        => substr($pagiMasuk, 0, 5),
+                'batas_terlambat'   => substr($pagiTerlambat, 0, 5),
+                'jam_pulang'       => substr($pagiPulang, 0, 5),
+                'tutup_jam_pulang' => substr($pagiTutupPulang, 0, 5),
+            ];
+        }
+
+        if ($tipe === 'siang') {
+            $siangMasuk       = $this->jam_masuk ?: ($settings['shift_siang_masuk'] ?? '13:00');
+            $siangTerlambat   = $this->batas_terlambat ?: ($settings['shift_siang_terlambat'] ?? '13:30');
+            $siangPulang      = $this->jam_pulang ?: ($settings['shift_siang_pulang'] ?? '21:00');
+            $siangTutupPulang = $this->tutup_jam_pulang ?: ($settings['shift_siang_tutup_pulang'] ?? '23:59');
+
+            return [
+                'tipe'             => 'siang',
+                'label'            => 'Shift Siang (' . substr($siangMasuk, 0, 5) . ' - ' . substr($siangPulang, 0, 5) . ')',
+                'jam_masuk'        => substr($siangMasuk, 0, 5),
+                'batas_terlambat'   => substr($siangTerlambat, 0, 5),
+                'jam_pulang'       => substr($siangPulang, 0, 5),
+                'tutup_jam_pulang' => substr($siangTutupPulang, 0, 5),
+            ];
+        }
+
+        // Reguler (default)
+        return [
+            'tipe'             => 'reguler',
+            'label'            => 'Shift Reguler (' . substr($regMasuk, 0, 5) . ' - ' . substr($regPulang, 0, 5) . ')',
+            'jam_masuk'        => substr($regMasuk, 0, 5),
+            'batas_terlambat'   => substr($regTerlambat, 0, 5),
+            'jam_pulang'       => substr($regPulang, 0, 5),
+            'tutup_jam_pulang' => substr($regTutupPulang, 0, 5),
+        ];
+    }
 
     /**
      * Check if a specific date (or today) is a regular weekly day off / holiday for this placement.

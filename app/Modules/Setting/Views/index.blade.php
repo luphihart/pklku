@@ -107,36 +107,103 @@
 
                     <!-- Tab 2: Attendance -->
                     <div class="tab-pane fade" id="attendance" role="tabpanel" aria-labelledby="attendance-tab">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="jam_masuk" class="form-label small fw-semibold">Jam Mulai Presensi Masuk</label>
-                                <input type="text" name="jam_masuk" id="jam_masuk" class="form-control" placeholder="06:00" value="{{ $settings['jam_masuk'] ?? '06:00' }}" required>
-                                <small class="text-muted">Format 24 jam (Contoh: 06:00). Murid baru bisa melakukan Check In masuk mulai jam ini.</small>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="batas_terlambat" class="form-label small fw-semibold">Batas Terlambat</label>
-                                <input type="text" name="batas_terlambat" id="batas_terlambat" class="form-control" placeholder="07:30" value="{{ $settings['batas_terlambat'] ?? '07:30' }}" required>
-                                <small class="text-muted">Format 24 jam (Contoh: 07:30). Murid yang absen melewati jam ini dianggap terlambat.</small>
+                        <div class="alert alert-info py-2 px-3 mb-4 d-flex align-items-center gap-2" style="font-size: 13px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="flex-shrink-0">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <div>
+                                Anda dapat mengatur <strong>Jam Kerja Reguler, Shift Pagi, dan Shift Siang</strong> standar sekolah di bawah ini. Pengaturan ini dapat dipilih atau dikustomisasi per murid saat melakukan <strong>Plotting Penempatan</strong>.
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="jam_pulang" class="form-label small fw-semibold">Buka Jam Pulang</label>
-                                <input type="text" name="jam_pulang" id="jam_pulang" class="form-control" placeholder="14:00" value="{{ $settings['jam_pulang'] ?? '14:00' }}" required>
-                                <small class="text-muted">Format 24 jam (Contoh: 14:00). Murid baru bisa melakukan Check Out pulang mulai jam ini.</small>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="tutup_jam_pulang" class="form-label small fw-semibold">Tutup Jam Pulang</label>
-                                <input type="text" name="tutup_jam_pulang" id="tutup_jam_pulang" class="form-control" placeholder="17:00" value="{{ $settings['tutup_jam_pulang'] ?? '17:00' }}" required>
-                                <small class="text-muted">Format 24 jam (Contoh: 17:00). Tombol Check Out pulang dikunci kembali setelah jam ini.</small>
+                        <!-- Section 1: Shift Reguler -->
+                        <div class="card p-3 mb-4 border" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                            <h6 class="fw-bold font-heading mb-3 d-flex align-items-center gap-2 text-dark">
+                                <span class="badge bg-primary-light text-primary">1</span>
+                                Jam Kerja Shift Reguler / Standar
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-3 col-6 mb-3">
+                                    <label for="jam_masuk" class="form-label small fw-semibold">Buka Jam Masuk</label>
+                                    <input type="text" name="jam_masuk" id="jam_masuk" class="form-control form-control-sm" placeholder="06:00" value="{{ $settings['jam_masuk'] ?? '06:00' }}" required>
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <label for="batas_terlambat" class="form-label small fw-semibold">Batas Terlambat</label>
+                                    <input type="text" name="batas_terlambat" id="batas_terlambat" class="form-control form-control-sm" placeholder="07:30" value="{{ $settings['batas_terlambat'] ?? '07:30' }}" required>
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <label for="jam_pulang" class="form-label small fw-semibold">Buka Jam Pulang</label>
+                                    <input type="text" name="jam_pulang" id="jam_pulang" class="form-control form-control-sm" placeholder="15:00" value="{{ $settings['jam_pulang'] ?? '15:00' }}" required>
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <label for="tutup_jam_pulang" class="form-label small fw-semibold">Tutup Jam Pulang</label>
+                                    <input type="text" name="tutup_jam_pulang" id="tutup_jam_pulang" class="form-control form-control-sm" placeholder="21:00" value="{{ $settings['tutup_jam_pulang'] ?? '21:00' }}" required>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="radius_presensi" class="form-label small fw-semibold">Jarak Geofence Default (Meter)</label>
-                            <input type="number" name="radius_presensi" id="radius_presensi" class="form-control" value="{{ $settings['radius_presensi'] ?? 50 }}" min="10" required>
-                            <small class="text-muted">Radius aman default dalam meter untuk wilayah DUDI presensi jika DUDI spesifik tidak diatur.</small>
+                        <!-- Section 2: Shift Pagi -->
+                        <div class="card p-3 mb-4 border" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                            <h6 class="fw-bold font-heading mb-3 d-flex align-items-center gap-2 text-dark">
+                                <span class="badge bg-success-light text-success">2</span>
+                                Jam Kerja Shift Pagi (Standar Sekolah)
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-3 col-6 mb-3">
+                                    <label for="shift_pagi_masuk" class="form-label small fw-semibold">Buka Jam Masuk</label>
+                                    <input type="text" name="shift_pagi_masuk" id="shift_pagi_masuk" class="form-control form-control-sm" placeholder="06:30" value="{{ $settings['shift_pagi_masuk'] ?? '06:30' }}">
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <label for="shift_pagi_terlambat" class="form-label small fw-semibold">Batas Terlambat</label>
+                                    <input type="text" name="shift_pagi_terlambat" id="shift_pagi_terlambat" class="form-control form-control-sm" placeholder="07:15" value="{{ $settings['shift_pagi_terlambat'] ?? '07:15' }}">
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <label for="shift_pagi_pulang" class="form-label small fw-semibold">Buka Jam Pulang</label>
+                                    <input type="text" name="shift_pagi_pulang" id="shift_pagi_pulang" class="form-control form-control-sm" placeholder="14:30" value="{{ $settings['shift_pagi_pulang'] ?? '14:30' }}">
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <label for="shift_pagi_tutup_pulang" class="form-label small fw-semibold">Tutup Jam Pulang</label>
+                                    <input type="text" name="shift_pagi_tutup_pulang" id="shift_pagi_tutup_pulang" class="form-control form-control-sm" placeholder="21:00" value="{{ $settings['shift_pagi_tutup_pulang'] ?? '21:00' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 3: Shift Siang / Sore -->
+                        <div class="card p-3 mb-4 border" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                            <h6 class="fw-bold font-heading mb-3 d-flex align-items-center gap-2 text-dark">
+                                <span class="badge bg-warning-light text-warning">3</span>
+                                Jam Kerja Shift Siang / Sore (Standar Sekolah)
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-3 col-6 mb-3">
+                                    <label for="shift_siang_masuk" class="form-label small fw-semibold">Buka Jam Masuk</label>
+                                    <input type="text" name="shift_siang_masuk" id="shift_siang_masuk" class="form-control form-control-sm" placeholder="13:00" value="{{ $settings['shift_siang_masuk'] ?? '13:00' }}">
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <label for="shift_siang_terlambat" class="form-label small fw-semibold">Batas Terlambat</label>
+                                    <input type="text" name="shift_siang_terlambat" id="shift_siang_terlambat" class="form-control form-control-sm" placeholder="13:30" value="{{ $settings['shift_siang_terlambat'] ?? '13:30' }}">
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <label for="shift_siang_pulang" class="form-label small fw-semibold">Buka Jam Pulang</label>
+                                    <input type="text" name="shift_siang_pulang" id="shift_siang_pulang" class="form-control form-control-sm" placeholder="21:00" value="{{ $settings['shift_siang_pulang'] ?? '21:00' }}">
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <label for="shift_siang_tutup_pulang" class="form-label small fw-semibold">Tutup Jam Pulang</label>
+                                    <input type="text" name="shift_siang_tutup_pulang" id="shift_siang_tutup_pulang" class="form-control form-control-sm" placeholder="23:59" value="{{ $settings['shift_siang_tutup_pulang'] ?? '23:59' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 4: Geofence -->
+                        <div class="card p-3 mb-3 border" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                            <h6 class="fw-bold font-heading mb-3 text-dark">Jarak Radius Geofence</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="radius_presensi" class="form-label small fw-semibold">Jarak Geofence Default (Meter)</label>
+                                    <input type="number" name="radius_presensi" id="radius_presensi" class="form-control form-control-sm" value="{{ $settings['radius_presensi'] ?? 50 }}" min="10" required>
+                                    <small class="text-muted">Radius toleransi default dalam meter untuk wilayah DUDI presensi jika DUDI spesifik tidak diatur.</small>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

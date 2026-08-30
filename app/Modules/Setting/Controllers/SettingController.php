@@ -35,6 +35,14 @@ class SettingController extends Controller
             'batas_terlambat' => 'nullable|string|max:5', // HH:MM
             'jam_pulang' => 'nullable|string|max:5', // HH:MM
             'tutup_jam_pulang' => 'nullable|string|max:5', // HH:MM
+            'shift_pagi_masuk' => 'nullable|string|max:5',
+            'shift_pagi_terlambat' => 'nullable|string|max:5',
+            'shift_pagi_pulang' => 'nullable|string|max:5',
+            'shift_pagi_tutup_pulang' => 'nullable|string|max:5',
+            'shift_siang_masuk' => 'nullable|string|max:5',
+            'shift_siang_terlambat' => 'nullable|string|max:5',
+            'shift_siang_pulang' => 'nullable|string|max:5',
+            'shift_siang_tutup_pulang' => 'nullable|string|max:5',
             'radius_presensi' => 'nullable|integer|min:10',
             'bobot_nilai_guru' => 'nullable|numeric|min:0|max:100',
             'bobot_nilai_industri' => 'nullable|numeric|min:0|max:100',
@@ -44,6 +52,8 @@ class SettingController extends Controller
         $settings = $request->only([
             'nama_sekolah', 'alamat_sekolah', 'nama_kepala_sekolah', 'nip_kepala_sekolah',
             'jam_masuk', 'batas_terlambat', 'jam_pulang', 'tutup_jam_pulang',
+            'shift_pagi_masuk', 'shift_pagi_terlambat', 'shift_pagi_pulang', 'shift_pagi_tutup_pulang',
+            'shift_siang_masuk', 'shift_siang_terlambat', 'shift_siang_pulang', 'shift_siang_tutup_pulang',
             'radius_presensi', 'bobot_nilai_guru', 'bobot_nilai_industri', 'kota_sekolah', 'footer_rapor', 'footer_login'
         ]);
 

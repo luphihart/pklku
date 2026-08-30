@@ -86,14 +86,31 @@ class PlacementRepository implements PlacementRepositoryInterface
         ]));
     }
 
-    public function createMassPlacement(array $muridIds, int $dudiId, int $guruId, ?int $pembimbingIndustriId, string $tglMulai, string $tglSelesai, string $tipeKerja = 'wfo', ?string $hariWfa = null, ?string $hariLibur = null)
-    {
+    public function createMassPlacement(
+        array $muridIds,
+        int $dudiId,
+        int $guruId,
+        ?int $pembimbingIndustriId,
+        string $tglMulai,
+        string $tglSelesai,
+        string $tipeKerja = 'wfo',
+        ?string $hariWfa = null,
+        ?string $hariLibur = null,
+        string $tipeShift = 'reguler',
+        ?string $jamMasuk = null,
+        ?string $batasTerlambat = null,
+        ?string $jamPulang = null,
+        ?string $tutupJamPulang = null
+    ) {
         $ta = TahunAjaran::where('is_aktif', true)->first();
         if (!$ta) {
             throw new \Exception('Tidak ada Tahun Ajaran aktif.');
         }
 
-        return DB::transaction(function() use ($muridIds, $dudiId, $guruId, $pembimbingIndustriId, $ta, $tglMulai, $tglSelesai, $tipeKerja, $hariWfa, $hariLibur) {
+        return DB::transaction(function() use (
+            $muridIds, $dudiId, $guruId, $pembimbingIndustriId, $ta, $tglMulai, $tglSelesai,
+            $tipeKerja, $hariWfa, $hariLibur, $tipeShift, $jamMasuk, $batasTerlambat, $jamPulang, $tutupJamPulang
+        ) {
             // Find which murid already have active placement in ONE single query
             $existingMuridIds = PenempatanPkl::whereIn('murid_id', $muridIds)
                 ->where('tahun_ajaran_id', $ta->id)
@@ -121,6 +138,11 @@ class PlacementRepository implements PlacementRepositoryInterface
                     'tipe_kerja' => $tipeKerja,
                     'hari_wfa' => $hariWfa,
                     'hari_libur' => $hariLibur,
+                    'tipe_shift' => $tipeShift,
+                    'jam_masuk' => $jamMasuk,
+                    'batas_terlambat' => $batasTerlambat,
+                    'jam_pulang' => $jamPulang,
+                    'tutup_jam_pulang' => $tutupJamPulang,
                 ]);
             }
 

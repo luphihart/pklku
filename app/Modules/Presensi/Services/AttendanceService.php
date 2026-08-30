@@ -85,24 +85,24 @@ class AttendanceService
             throw new \Exception("Anda sudah melakukan Check In hari ini.");
         }
 
-        // 0.1. Fetch Settings in Single Query
-        $settings = Setting::whereIn('key', ['jam_masuk', 'batas_terlambat', 'jam_pulang', 'radius_presensi'])
-            ->pluck('value', 'key');
+        // 0.1. Fetch Placement and Effective Shift Hours
+        $placement = \App\Modules\PKL\Models\PenempatanPkl::with(['dudi', 'murid'])->findOrFail($placementId);
+        $shiftHours = $placement->getEffectiveShiftHours();
 
-        $jamMasukLimit  = $settings->get('jam_masuk', '06:00');
-        $batasTerlambat = $settings->get('batas_terlambat', '07:30');
-        $endTime        = $settings->get('jam_pulang', '14:00');
+        $jamMasukLimit  = $shiftHours['jam_masuk'] . ':00';
+        $batasTerlambat = $shiftHours['batas_terlambat'] . ':00';
+        $tutupJamPulang = $shiftHours['tutup_jam_pulang'] . ':00';
         $nowTime        = now()->toTimeString();
 
         if ($nowTime < $jamMasukLimit) {
-            throw new \Exception("Presensi Check-In belum dibuka! Presensi dibuka mulai pukul " . substr($jamMasukLimit, 0, 5) . ".");
+            throw new \Exception("Presensi Check-In belum dibuka! Presensi " . $shiftHours['label'] . " dibuka mulai pukul " . substr($jamMasukLimit, 0, 5) . ".");
         }
 
-        if ($nowTime > $endTime) {
-            throw new \Exception("Batas waktu presensi Check-In telah berakhir (Pukul " . substr($endTime, 0, 5) . ").");
+        if ($nowTime > $tutupJamPulang) {
+            throw new \Exception("Batas waktu presensi untuk " . $shiftHours['label'] . " telah berakhir (Pukul " . substr($tutupJamPulang, 0, 5) . ").");
         }
 
-        $placement = \App\Modules\PKL\Models\PenempatanPkl::with(['dudi', 'murid'])->findOrFail($placementId);
+        $settings = Setting::whereIn('key', ['radius_presensi'])->pluck('value', 'key');
         
         $isWfaToday = $placement->isWfaToday();
 
@@ -172,19 +172,19 @@ class AttendanceService
             throw new \Exception("Anda sudah melakukan Check Out hari ini.");
         }
 
-        // 0.2. Fetch Settings in Single Query
-        $settings = Setting::whereIn('key', ['jam_pulang', 'tutup_jam_pulang', 'radius_presensi'])
-            ->pluck('value', 'key');
+        // 0.2. Fetch Placement and Effective Shift Hours
+        $placement = \App\Modules\PKL\Models\PenempatanPkl::with(['dudi', 'murid'])->findOrFail($placementId);
+        $shiftHours = $placement->getEffectiveShiftHours();
 
-        $jamPulangLimit = $settings->get('jam_pulang', '14:00');
-        $tutupJamPulang = $settings->get('tutup_jam_pulang', '17:00');
+        $jamPulangLimit = $shiftHours['jam_pulang'] . ':00';
+        $tutupJamPulang = $shiftHours['tutup_jam_pulang'] . ':00';
         $nowTime        = now()->toTimeString();
 
         if ($nowTime > $tutupJamPulang) {
-            throw new \Exception("Batas waktu presensi Check-Out telah berakhir (Pukul " . substr($tutupJamPulang, 0, 5) . ").");
+            throw new \Exception("Batas waktu presensi Check-Out untuk " . $shiftHours['label'] . " telah berakhir (Pukul " . substr($tutupJamPulang, 0, 5) . ").");
         }
 
-        $placement = \App\Modules\PKL\Models\PenempatanPkl::with(['dudi', 'murid'])->findOrFail($placementId);
+        $settings = Setting::whereIn('key', ['radius_presensi'])->pluck('value', 'key');
         
         $isWfaToday = $placement->isWfaToday();
 

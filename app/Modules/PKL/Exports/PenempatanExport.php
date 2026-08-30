@@ -74,6 +74,8 @@ class PenempatanExport
             'Guru Pembimbing Sekolah',
             'Pembimbing DUDI / Industri',
             'Model Kerja',
+            'Shift Kerja',
+            'Jam Kerja',
             'Jadwal Hari WFA',
             'Hari Libur Rutin',
             'Tanggal Mulai PKL',
@@ -84,8 +86,8 @@ class PenempatanExport
         // Title Block
         $sheet->setCellValue('A1', 'DATA PLOTTING PENEMPATAN SISWA PKL');
         $sheet->setCellValue('A2', 'Waktu Ekspor: ' . date('d-m-Y H:i:s') . ' | Total Data: ' . $placements->count() . ' Penempatan');
-        $sheet->mergeCells('A1:M1');
-        $sheet->mergeCells('A2:M2');
+        $sheet->mergeCells('A1:O1');
+        $sheet->mergeCells('A2:O2');
 
         $sheet->getStyle('A1')->applyFromArray([
             'font' => ['bold' => true, 'size' => 14, 'color' => ['rgb' => '1E293B']],
@@ -124,6 +126,9 @@ class PenempatanExport
             $pembimbingIndustri = $p->pembimbingIndustri?->nama ?: '-';
             
             $modelKerja = strtoupper($p->tipe_kerja ?: 'WFO');
+            $shiftInfo = $p->getEffectiveShiftHours();
+            $shiftKerja = ucfirst($p->tipe_shift ?? 'reguler');
+            $jamKerja = $shiftInfo['jam_masuk'] . ' - ' . $shiftInfo['jam_pulang'];
             $hariWfa = $p->tipe_kerja === 'hybrid' ? ($p->hari_wfa ?: '-') : '-';
             $hariLibur = $p->hari_libur ?: 'Sabtu, Minggu (Default)';
 
@@ -139,11 +144,13 @@ class PenempatanExport
             $sheet->setCellValueByColumnAndRow(6, $rowNum, $guru);
             $sheet->setCellValueByColumnAndRow(7, $rowNum, $pembimbingIndustri);
             $sheet->setCellValueByColumnAndRow(8, $rowNum, $modelKerja);
-            $sheet->setCellValueByColumnAndRow(9, $rowNum, $hariWfa);
-            $sheet->setCellValueByColumnAndRow(10, $rowNum, $hariLibur);
-            $sheet->setCellValueByColumnAndRow(11, $rowNum, $tglMulai);
-            $sheet->setCellValueByColumnAndRow(12, $rowNum, $tglSelesai);
-            $sheet->setCellValueByColumnAndRow(13, $rowNum, $status);
+            $sheet->setCellValueByColumnAndRow(9, $rowNum, $shiftKerja);
+            $sheet->setCellValueByColumnAndRow(10, $rowNum, $jamKerja);
+            $sheet->setCellValueByColumnAndRow(11, $rowNum, $hariWfa);
+            $sheet->setCellValueByColumnAndRow(12, $rowNum, $hariLibur);
+            $sheet->setCellValueByColumnAndRow(13, $rowNum, $tglMulai);
+            $sheet->setCellValueByColumnAndRow(14, $rowNum, $tglSelesai);
+            $sheet->setCellValueByColumnAndRow(15, $rowNum, $status);
 
             // Alignment
             $sheet->getStyle("A{$rowNum}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -155,12 +162,21 @@ class PenempatanExport
             $sheet->getStyle("K{$rowNum}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle("L{$rowNum}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle("M{$rowNum}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("N{$rowNum}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("O{$rowNum}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("D{$rowNum}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("H{$rowNum}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("I{$rowNum}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("J{$rowNum}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("K{$rowNum}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("L{$rowNum}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("M{$rowNum}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             // Status color highlight
             if ($p->status === 'aktif') {
-                $sheet->getStyle("M{$rowNum}")->getFont()->getColor()->setRGB('16A34A');
+                $sheet->getStyle("O{$rowNum}")->getFont()->getColor()->setRGB('16A34A');
             } else {
-                $sheet->getStyle("M{$rowNum}")->getFont()->getColor()->setRGB('64748B');
+                $sheet->getStyle("O{$rowNum}")->getFont()->getColor()->setRGB('64748B');
             }
 
             $sheet->getRowDimension($rowNum)->setRowHeight(20);

@@ -222,13 +222,24 @@
                                 <td>{{ $p->guru ? $p->guru->nama : 'Guru Terhapus' }}</td>
                                 <td>{{ $p->pembimbingIndustri ? $p->pembimbingIndustri->nama : ($p->dudi?->pic_nama ?? '-') }}</td>
                                 <td class="text-center">
-                                    <div class="mb-1">
+                                    <div class="d-flex align-items-center justify-content-center gap-1 flex-wrap mb-1">
                                         @if(($p->tipe_kerja ?? 'wfo') === 'wfa')
                                             <span class="badge bg-primary-light text-primary fw-semibold" title="100% WFA (Full Remote)">🏠 WFA</span>
                                         @elseif(($p->tipe_kerja ?? 'wfo') === 'hybrid')
                                             <span class="badge bg-info-light text-info fw-semibold" title="Hybrid: WFA pada {{ $p->hari_wfa }}">🔄 Hybrid ({{ $p->hari_wfa }})</span>
                                         @else
                                             <span class="badge bg-secondary-light text-secondary fw-semibold" title="100% WFO (Di Kantor DUDI)">🏢 WFO</span>
+                                        @endif
+
+                                        @php
+                                            $shiftInfo = $p->getEffectiveShiftHours();
+                                        @endphp
+                                        @if(($p->tipe_shift ?? 'reguler') === 'pagi')
+                                            <span class="badge bg-success-light text-success fw-semibold" title="{{ $shiftInfo['label'] }}">🌅 Pagi</span>
+                                        @elseif(($p->tipe_shift ?? 'reguler') === 'siang')
+                                            <span class="badge bg-warning-light text-warning fw-semibold" title="{{ $shiftInfo['label'] }}">🌆 Siang</span>
+                                        @elseif(($p->tipe_shift ?? 'reguler') === 'custom')
+                                            <span class="badge bg-indigo-light text-indigo fw-semibold" style="background-color: rgba(79, 70, 229, 0.1); color: #4f46e5;" title="Kustom: {{ $shiftInfo['jam_masuk'] }} - {{ $shiftInfo['jam_pulang'] }}">⚙️ {{ $shiftInfo['jam_masuk'] }}-{{ $shiftInfo['jam_pulang'] }}</span>
                                         @endif
                                     </div>
                                     @if(!empty($p->hari_libur))
@@ -486,6 +497,63 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Step 7: Shift & Working Hours -->
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label small fw-semibold">7. Pengaturan Shift & Jam Kerja Siswa</label>
+                            <small class="text-muted d-block mb-2" style="font-size: 12px;">Pilih template shift standar sekolah atau atur jam kerja mandiri khusus untuk penempatan ini:</small>
+                            <div class="d-flex flex-wrap gap-3 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_reguler" value="reguler" checked onchange="toggleMassShiftCustom(this.value)">
+                                    <label class="form-check-label small" for="mass_shift_reguler">
+                                        🏢 Reguler ({{ substr($globalSettings['jam_masuk'] ?? '06:00', 0, 5) }} - {{ substr($globalSettings['jam_pulang'] ?? '15:00', 0, 5) }})
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_pagi" value="pagi" onchange="toggleMassShiftCustom(this.value)">
+                                    <label class="form-check-label small" for="mass_shift_pagi">
+                                        🌅 Shift Pagi ({{ substr($globalSettings['shift_pagi_masuk'] ?? '06:30', 0, 5) }} - {{ substr($globalSettings['shift_pagi_pulang'] ?? '14:30', 0, 5) }})
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_siang" value="siang" onchange="toggleMassShiftCustom(this.value)">
+                                    <label class="form-check-label small" for="mass_shift_siang">
+                                        🌆 Shift Siang ({{ substr($globalSettings['shift_siang_masuk'] ?? '13:00', 0, 5) }} - {{ substr($globalSettings['shift_siang_pulang'] ?? '21:00', 0, 5) }})
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_custom" value="custom" onchange="toggleMassShiftCustom(this.value)">
+                                    <label class="form-check-label small" for="mass_shift_custom">
+                                        ⚙️ Kustom Jam Khusus
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Custom hours fields -->
+                            <div id="massShiftCustomContainer" class="p-3 border rounded bg-light" style="display: none;">
+                                <div class="row g-2">
+                                    <div class="col-md-3 col-6">
+                                        <label class="form-label small fw-semibold">Buka Jam Masuk</label>
+                                        <input type="text" name="jam_masuk" class="form-control form-control-sm" placeholder="08:00">
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <label class="form-label small fw-semibold">Batas Terlambat</label>
+                                        <input type="text" name="batas_terlambat" class="form-control form-control-sm" placeholder="08:15">
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <label class="form-label small fw-semibold">Buka Jam Pulang</label>
+                                        <input type="text" name="jam_pulang" class="form-control form-control-sm" placeholder="16:00">
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <label class="form-label small fw-semibold">Tutup Jam Pulang</label>
+                                        <input type="text" name="tutup_jam_pulang" class="form-control form-control-sm" placeholder="22:00">
+                                    </div>
+                                </div>
+                                <small class="text-muted mt-1 d-block" style="font-size: 11px;">Format waktu 24 jam (HH:mm, contoh: 08:00).</small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer border-top" style="border-top-color: var(--border-color) !important;">
                     <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -597,6 +665,61 @@
                                 @endforeach
                             </div>
                         </div>
+
+                        @php
+                            $currentShift = $p->tipe_shift ?? 'reguler';
+                        @endphp
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Pengaturan Shift & Jam Kerja Siswa</label>
+                            <small class="text-muted d-block mb-2" style="font-size: 12px;">Pilih template shift standar sekolah atau atur jam kerja mandiri khusus:</small>
+                            <div class="d-flex flex-wrap gap-3 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_reguler_{{ $p->id }}" value="reguler" {{ $currentShift === 'reguler' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
+                                    <label class="form-check-label small" for="edit_shift_reguler_{{ $p->id }}">
+                                        🏢 Reguler
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_pagi_{{ $p->id }}" value="pagi" {{ $currentShift === 'pagi' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
+                                    <label class="form-check-label small" for="edit_shift_pagi_{{ $p->id }}">
+                                        🌅 Shift Pagi
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_siang_{{ $p->id }}" value="siang" {{ $currentShift === 'siang' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
+                                    <label class="form-check-label small" for="edit_shift_siang_{{ $p->id }}">
+                                        🌆 Shift Siang
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_custom_{{ $p->id }}" value="custom" {{ $currentShift === 'custom' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
+                                    <label class="form-check-label small" for="edit_shift_custom_{{ $p->id }}">
+                                        ⚙️ Kustom Jam
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="editShiftCustomContainer_{{ $p->id }}" class="p-3 border rounded bg-light" style="{{ $currentShift === 'custom' ? '' : 'display: none;' }}">
+                                <div class="row g-2">
+                                    <div class="col-md-3 col-6">
+                                        <label class="form-label small fw-semibold">Jam Masuk</label>
+                                        <input type="text" name="jam_masuk" class="form-control form-control-sm" placeholder="08:00" value="{{ $p->jam_masuk ? substr($p->jam_masuk, 0, 5) : '' }}">
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <label class="form-label small fw-semibold">Batas Telat</label>
+                                        <input type="text" name="batas_terlambat" class="form-control form-control-sm" placeholder="08:15" value="{{ $p->batas_terlambat ? substr($p->batas_terlambat, 0, 5) : '' }}">
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <label class="form-label small fw-semibold">Jam Pulang</label>
+                                        <input type="text" name="jam_pulang" class="form-control form-control-sm" placeholder="16:00" value="{{ $p->jam_pulang ? substr($p->jam_pulang, 0, 5) : '' }}">
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <label class="form-label small fw-semibold">Tutup Pulang</label>
+                                        <input type="text" name="tutup_jam_pulang" class="form-control form-control-sm" placeholder="22:00" value="{{ $p->tutup_jam_pulang ? substr($p->tutup_jam_pulang, 0, 5) : '' }}">
+                                    </div>
+                                </div>
+                                <small class="text-muted mt-1 d-block" style="font-size: 11px;">Format waktu 24 jam (HH:mm, contoh: 08:00).</small>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer border-top" style="border-top-color: var(--border-color) !important;">
                         <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -628,6 +751,20 @@
         const el = document.getElementById('editHybridDaysContainer_' + placementId);
         if (el) {
             el.style.display = (val === 'hybrid') ? 'block' : 'none';
+        }
+    }
+
+    function toggleMassShiftCustom(val) {
+        const el = document.getElementById('massShiftCustomContainer');
+        if (el) {
+            el.style.display = (val === 'custom') ? 'block' : 'none';
+        }
+    }
+
+    function toggleEditShiftCustom(placementId, val) {
+        const el = document.getElementById('editShiftCustomContainer_' + placementId);
+        if (el) {
+            el.style.display = (val === 'custom') ? 'block' : 'none';
         }
     }
 
