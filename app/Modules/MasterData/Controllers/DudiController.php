@@ -102,7 +102,9 @@ class DudiController extends Controller
         $data = $request->only(['nama', 'alamat', 'radius_meter', 'pic_nama', 'pic_phone']);
         $data['latitude']   = $this->sanitizeCoordinate($request->input('latitude'));
         $data['longitude']  = $this->sanitizeCoordinate($request->input('longitude'));
-        $data['hari_kerja'] = implode(',', $request->input('hari_kerja', []));
+        
+        $submittedHariKerja = $request->input('hari_kerja');
+        $data['hari_kerja'] = !empty($submittedHariKerja) ? implode(',', $submittedHariKerja) : 'Senin,Selasa,Rabu,Kamis,Jumat';
 
         $this->service->editDudi($id, $data);
 

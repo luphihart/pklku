@@ -62,11 +62,13 @@ class SettingController extends Controller
             'radius_presensi', 'bobot_nilai_guru', 'bobot_nilai_industri', 'kota_sekolah', 'footer_rapor', 'footer_login'
         ]);
 
-        // Auto balance weights if only one is updated
-        if ($request->has('bobot_nilai_guru') && !$request->has('bobot_nilai_industri')) {
-            $settings['bobot_nilai_industri'] = 100 - $request->bobot_nilai_guru;
-        } elseif (!$request->has('bobot_nilai_guru') && $request->has('bobot_nilai_industri')) {
-            $settings['bobot_nilai_guru'] = 100 - $request->bobot_nilai_industri;
+        // Auto balance weights if only one is updated (safely clamped between 0 and 100)
+        if ($request->filled('bobot_nilai_guru') && !$request->filled('bobot_nilai_industri')) {
+            $val = (float) $request->bobot_nilai_guru;
+            $settings['bobot_nilai_industri'] = max(0, min(100, 100 - $val));
+        } elseif (!$request->filled('bobot_nilai_guru') && $request->filled('bobot_nilai_industri')) {
+            $val = (float) $request->bobot_nilai_industri;
+            $settings['bobot_nilai_guru'] = max(0, min(100, 100 - $val));
         }
 
         $hapusLogo = $request->boolean('hapus_logo');

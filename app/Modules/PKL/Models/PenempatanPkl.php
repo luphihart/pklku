@@ -3,6 +3,9 @@
 namespace App\Modules\PKL\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
+use App\Modules\Setting\Models\Setting;
+use App\Modules\PKL\Models\KunjunganMonitoring;
 
 class PenempatanPkl extends Model
 {
@@ -39,13 +42,12 @@ class PenempatanPkl extends Model
     {
         $tipe = $this->tipe_shift ?? 'reguler';
         
-        static $settings = null;
-        if ($settings === null) {
-            try {
-                $settings = \App\Modules\Setting\Models\Setting::pluck('value', 'key')->all();
-            } catch (\Throwable $e) {
-                $settings = [];
-            }
+        try {
+            $settings = Cache::remember('global_school_settings', 60, function() {
+                return Setting::pluck('value', 'key')->all();
+            });
+        } catch (\Throwable $e) {
+            $settings = [];
         }
 
         $regMasuk       = $settings['jam_masuk'] ?? '07:00';
@@ -216,7 +218,14 @@ class PenempatanPkl extends Model
         }
 
         // 3. Fallback to Global Setting working days
-        $globalHariKerja = \App\Modules\Setting\Models\Setting::where('key', 'hari_kerja')->value('value') ?: 'Senin,Selasa,Rabu,Kamis,Jumat';
+        try {
+            $globalHariKerja = Cache::remember('global_setting_hari_kerja', 60, function() {
+                return Setting::where('key', 'hari_kerja')->value('value');
+            }) ?: 'Senin,Selasa,Rabu,Kamis,Jumat';
+        } catch (\Throwable $e) {
+            $globalHariKerja = 'Senin,Selasa,Rabu,Kamis,Jumat';
+        }
+
         $globalWorkingDays = array_map('trim', explode(',', $globalHariKerja));
         return !in_array($dayNameIndo, $globalWorkingDays);
     }

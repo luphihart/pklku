@@ -183,11 +183,20 @@ class PresensiController extends Controller
             return redirect()->back()->with('error', 'Catatan presensi untuk murid tersebut pada tanggal terpilih sudah ada.');
         }
 
-        // Standardise time format to HH:MM:SS
-        $jamMasuk = $request->filled('jam_masuk') ? date('H:i:s', strtotime($request->jam_masuk)) : null;
-        $statusMasuk = $request->filled('jam_masuk') ? $request->status_masuk : null;
-        $jamPulang = $request->filled('jam_pulang') ? date('H:i:s', strtotime($request->jam_pulang)) : null;
-        $statusPulang = $request->filled('jam_pulang') ? $request->status_pulang : null;
+        // Standardise time format to HH:MM:SS safely
+        $jamMasuk = null;
+        if ($request->filled('jam_masuk')) {
+            $parsed = strtotime($request->jam_masuk);
+            $jamMasuk = ($parsed !== false) ? date('H:i:s', $parsed) : null;
+        }
+        $statusMasuk = $jamMasuk ? $request->status_masuk : null;
+
+        $jamPulang = null;
+        if ($request->filled('jam_pulang')) {
+            $parsed = strtotime($request->jam_pulang);
+            $jamPulang = ($parsed !== false) ? date('H:i:s', $parsed) : null;
+        }
+        $statusPulang = $jamPulang ? $request->status_pulang : null;
 
         Presensi::create([
             'penempatan_pkl_id' => $request->penempatan_pkl_id,
@@ -224,10 +233,19 @@ class PresensiController extends Controller
 
         $presensi = Presensi::findOrFail($id);
 
-        $jamMasuk = $request->filled('jam_masuk') ? date('H:i:s', strtotime($request->jam_masuk)) : null;
-        $statusMasuk = $request->filled('jam_masuk') ? $request->status_masuk : null;
-        $jamPulang = $request->filled('jam_pulang') ? date('H:i:s', strtotime($request->jam_pulang)) : null;
-        $statusPulang = $request->filled('jam_pulang') ? $request->status_pulang : null;
+        $jamMasuk = null;
+        if ($request->filled('jam_masuk')) {
+            $parsed = strtotime($request->jam_masuk);
+            $jamMasuk = ($parsed !== false) ? date('H:i:s', $parsed) : null;
+        }
+        $statusMasuk = $jamMasuk ? $request->status_masuk : null;
+
+        $jamPulang = null;
+        if ($request->filled('jam_pulang')) {
+            $parsed = strtotime($request->jam_pulang);
+            $jamPulang = ($parsed !== false) ? date('H:i:s', $parsed) : null;
+        }
+        $statusPulang = $jamPulang ? $request->status_pulang : null;
 
         $presensi->update([
             'jam_masuk' => $jamMasuk,

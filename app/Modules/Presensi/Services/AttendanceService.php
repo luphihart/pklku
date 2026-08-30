@@ -90,6 +90,7 @@ class AttendanceService
         $placement = \App\Modules\PKL\Models\PenempatanPkl::with(['dudi', 'murid'])->findOrFail($placementId);
         $nowTime = now()->toTimeString();
         $detectedShift = $placement->tipe_shift ?? 'reguler';
+        $batasTerlambat = null;
 
         if ($placement->tipe_shift === 'rolling') {
             $settings = Setting::whereIn('key', [
@@ -152,7 +153,11 @@ class AttendanceService
 
         // 1. Verify Geofence (Prioritise DUDI specific radius) if NOT WFA
         if (!$isWfaToday) {
-            $distance = $this->calculateDistance($lat, $lng, $placement->dudi->latitude, $placement->dudi->longitude);
+            if (!$placement->dudi || $placement->dudi->latitude === null || $placement->dudi->longitude === null) {
+                throw new \Exception("Presensi gagal! Data lokasi kantor DUDI belum dikonfigurasi oleh Admin.");
+            }
+
+            $distance = $this->calculateDistance($lat, $lng, (float)$placement->dudi->latitude, (float)$placement->dudi->longitude);
             $allowedRadius = $placement->dudi->radius_meter ?: (int)$settings->get('radius_presensi', 100);
             if (!$allowedRadius) {
                 $allowedRadius = 100; // ultimate fallback
@@ -178,12 +183,12 @@ class AttendanceService
             $lat, 
             $lng, 
             $watermarkType, 
-            $placement->murid->nama, 
-            $placement->dudi->nama
+            $placement->murid?->nama ?? 'Murid', 
+            $placement->dudi?->nama ?? 'DUDI'
         );
 
         // 3. Determine status (Tepat Waktu if before/equal to batasTerlambat)
-        $statusMasuk = $nowTime <= $batasTerlambat ? 'tepat_waktu' : 'terlambat';
+        $statusMasuk = ($batasTerlambat && $nowTime <= $batasTerlambat) ? 'tepat_waktu' : 'terlambat';
 
         // 4. Save to DB
         return $this->repo->saveAttendance([
@@ -236,7 +241,11 @@ class AttendanceService
 
         // 1. Verify Geofence (Prioritise DUDI specific radius) if NOT WFA
         if (!$isWfaToday) {
-            $distance = $this->calculateDistance($lat, $lng, $placement->dudi->latitude, $placement->dudi->longitude);
+            if (!$placement->dudi || $placement->dudi->latitude === null || $placement->dudi->longitude === null) {
+                throw new \Exception("Presensi gagal! Data lokasi kantor DUDI belum dikonfigurasi oleh Admin.");
+            }
+
+            $distance = $this->calculateDistance($lat, $lng, (float)$placement->dudi->latitude, (float)$placement->dudi->longitude);
             $allowedRadius = $placement->dudi->radius_meter ?: (int)$settings->get('radius_presensi', 100);
             if (!$allowedRadius) {
                 $allowedRadius = 100; // ultimate fallback
@@ -262,8 +271,8 @@ class AttendanceService
             $lat, 
             $lng, 
             $watermarkType, 
-            $placement->murid->nama, 
-            $placement->dudi->nama
+            $placement->murid?->nama ?? 'Murid', 
+            $placement->dudi?->nama ?? 'DUDI'
         );
 
         // 3. Determine status (Pulang Cepat if before jamPulangLimit, Tepat Waktu if on/after jamPulangLimit)
@@ -373,24 +382,42 @@ class AttendanceService
 
     private function compressImageNative(string $sourcePath, string $destPath, int $maxWidth, int $quality): void
     {
-        list($origWidth, $origHeight, $type) = getimagesize($sourcePath);
+        $imgInfo = @getimagesize($sourcePath);
+        if (!$imgInfo) {
+            copy($sourcePath, $destPath);
+            return;
+        }
+
+        list($origWidth, $origHeight, $type) = $imgInfo;
         
         $width = $origWidth;
         $height = $origHeight;
 
         // Proportional scaling if larger than max width
-        if ($origWidth > $maxWidth) {
+        if ($origWidth > $maxWidth && $origWidth > 0) {
             $width = $maxWidth;
             $height = (int)($origHeight * ($maxWidth / $origWidth));
         }
 
+        $srcImg = null;
         switch ($type) {
-            case IMAGETYPE_JPEG: $srcImg = imagecreatefromjpeg($sourcePath); break;
-            case IMAGETYPE_PNG: $srcImg = imagecreatefrompng($sourcePath); break;
-            default: $srcImg = imagecreatefromjpeg($sourcePath); break;
+            case IMAGETYPE_JPEG: $srcImg = @imagecreatefromjpeg($sourcePath); break;
+            case IMAGETYPE_PNG: $srcImg = @imagecreatefrompng($sourcePath); break;
+            default: $srcImg = @imagecreatefromjpeg($sourcePath); break;
+        }
+
+        if (!$srcImg) {
+            copy($sourcePath, $destPath);
+            return;
         }
 
         $destImg = imagecreatetruecolor($width, $height);
+        if (!$destImg) {
+            imagedestroy($srcImg);
+            copy($sourcePath, $destPath);
+            return;
+        }
+
         imagecopyresampled($destImg, $srcImg, 0, 0, 0, 0, $width, $height, $origWidth, $origHeight);
         imagejpeg($destImg, $destPath, $quality);
 

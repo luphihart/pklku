@@ -309,7 +309,7 @@
                             </div>
                             <div>
                                 <span class="text-muted d-block small mb-1 text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Tempat DUDI</span>
-                                <span class="font-heading fw-bold text-dark" style="font-size: 15px; line-height: 1.4;">{{ $penempatan->dudi->nama }}</span>
+                                <span class="font-heading fw-bold text-dark" style="font-size: 15px; line-height: 1.4;">{{ $penempatan->dudi?->nama ?? 'DUDI Terhapus' }}</span>
                             </div>
                         </div>
 
@@ -322,7 +322,7 @@
                             </div>
                             <div>
                                 <span class="text-muted d-block small mb-1 text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Guru Pembimbing</span>
-                                <span class="fw-semibold text-dark font-heading" style="font-size: 14px; line-height: 1.4;">{{ $penempatan->guru->nama }}</span>
+                                <span class="fw-semibold text-dark font-heading" style="font-size: 14px; line-height: 1.4;">{{ $penempatan->guru?->nama ?? 'Guru Terhapus' }}</span>
                             </div>
                         </div>
 
@@ -336,7 +336,7 @@
                             <div>
                                 <span class="text-muted d-block small mb-1 text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Pembimbing Industri</span>
                                 <span class="fw-semibold text-dark font-heading" style="font-size: 14px; line-height: 1.4;">
-                                    {{ $penempatan->pembimbingIndustri ? $penempatan->pembimbingIndustri->nama : ($penempatan->dudi->pic_nama ? $penempatan->dudi->pic_nama . ' (' . $penempatan->dudi->pic_phone . ')' : 'Belum di-assign') }}
+                                    {{ $penempatan->pembimbingIndustri ? $penempatan->pembimbingIndustri->nama : ($penempatan->dudi?->pic_nama ? $penempatan->dudi->pic_nama . ' (' . $penempatan->dudi->pic_phone . ')' : 'Belum di-assign') }}
                                 </span>
                             </div>
                         </div>
@@ -450,7 +450,7 @@
                                     <ul class="ps-3 mb-0" style="font-size: 12px; color: var(--text-primary);">
                                         @foreach($dudiItem['placements'] as $placement)
                                             <li class="mb-1">
-                                                <strong>{{ $placement->murid->nama }}</strong> ({{ $placement->murid->kelas->nama }})
+                                                <strong>{{ $placement->murid?->nama ?? 'Murid' }}</strong> ({{ $placement->murid?->kelas?->nama ?? '-' }})
                                             </li>
                                         @endforeach
                                     </ul>

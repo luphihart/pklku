@@ -39,6 +39,13 @@ class SettingService
 
         $this->repo->saveSettings($settings);
 
+        try {
+            \Illuminate\Support\Facades\Cache::forget('global_school_settings');
+            \Illuminate\Support\Facades\Cache::forget('global_setting_hari_kerja');
+        } catch (\Throwable $e) {
+            // Ignore
+        }
+
         $this->logActivity("Mengubah konfigurasi sistem dan parameter branding aplikasi");
     }
 

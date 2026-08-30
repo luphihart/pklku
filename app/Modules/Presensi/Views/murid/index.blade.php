@@ -352,9 +352,9 @@
     function attendanceHandler() {
         return {
             placementId: "{{ $placement->id }}",
-            dudiLat: {{ $placement->dudi->latitude }},
-            dudiLng: {{ $placement->dudi->longitude }},
-            allowedRadius: {{ $placement->dudi->radius_meter }},
+            dudiLat: {{ $placement->dudi?->latitude ?? 0 }},
+            dudiLng: {{ $placement->dudi?->longitude ?? 0 }},
+            allowedRadius: {{ $placement->dudi?->radius_meter ?? 100 }},
             isWfa: {{ $placement && $placement->isWfaToday() ? 'true' : 'false' }},
             
             userLat: null,
