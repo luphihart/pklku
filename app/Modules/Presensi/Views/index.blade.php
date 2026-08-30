@@ -54,11 +54,19 @@
                             </td>
                             <td>
                                 <div class="fw-semibold">{{ $p->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</div>
-                                @if($p->is_wfa)
-                                    <span class="badge bg-primary-light text-primary" style="font-size: 11px;">🏠 Presensi WFA</span>
-                                @else
-                                    <span class="badge bg-secondary-light text-secondary" style="font-size: 11px;">🏢 Presensi WFO</span>
-                                @endif
+                                <div class="d-flex align-items-center gap-1 flex-wrap mt-1">
+                                    @if($p->is_wfa)
+                                        <span class="badge bg-primary-light text-primary" style="font-size: 11px;">🏠 WFA</span>
+                                    @else
+                                        <span class="badge bg-secondary-light text-secondary" style="font-size: 11px;">🏢 WFO</span>
+                                    @endif
+
+                                    @if($p->shift_harian === 'pagi')
+                                        <span class="badge bg-success-light text-success" style="font-size: 11px;">🌅 Shift Pagi</span>
+                                    @elseif($p->shift_harian === 'siang')
+                                        <span class="badge bg-warning-light text-warning" style="font-size: 11px;">🌆 Shift Siang</span>
+                                    @endif
+                                </div>
                             </td>
                             <td class="text-center fw-semibold text-success">
                                 {{ $p->jam_masuk ? substr($p->jam_masuk, 0, 5) : '-' }}

@@ -116,7 +116,8 @@
 
         @php
             $isWfaToday = $placement ? $placement->isWfaToday() : false;
-            $shiftInfo = $placement ? $placement->getEffectiveShiftHours() : null;
+            $activeShift = ($today && $today->shift_harian) ? $today->shift_harian : null;
+            $shiftInfo = $placement ? $placement->getEffectiveShiftHours($activeShift) : null;
         @endphp
 
         <div class="row">
@@ -143,9 +144,16 @@
                                 <span class="badge bg-indigo-light text-indigo fw-semibold" style="font-size: 12px; background-color: rgba(79, 70, 229, 0.12); color: #4f46e5;">
                                     ⏱️ {{ $shiftInfo['label'] }}
                                 </span>
+                                @if(($placement->tipe_shift ?? 'reguler') === 'rolling' && !$activeShift)
+                                    <span class="badge bg-purple-light text-purple" style="font-size: 11px; background-color: rgba(147, 51, 234, 0.1); color: #9333ea;">Auto-Detect Saat Check-In</span>
+                                @endif
                             </div>
                             <div class="small text-muted" style="font-size: 12px;">
-                                Batas Tepat Waktu: <strong class="text-dark">{{ $shiftInfo['batas_terlambat'] }}</strong> | Mulai Pulang: <strong class="text-dark">{{ $shiftInfo['jam_pulang'] }}</strong>
+                                @if(($placement->tipe_shift ?? 'reguler') === 'rolling' && !$activeShift)
+                                    Buka Pagi: <strong class="text-dark">{{ substr($globalSettings['shift_pagi_masuk'] ?? '06:30', 0, 5) }}</strong> | Buka Siang: <strong class="text-dark">{{ substr($globalSettings['shift_siang_masuk'] ?? '13:00', 0, 5) }}</strong>
+                                @else
+                                    Batas Tepat Waktu: <strong class="text-dark">{{ $shiftInfo['batas_terlambat'] }}</strong> | Mulai Pulang: <strong class="text-dark">{{ $shiftInfo['jam_pulang'] }}</strong>
+                                @endif
                             </div>
                         </div>
                     @endif

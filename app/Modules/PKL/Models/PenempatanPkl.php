@@ -101,6 +101,49 @@ class PenempatanPkl extends Model
             ];
         }
 
+        if ($tipe === 'rolling') {
+            if ($detectedShift === 'pagi') {
+                $pagiMasuk       = $settings['shift_pagi_masuk'] ?? '06:30';
+                $pagiTerlambat   = $settings['shift_pagi_terlambat'] ?? '07:15';
+                $pagiPulang      = $settings['shift_pagi_pulang'] ?? '14:30';
+                $pagiTutupPulang = $settings['shift_pagi_tutup_pulang'] ?? '21:00';
+                return [
+                    'tipe'             => 'rolling',
+                    'active_shift'     => 'pagi',
+                    'label'            => 'Rolling: Shift Pagi (' . substr($pagiMasuk, 0, 5) . ' - ' . substr($pagiPulang, 0, 5) . ')',
+                    'jam_masuk'        => substr($pagiMasuk, 0, 5),
+                    'batas_terlambat'   => substr($pagiTerlambat, 0, 5),
+                    'jam_pulang'       => substr($pagiPulang, 0, 5),
+                    'tutup_jam_pulang' => substr($pagiTutupPulang, 0, 5),
+                ];
+            }
+            if ($detectedShift === 'siang') {
+                $siangMasuk       = $settings['shift_siang_masuk'] ?? '13:00';
+                $siangTerlambat   = $settings['shift_siang_terlambat'] ?? '13:30';
+                $siangPulang      = $settings['shift_siang_pulang'] ?? '21:00';
+                $siangTutupPulang = $settings['shift_siang_tutup_pulang'] ?? '23:59';
+                return [
+                    'tipe'             => 'rolling',
+                    'active_shift'     => 'siang',
+                    'label'            => 'Rolling: Shift Siang (' . substr($siangMasuk, 0, 5) . ' - ' . substr($siangPulang, 0, 5) . ')',
+                    'jam_masuk'        => substr($siangMasuk, 0, 5),
+                    'batas_terlambat'   => substr($siangTerlambat, 0, 5),
+                    'jam_pulang'       => substr($siangPulang, 0, 5),
+                    'tutup_jam_pulang' => substr($siangTutupPulang, 0, 5),
+                ];
+            }
+
+            return [
+                'tipe'             => 'rolling',
+                'active_shift'     => null,
+                'label'            => 'Rolling (Auto-Detect Pagi/Siang)',
+                'jam_masuk'        => substr($settings['shift_pagi_masuk'] ?? '06:30', 0, 5),
+                'batas_terlambat'   => substr($settings['shift_pagi_terlambat'] ?? '07:15', 0, 5),
+                'jam_pulang'       => substr($settings['shift_pagi_pulang'] ?? '14:30', 0, 5),
+                'tutup_jam_pulang' => substr($settings['shift_siang_tutup_pulang'] ?? '23:59', 0, 5),
+            ];
+        }
+
         // Reguler (default)
         return [
             'tipe'             => 'reguler',

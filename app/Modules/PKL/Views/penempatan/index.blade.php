@@ -234,7 +234,9 @@
                                         @php
                                             $shiftInfo = $p->getEffectiveShiftHours();
                                         @endphp
-                                        @if(($p->tipe_shift ?? 'reguler') === 'pagi')
+                                        @if(($p->tipe_shift ?? 'reguler') === 'rolling')
+                                            <span class="badge bg-purple-light text-purple fw-semibold" style="background-color: rgba(147, 51, 234, 0.12); color: #9333ea;" title="Rolling Shift (Auto-Detect Pagi/Siang)">🔄 Rolling</span>
+                                        @elseif(($p->tipe_shift ?? 'reguler') === 'pagi')
                                             <span class="badge bg-success-light text-success fw-semibold" title="{{ $shiftInfo['label'] }}">🌅 Pagi</span>
                                         @elseif(($p->tipe_shift ?? 'reguler') === 'siang')
                                             <span class="badge bg-warning-light text-warning fw-semibold" title="{{ $shiftInfo['label'] }}">🌆 Siang</span>
@@ -523,6 +525,12 @@
                                     </label>
                                 </div>
                                 <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_rolling" value="rolling" onchange="toggleMassShiftCustom(this.value)">
+                                    <label class="form-check-label small" for="mass_shift_rolling">
+                                        🔄 Rolling (Auto-Detect Pagi/Siang)
+                                    </label>
+                                </div>
+                                <div class="form-check">
                                     <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_custom" value="custom" onchange="toggleMassShiftCustom(this.value)">
                                     <label class="form-check-label small" for="mass_shift_custom">
                                         ⚙️ Kustom Jam Khusus
@@ -689,6 +697,12 @@
                                     <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_siang_{{ $p->id }}" value="siang" {{ $currentShift === 'siang' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
                                     <label class="form-check-label small" for="edit_shift_siang_{{ $p->id }}">
                                         🌆 Shift Siang
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_rolling_{{ $p->id }}" value="rolling" {{ $currentShift === 'rolling' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
+                                    <label class="form-check-label small" for="edit_shift_rolling_{{ $p->id }}">
+                                        🔄 Rolling (Auto-Detect)
                                     </label>
                                 </div>
                                 <div class="form-check">

@@ -85,21 +85,50 @@ class AttendanceService
             throw new \Exception("Anda sudah melakukan Check In hari ini.");
         }
 
-        // 0.1. Fetch Placement and Effective Shift Hours
+        // 0.1. Fetch Placement and Determine Shift Hours
         $placement = \App\Modules\PKL\Models\PenempatanPkl::with(['dudi', 'murid'])->findOrFail($placementId);
-        $shiftHours = $placement->getEffectiveShiftHours();
+        $nowTime = now()->toTimeString();
+        $detectedShift = $placement->tipe_shift ?? 'reguler';
 
-        $jamMasukLimit  = $shiftHours['jam_masuk'] . ':00';
-        $batasTerlambat = $shiftHours['batas_terlambat'] . ':00';
-        $tutupJamPulang = $shiftHours['tutup_jam_pulang'] . ':00';
-        $nowTime        = now()->toTimeString();
+        if ($placement->tipe_shift === 'rolling') {
+            $settings = Setting::whereIn('key', [
+                'shift_pagi_masuk', 'shift_pagi_terlambat', 'shift_pagi_pulang', 'shift_pagi_tutup_pulang',
+                'shift_siang_masuk', 'shift_siang_terlambat', 'shift_siang_pulang', 'shift_siang_tutup_pulang'
+            ])->pluck('value', 'key');
 
-        if ($nowTime < $jamMasukLimit) {
-            throw new \Exception("Presensi Check-In belum dibuka! Presensi " . $shiftHours['label'] . " dibuka mulai pukul " . substr($jamMasukLimit, 0, 5) . ".");
-        }
+            $pagiMasuk       = ($settings->get('shift_pagi_masuk') ?: '06:30') . ':00';
+            $pagiTerlambat   = ($settings->get('shift_pagi_terlambat') ?: '07:15') . ':00';
+            $pagiTutupPulang = ($settings->get('shift_pagi_tutup_pulang') ?: '21:00') . ':00';
 
-        if ($nowTime > $tutupJamPulang) {
-            throw new \Exception("Batas waktu presensi untuk " . $shiftHours['label'] . " telah berakhir (Pukul " . substr($tutupJamPulang, 0, 5) . ").");
+            $siangMasuk       = ($settings->get('shift_siang_masuk') ?: '13:00') . ':00';
+            $siangTerlambat   = ($settings->get('shift_siang_terlambat') ?: '13:30') . ':00';
+            $siangTutupPulang = ($settings->get('shift_siang_tutup_pulang') ?: '23:59') . ':59';
+
+            if ($nowTime >= $pagiMasuk && $nowTime < $siangMasuk) {
+                $detectedShift = 'pagi';
+                $batasTerlambat = $pagiTerlambat;
+                $shiftLabel = 'Shift Pagi';
+            } elseif ($nowTime >= $siangMasuk && $nowTime <= $siangTutupPulang) {
+                $detectedShift = 'siang';
+                $batasTerlambat = $siangTerlambat;
+                $shiftLabel = 'Shift Siang';
+            } else {
+                throw new \Exception("Presensi Check-In ditolak! Jam saat ini (" . substr($nowTime, 0, 5) . ") belum masuk jam buka Shift Pagi (" . substr($pagiMasuk, 0, 5) . ") maupun Shift Siang (" . substr($siangMasuk, 0, 5) . ").");
+            }
+        } else {
+            $shiftHours = $placement->getEffectiveShiftHours();
+            $jamMasukLimit  = $shiftHours['jam_masuk'] . ':00';
+            $batasTerlambat = $shiftHours['batas_terlambat'] . ':00';
+            $tutupJamPulang = $shiftHours['tutup_jam_pulang'] . ':00';
+            $shiftLabel     = $shiftHours['label'];
+
+            if ($nowTime < $jamMasukLimit) {
+                throw new \Exception("Presensi Check-In belum dibuka! Presensi " . $shiftLabel . " dibuka mulai pukul " . substr($jamMasukLimit, 0, 5) . ".");
+            }
+
+            if ($nowTime > $tutupJamPulang) {
+                throw new \Exception("Batas waktu presensi untuk " . $shiftLabel . " telah berakhir (Pukul " . substr($tutupJamPulang, 0, 5) . ").");
+            }
         }
 
         $settings = Setting::whereIn('key', ['radius_presensi'])->pluck('value', 'key');
@@ -150,6 +179,7 @@ class AttendanceService
             'lng_masuk' => $lng,
             'foto_masuk' => $filename,
             'status_masuk' => $statusMasuk,
+            'shift_harian' => $detectedShift,
             'is_wfa' => $isWfaToday ? 1 : 0,
         ]);
     }
@@ -174,7 +204,8 @@ class AttendanceService
 
         // 0.2. Fetch Placement and Effective Shift Hours
         $placement = \App\Modules\PKL\Models\PenempatanPkl::with(['dudi', 'murid'])->findOrFail($placementId);
-        $shiftHours = $placement->getEffectiveShiftHours();
+        $recordedShift = $attendance->shift_harian ?: ($placement->tipe_shift ?? 'reguler');
+        $shiftHours = $placement->getEffectiveShiftHours($recordedShift);
 
         $jamPulangLimit = $shiftHours['jam_pulang'] . ':00';
         $tutupJamPulang = $shiftHours['tutup_jam_pulang'] . ':00';

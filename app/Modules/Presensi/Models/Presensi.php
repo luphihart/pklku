@@ -21,6 +21,7 @@ class Presensi extends Model
         'foto_pulang',
         'status_masuk',
         'status_pulang',
+        'shift_harian',
         'is_wfa',
     ];
 
