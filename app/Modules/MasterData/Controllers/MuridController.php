@@ -25,6 +25,12 @@ class MuridController extends Controller
         return view('masterdata::murid.index', compact('murids', 'kelas'));
     }
 
+    public function export(Request $request)
+    {
+        $exporter = new \App\Modules\MasterData\Exports\MuridExport($request->only('kelas_id', 'search'));
+        return $exporter->generate();
+    }
+
     public function create()
     {
         $kelas = Kelas::all();

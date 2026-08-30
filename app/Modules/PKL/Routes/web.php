@@ -8,6 +8,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     // Admin only routes for Plotting Penempatan
     Route::middleware('role:admin')->group(function () {
         Route::get('/penempatan', [PenempatanController::class, 'index'])->name('penempatan.index');
+        Route::get('/penempatan/export', [PenempatanController::class, 'export'])->name('penempatan.export');
         Route::post('/penempatan/massal', [PenempatanController::class, 'storeMassal'])->name('penempatan.store_massal');
         Route::put('/penempatan/{id}', [PenempatanController::class, 'update'])->name('penempatan.update');
         Route::delete('/penempatan/{id}', [PenempatanController::class, 'destroy'])->name('penempatan.destroy');

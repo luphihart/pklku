@@ -22,6 +22,12 @@ class DudiController extends Controller
         return view('masterdata::dudi.index', compact('dudis'));
     }
 
+    public function export(Request $request)
+    {
+        $exporter = new \App\Modules\MasterData\Exports\DudiExport($request->only('search', 'sort'));
+        return $exporter->generate();
+    }
+
     public function create()
     {
         return view('masterdata::dudi.create');

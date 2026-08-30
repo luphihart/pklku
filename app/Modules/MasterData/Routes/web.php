@@ -19,6 +19,11 @@ Route::middleware(['web', 'auth', 'role:admin'])->group(function () {
     Route::post('/master/murid/bulk-reset-password', [MuridController::class, 'resetPasswordBulk'])->name('murid.reset_password_bulk');
     Route::post('/master/guru/bulk-reset-password', [GuruController::class, 'resetPasswordBulk'])->name('guru.reset_password_bulk');
 
+    // Export Excel Routes
+    Route::get('/master/murid/export', [MuridController::class, 'export'])->name('murid.export');
+    Route::get('/master/guru/export', [GuruController::class, 'export'])->name('guru.export');
+    Route::get('/master/dudi/export', [DudiController::class, 'export'])->name('dudi.export');
+
     // CRUD Resources
     Route::resource('/master/murid', MuridController::class)->except(['show']);
     Route::resource('/master/guru', GuruController::class)->except(['show']);

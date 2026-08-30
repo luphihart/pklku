@@ -20,7 +20,14 @@
     <!-- Action Header -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
         <h5 class="fw-bold font-heading m-0 text-dark dark-text-light">Daftar Seluruh Murid</h5>
-        <div class="d-flex gap-2 mt-2 mt-sm-0">
+        <div class="d-flex gap-2 mt-2 mt-sm-0 flex-wrap">
+            <!-- Export Excel Button -->
+            <a href="{{ route('murid.export', request()->query()) }}" class="btn btn-sm btn-outline-success d-flex align-items-center">
+                <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Ekspor Excel
+            </a>
             <!-- Trigger Import Modal -->
             <button class="btn btn-sm btn-outline-primary d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#importModal">
                 <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -22,6 +22,12 @@ class GuruController extends Controller
         return view('masterdata::guru.index', compact('gurus'));
     }
 
+    public function export(Request $request)
+    {
+        $exporter = new \App\Modules\MasterData\Exports\GuruExport($request->only('search'));
+        return $exporter->generate();
+    }
+
     public function create()
     {
         return view('masterdata::guru.create');

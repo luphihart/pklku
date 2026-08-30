@@ -41,6 +41,12 @@ class PenempatanController extends Controller
         return view('pkl::penempatan.index', compact('placements', 'dudis', 'gurus', 'unassignedStudents', 'kelasOptions'));
     }
 
+    public function export(Request $request)
+    {
+        $exporter = new \App\Modules\PKL\Exports\PenempatanExport($request->only('status', 'dudi_id', 'guru_id', 'search'));
+        return $exporter->generate();
+    }
+
     public function storeMassal(Request $request)
     {
         $request->validate([
