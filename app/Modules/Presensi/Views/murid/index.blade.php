@@ -118,6 +118,7 @@
             $isWfaToday = $placement ? $placement->isWfaToday() : false;
             $activeShift = ($today && $today->shift_harian) ? $today->shift_harian : null;
             $shiftInfo = $placement ? $placement->getEffectiveShiftHours($activeShift) : null;
+            $globalSettings = \App\Modules\Setting\Models\Setting::pluck('value', 'key');
         @endphp
 
         <div class="row">
@@ -150,7 +151,7 @@
                             </div>
                             <div class="small text-muted" style="font-size: 12px;">
                                 @if(($placement->tipe_shift ?? 'reguler') === 'rolling' && !$activeShift)
-                                    Buka Pagi: <strong class="text-dark">{{ substr($globalSettings['shift_pagi_masuk'] ?? '06:30', 0, 5) }}</strong> | Buka Siang: <strong class="text-dark">{{ substr($globalSettings['shift_siang_masuk'] ?? '13:00', 0, 5) }}</strong>
+                                    Buka Pagi: <strong class="text-dark">{{ substr($globalSettings['shift_pagi_masuk'] ?? '07:00', 0, 5) }}</strong> | Buka Siang: <strong class="text-dark">{{ substr($globalSettings['shift_siang_masuk'] ?? '11:00', 0, 5) }}</strong> | Buka Sore: <strong class="text-dark">{{ substr($globalSettings['shift_sore_masuk'] ?? '15:00', 0, 5) }}</strong>
                                 @else
                                     Batas Tepat Waktu: <strong class="text-dark">{{ $shiftInfo['batas_terlambat'] }}</strong> | Mulai Pulang: <strong class="text-dark">{{ $shiftInfo['jam_pulang'] }}</strong>
                                 @endif

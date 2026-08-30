@@ -507,41 +507,69 @@
                         <div class="col-md-12 mb-3">
                             <label class="form-label small fw-semibold">7. Pengaturan Shift & Jam Kerja Siswa</label>
                             <small class="text-muted d-block mb-2" style="font-size: 12px;">Pilih template shift standar sekolah atau atur jam kerja mandiri khusus untuk penempatan ini:</small>
-                            <div class="d-flex flex-wrap gap-3 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_reguler" value="reguler" checked onchange="toggleMassShiftCustom(this.value)">
-                                    <label class="form-check-label small" for="mass_shift_reguler">
-                                        🏢 Reguler ({{ substr($globalSettings['jam_masuk'] ?? '06:00', 0, 5) }} - {{ substr($globalSettings['jam_pulang'] ?? '15:00', 0, 5) }})
+                            <!-- Grouped Shift Options -->
+                            <div class="row g-2 mb-3">
+                                <!-- Category A: Standar Sekolah -->
+                                <div class="col-12">
+                                    <span class="text-muted d-block small mb-1 fw-bold text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">A. Template Jam Standar Sekolah:</span>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <label class="d-flex align-items-center gap-2 p-2 border rounded cursor-pointer h-100" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;" for="mass_shift_reguler">
+                                        <input class="form-check-input m-0 flex-shrink-0" type="radio" name="tipe_shift" id="mass_shift_reguler" value="reguler" checked onchange="toggleMassShiftCustom(this.value)">
+                                        <div>
+                                            <strong class="d-block small text-dark font-heading">🏢 Reguler</strong>
+                                            <small class="text-muted d-block" style="font-size: 11px;">{{ substr($globalSettings['jam_masuk'] ?? '08:00', 0, 5) }} - {{ substr($globalSettings['jam_pulang'] ?? '16:00', 0, 5) }}</small>
+                                        </div>
                                     </label>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_pagi" value="pagi" onchange="toggleMassShiftCustom(this.value)">
-                                    <label class="form-check-label small" for="mass_shift_pagi">
-                                        🌅 Shift Pagi ({{ substr($globalSettings['shift_pagi_masuk'] ?? '06:30', 0, 5) }} - {{ substr($globalSettings['shift_pagi_pulang'] ?? '14:30', 0, 5) }})
+                                <div class="col-md-3 col-6">
+                                    <label class="d-flex align-items-center gap-2 p-2 border rounded cursor-pointer h-100" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;" for="mass_shift_pagi">
+                                        <input class="form-check-input m-0 flex-shrink-0" type="radio" name="tipe_shift" id="mass_shift_pagi" value="pagi" onchange="toggleMassShiftCustom(this.value)">
+                                        <div>
+                                            <strong class="d-block small text-success font-heading">🌅 Shift Pagi</strong>
+                                            <small class="text-muted d-block" style="font-size: 11px;">{{ substr($globalSettings['shift_pagi_masuk'] ?? '07:00', 0, 5) }} - {{ substr($globalSettings['shift_pagi_pulang'] ?? '16:00', 0, 5) }}</small>
+                                        </div>
                                     </label>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_siang" value="siang" onchange="toggleMassShiftCustom(this.value)">
-                                    <label class="form-check-label small" for="mass_shift_siang">
-                                        🌆 Shift Siang ({{ substr($globalSettings['shift_siang_masuk'] ?? '11:00', 0, 5) }} - {{ substr($globalSettings['shift_siang_pulang'] ?? '19:00', 0, 5) }})
+                                <div class="col-md-3 col-6">
+                                    <label class="d-flex align-items-center gap-2 p-2 border rounded cursor-pointer h-100" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;" for="mass_shift_siang">
+                                        <input class="form-check-input m-0 flex-shrink-0" type="radio" name="tipe_shift" id="mass_shift_siang" value="siang" onchange="toggleMassShiftCustom(this.value)">
+                                        <div>
+                                            <strong class="d-block small text-warning font-heading">🌆 Shift Siang</strong>
+                                            <small class="text-muted d-block" style="font-size: 11px;">{{ substr($globalSettings['shift_siang_masuk'] ?? '11:00', 0, 5) }} - {{ substr($globalSettings['shift_siang_pulang'] ?? '19:00', 0, 5) }}</small>
+                                        </div>
                                     </label>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_sore" value="sore" onchange="toggleMassShiftCustom(this.value)">
-                                    <label class="form-check-label small" for="mass_shift_sore">
-                                        🌇 Shift Sore ({{ substr($globalSettings['shift_sore_masuk'] ?? '15:00', 0, 5) }} - {{ substr($globalSettings['shift_sore_pulang'] ?? '21:00', 0, 5) }})
+                                <div class="col-md-3 col-6">
+                                    <label class="d-flex align-items-center gap-2 p-2 border rounded cursor-pointer h-100" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;" for="mass_shift_sore">
+                                        <input class="form-check-input m-0 flex-shrink-0" type="radio" name="tipe_shift" id="mass_shift_sore" value="sore" onchange="toggleMassShiftCustom(this.value)">
+                                        <div>
+                                            <strong class="d-block small font-heading" style="color: #ea580c;">🌇 Shift Sore</strong>
+                                            <small class="text-muted d-block" style="font-size: 11px;">{{ substr($globalSettings['shift_sore_masuk'] ?? '15:00', 0, 5) }} - {{ substr($globalSettings['shift_sore_pulang'] ?? '21:00', 0, 5) }}</small>
+                                        </div>
                                     </label>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_rolling" value="rolling" onchange="toggleMassShiftCustom(this.value)">
-                                    <label class="form-check-label small" for="mass_shift_rolling">
-                                        🔄 Rolling (Auto-Detect)
+
+                                <!-- Category B: Fleksibel / Dinamis -->
+                                <div class="col-12 mt-2">
+                                    <span class="text-muted d-block small mb-1 fw-bold text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">B. Opsi Fleksibel / Dinamis:</span>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <label class="d-flex align-items-center gap-2 p-2 border rounded cursor-pointer h-100" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;" for="mass_shift_rolling">
+                                        <input class="form-check-input m-0 flex-shrink-0" type="radio" name="tipe_shift" id="mass_shift_rolling" value="rolling" onchange="toggleMassShiftCustom(this.value)">
+                                        <div>
+                                            <strong class="d-block small font-heading" style="color: #9333ea;">🔄 Rolling Shift (Smart Auto-Detect)</strong>
+                                            <small class="text-muted d-block" style="font-size: 11px;">Otomatis tentukan Pagi/Siang/Sore sesuai waktu check-in siswa.</small>
+                                        </div>
                                     </label>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_custom" value="custom" onchange="toggleMassShiftCustom(this.value)">
-                                    <label class="form-check-label small" for="mass_shift_custom">
-                                        ⚙️ Kustom Jam Khusus
+                                <div class="col-md-6 col-12">
+                                    <label class="d-flex align-items-center gap-2 p-2 border rounded cursor-pointer h-100" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;" for="mass_shift_custom">
+                                        <input class="form-check-input m-0 flex-shrink-0" type="radio" name="tipe_shift" id="mass_shift_custom" value="custom" onchange="toggleMassShiftCustom(this.value)">
+                                        <div>
+                                            <strong class="d-block small font-heading" style="color: #4f46e5;">⚙️ Kustom Jam Mandiri</strong>
+                                            <small class="text-muted d-block" style="font-size: 11px;">Tentukan jam masuk, batas telat, & jam pulang khusus murid ini.</small>
+                                        </div>
                                     </label>
                                 </div>
                             </div>
@@ -688,41 +716,69 @@
                         <div class="mb-3">
                             <label class="form-label small fw-semibold">Pengaturan Shift & Jam Kerja Siswa</label>
                             <small class="text-muted d-block mb-2" style="font-size: 12px;">Pilih template shift standar sekolah atau atur jam kerja mandiri khusus:</small>
-                            <div class="d-flex flex-wrap gap-3 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_reguler_{{ $p->id }}" value="reguler" {{ $currentShift === 'reguler' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
-                                    <label class="form-check-label small" for="edit_shift_reguler_{{ $p->id }}">
-                                        🏢 Reguler
+                            <!-- Grouped Shift Options -->
+                            <div class="row g-2 mb-3">
+                                <!-- Category A: Standar Sekolah -->
+                                <div class="col-12">
+                                    <span class="text-muted d-block small mb-1 fw-bold text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">A. Template Jam Standar Sekolah:</span>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <label class="d-flex align-items-center gap-2 p-2 border rounded cursor-pointer h-100" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;" for="edit_shift_reguler_{{ $p->id }}">
+                                        <input class="form-check-input m-0 flex-shrink-0" type="radio" name="tipe_shift" id="edit_shift_reguler_{{ $p->id }}" value="reguler" {{ $currentShift === 'reguler' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
+                                        <div>
+                                            <strong class="d-block small text-dark font-heading">🏢 Reguler</strong>
+                                            <small class="text-muted d-block" style="font-size: 11px;">{{ substr($globalSettings['jam_masuk'] ?? '08:00', 0, 5) }}-{{ substr($globalSettings['jam_pulang'] ?? '16:00', 0, 5) }}</small>
+                                        </div>
                                     </label>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_pagi_{{ $p->id }}" value="pagi" {{ $currentShift === 'pagi' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
-                                    <label class="form-check-label small" for="edit_shift_pagi_{{ $p->id }}">
-                                        🌅 Shift Pagi
+                                <div class="col-md-3 col-6">
+                                    <label class="d-flex align-items-center gap-2 p-2 border rounded cursor-pointer h-100" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;" for="edit_shift_pagi_{{ $p->id }}">
+                                        <input class="form-check-input m-0 flex-shrink-0" type="radio" name="tipe_shift" id="edit_shift_pagi_{{ $p->id }}" value="pagi" {{ $currentShift === 'pagi' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
+                                        <div>
+                                            <strong class="d-block small text-success font-heading">🌅 Pagi</strong>
+                                            <small class="text-muted d-block" style="font-size: 11px;">{{ substr($globalSettings['shift_pagi_masuk'] ?? '07:00', 0, 5) }}-{{ substr($globalSettings['shift_pagi_pulang'] ?? '16:00', 0, 5) }}</small>
+                                        </div>
                                     </label>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_siang_{{ $p->id }}" value="siang" {{ $currentShift === 'siang' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
-                                    <label class="form-check-label small" for="edit_shift_siang_{{ $p->id }}">
-                                        🌆 Shift Siang
+                                <div class="col-md-3 col-6">
+                                    <label class="d-flex align-items-center gap-2 p-2 border rounded cursor-pointer h-100" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;" for="edit_shift_siang_{{ $p->id }}">
+                                        <input class="form-check-input m-0 flex-shrink-0" type="radio" name="tipe_shift" id="edit_shift_siang_{{ $p->id }}" value="siang" {{ $currentShift === 'siang' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
+                                        <div>
+                                            <strong class="d-block small text-warning font-heading">🌆 Siang</strong>
+                                            <small class="text-muted d-block" style="font-size: 11px;">{{ substr($globalSettings['shift_siang_masuk'] ?? '11:00', 0, 5) }}-{{ substr($globalSettings['shift_siang_pulang'] ?? '19:00', 0, 5) }}</small>
+                                        </div>
                                     </label>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_sore_{{ $p->id }}" value="sore" {{ $currentShift === 'sore' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
-                                    <label class="form-check-label small" for="edit_shift_sore_{{ $p->id }}">
-                                        🌇 Shift Sore
+                                <div class="col-md-3 col-6">
+                                    <label class="d-flex align-items-center gap-2 p-2 border rounded cursor-pointer h-100" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;" for="edit_shift_sore_{{ $p->id }}">
+                                        <input class="form-check-input m-0 flex-shrink-0" type="radio" name="tipe_shift" id="edit_shift_sore_{{ $p->id }}" value="sore" {{ $currentShift === 'sore' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
+                                        <div>
+                                            <strong class="d-block small font-heading" style="color: #ea580c;">🌇 Sore</strong>
+                                            <small class="text-muted d-block" style="font-size: 11px;">{{ substr($globalSettings['shift_sore_masuk'] ?? '15:00', 0, 5) }}-{{ substr($globalSettings['shift_sore_pulang'] ?? '21:00', 0, 5) }}</small>
+                                        </div>
                                     </label>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_rolling_{{ $p->id }}" value="rolling" {{ $currentShift === 'rolling' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
-                                    <label class="form-check-label small" for="edit_shift_rolling_{{ $p->id }}">
-                                        🔄 Rolling (Auto-Detect)
+
+                                <!-- Category B: Fleksibel / Dinamis -->
+                                <div class="col-12 mt-2">
+                                    <span class="text-muted d-block small mb-1 fw-bold text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">B. Opsi Fleksibel / Dinamis:</span>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <label class="d-flex align-items-center gap-2 p-2 border rounded cursor-pointer h-100" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;" for="edit_shift_rolling_{{ $p->id }}">
+                                        <input class="form-check-input m-0 flex-shrink-0" type="radio" name="tipe_shift" id="edit_shift_rolling_{{ $p->id }}" value="rolling" {{ $currentShift === 'rolling' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
+                                        <div>
+                                            <strong class="d-block small font-heading" style="color: #9333ea;">🔄 Rolling (Smart Auto-Detect)</strong>
+                                            <small class="text-muted d-block" style="font-size: 11px;">Otomatis tentukan shift saat check-in.</small>
+                                        </div>
                                     </label>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_custom_{{ $p->id }}" value="custom" {{ $currentShift === 'custom' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
-                                    <label class="form-check-label small" for="edit_shift_custom_{{ $p->id }}">
-                                        ⚙️ Kustom Jam
+                                <div class="col-md-6 col-12">
+                                    <label class="d-flex align-items-center gap-2 p-2 border rounded cursor-pointer h-100" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;" for="edit_shift_custom_{{ $p->id }}">
+                                        <input class="form-check-input m-0 flex-shrink-0" type="radio" name="tipe_shift" id="edit_shift_custom_{{ $p->id }}" value="custom" {{ $currentShift === 'custom' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
+                                        <div>
+                                            <strong class="d-block small font-heading" style="color: #4f46e5;">⚙️ Kustom Jam Mandiri</strong>
+                                            <small class="text-muted d-block" style="font-size: 11px;">Atur jam khusus untuk murid ini.</small>
+                                        </div>
                                     </label>
                                 </div>
                             </div>
