@@ -61,54 +61,62 @@ class PenempatanController extends Controller
             'hari_wfa' => 'nullable|array',
             'hari_libur' => 'nullable|array',
             'tipe_shift' => 'nullable|in:reguler,pagi,siang,custom',
-            'jam_masuk' => 'nullable|string|max:5',
-            'batas_terlambat' => 'nullable|string|max:5',
-            'jam_pulang' => 'nullable|string|max:5',
-            'tutup_jam_pulang' => 'nullable|string|max:5',
+            'jam_masuk' => 'nullable|string|max:8',
+            'batas_terlambat' => 'nullable|string|max:8',
+            'jam_pulang' => 'nullable|string|max:8',
+            'tutup_jam_pulang' => 'nullable|string|max:8',
         ], [
             'murid_ids.required' => 'Pilih minimal satu murid untuk ditempatkan.',
             'tanggal_selesai.after' => 'Tanggal selesai harus setelah tanggal mulai.',
         ]);
 
         $tipeKerja = $request->input('tipe_kerja', 'wfo');
-        $hariWfa = ($tipeKerja === 'hybrid' && $request->has('hari_wfa'))
-            ? implode(',', $request->input('hari_wfa', []))
+        $hariWfa = ($tipeKerja === 'hybrid' && $request->has('hari_wfa') && is_array($request->input('hari_wfa')))
+            ? implode(',', array_filter($request->input('hari_wfa', [])))
             : null;
 
-        $hariLibur = $request->has('hari_libur')
-            ? implode(',', $request->input('hari_libur', []))
+        $hariLibur = ($request->has('hari_libur') && is_array($request->input('hari_libur')) && count($request->input('hari_libur')) > 0)
+            ? implode(',', array_filter($request->input('hari_libur', [])))
             : null;
 
         $tipeShift = $request->input('tipe_shift', 'reguler');
-        $jamMasuk = $tipeShift === 'custom' ? $request->input('jam_masuk') : null;
-        $batasTerlambat = $tipeShift === 'custom' ? $request->input('batas_terlambat') : null;
-        $jamPulang = $tipeShift === 'custom' ? $request->input('jam_pulang') : null;
-        $tutupJamPulang = $tipeShift === 'custom' ? $request->input('tutup_jam_pulang') : null;
+        $jamMasuk = $tipeShift === 'custom' ? $this->sanitizeTime($request->input('jam_masuk')) : null;
+        $batasTerlambat = $tipeShift === 'custom' ? $this->sanitizeTime($request->input('batas_terlambat')) : null;
+        $jamPulang = $tipeShift === 'custom' ? $this->sanitizeTime($request->input('jam_pulang')) : null;
+        $tutupJamPulang = $tipeShift === 'custom' ? $this->sanitizeTime($request->input('tutup_jam_pulang')) : null;
 
-        $this->service->saveMassPlacement(
-            $request->murid_ids,
-            $request->dudi_id,
-            $request->guru_id,
-            $request->pembimbing_industri_id,
-            $request->tanggal_mulai,
-            $request->tanggal_selesai,
-            $tipeKerja,
-            $hariWfa,
-            $hariLibur,
-            $tipeShift,
-            $jamMasuk,
-            $batasTerlambat,
-            $jamPulang,
-            $tutupJamPulang
-        );
+        try {
+            $this->service->saveMassPlacement(
+                $request->murid_ids,
+                (int)$request->dudi_id,
+                (int)$request->guru_id,
+                $request->filled('pembimbing_industri_id') ? (int)$request->pembimbing_industri_id : null,
+                $request->tanggal_mulai,
+                $request->tanggal_selesai,
+                $tipeKerja,
+                $hariWfa,
+                $hariLibur,
+                $tipeShift,
+                $jamMasuk,
+                $batasTerlambat,
+                $jamPulang,
+                $tutupJamPulang
+            );
 
-        return redirect()->route('penempatan.index')->with('success', 'Plotting penempatan massal berhasil disimpan.');
+            return redirect()->route('penempatan.index')->with('success', 'Plotting penempatan massal berhasil disimpan.');
+        } catch (\Throwable $e) {
+            return redirect()->route('penempatan.index')->with('error', 'Gagal menyimpan penempatan massal: ' . $e->getMessage());
+        }
     }
 
     public function destroy(int $id)
     {
-        $this->service->removePlacement($id);
-        return redirect()->route('penempatan.index')->with('success', 'Penempatan murid berhasil dibatalkan/dihapus.');
+        try {
+            $this->service->removePlacement($id);
+            return redirect()->route('penempatan.index')->with('success', 'Penempatan murid berhasil dibatalkan/dihapus.');
+        } catch (\Throwable $e) {
+            return redirect()->route('penempatan.index')->with('error', 'Gagal menghapus penempatan: ' . $e->getMessage());
+        }
     }
 
     public function update(Request $request, int $id)
@@ -123,42 +131,66 @@ class PenempatanController extends Controller
             'hari_wfa' => 'nullable|array',
             'hari_libur' => 'nullable|array',
             'tipe_shift' => 'nullable|in:reguler,pagi,siang,custom',
-            'jam_masuk' => 'nullable|string|max:5',
-            'batas_terlambat' => 'nullable|string|max:5',
-            'jam_pulang' => 'nullable|string|max:5',
-            'tutup_jam_pulang' => 'nullable|string|max:5',
+            'jam_masuk' => 'nullable|string|max:8',
+            'batas_terlambat' => 'nullable|string|max:8',
+            'jam_pulang' => 'nullable|string|max:8',
+            'tutup_jam_pulang' => 'nullable|string|max:8',
         ], [
             'tanggal_selesai.after' => 'Tanggal selesai harus setelah tanggal mulai.',
         ]);
 
         $tipeKerja = $request->input('tipe_kerja', 'wfo');
-        $hariWfa = ($tipeKerja === 'hybrid' && $request->has('hari_wfa'))
-            ? implode(',', $request->input('hari_wfa', []))
+        $hariWfa = ($tipeKerja === 'hybrid' && $request->has('hari_wfa') && is_array($request->input('hari_wfa')))
+            ? implode(',', array_filter($request->input('hari_wfa', [])))
             : null;
 
-        $hariLibur = $request->has('hari_libur')
-            ? implode(',', $request->input('hari_libur', []))
+        $hariLibur = ($request->has('hari_libur') && is_array($request->input('hari_libur')) && count($request->input('hari_libur')) > 0)
+            ? implode(',', array_filter($request->input('hari_libur', [])))
             : null;
 
         $tipeShift = $request->input('tipe_shift', 'reguler');
-        $jamMasuk = $tipeShift === 'custom' ? $request->input('jam_masuk') : null;
-        $batasTerlambat = $tipeShift === 'custom' ? $request->input('batas_terlambat') : null;
-        $jamPulang = $tipeShift === 'custom' ? $request->input('jam_pulang') : null;
-        $tutupJamPulang = $tipeShift === 'custom' ? $request->input('tutup_jam_pulang') : null;
+        $jamMasuk = $tipeShift === 'custom' ? $this->sanitizeTime($request->input('jam_masuk')) : null;
+        $batasTerlambat = $tipeShift === 'custom' ? $this->sanitizeTime($request->input('batas_terlambat')) : null;
+        $jamPulang = $tipeShift === 'custom' ? $this->sanitizeTime($request->input('jam_pulang')) : null;
+        $tutupJamPulang = $tipeShift === 'custom' ? $this->sanitizeTime($request->input('tutup_jam_pulang')) : null;
 
-        $updateData = $request->only('dudi_id', 'guru_id', 'pembimbing_industri_id', 'tanggal_mulai', 'tanggal_selesai');
-        $updateData['tipe_kerja'] = $tipeKerja;
-        $updateData['hari_wfa'] = $hariWfa;
-        $updateData['hari_libur'] = $hariLibur;
-        $updateData['tipe_shift'] = $tipeShift;
-        $updateData['jam_masuk'] = $jamMasuk;
-        $updateData['batas_terlambat'] = $batasTerlambat;
-        $updateData['jam_pulang'] = $jamPulang;
-        $updateData['tutup_jam_pulang'] = $tutupJamPulang;
+        $updateData = [
+            'dudi_id'                => (int)$request->input('dudi_id'),
+            'guru_id'                => (int)$request->input('guru_id'),
+            'pembimbing_industri_id' => $request->filled('pembimbing_industri_id') ? (int)$request->input('pembimbing_industri_id') : null,
+            'tanggal_mulai'          => $request->input('tanggal_mulai'),
+            'tanggal_selesai'        => $request->input('tanggal_selesai'),
+            'tipe_kerja'             => $tipeKerja,
+            'hari_wfa'               => $hariWfa,
+            'hari_libur'             => $hariLibur,
+            'tipe_shift'             => $tipeShift,
+            'jam_masuk'              => $jamMasuk,
+            'batas_terlambat'        => $batasTerlambat,
+            'jam_pulang'             => $jamPulang,
+            'tutup_jam_pulang'       => $tutupJamPulang,
+        ];
 
-        $this->service->editPlacement($id, $updateData);
+        try {
+            $this->service->editPlacement($id, $updateData);
+            return redirect()->route('penempatan.index')->with('success', 'Detail penempatan murid berhasil diperbarui.');
+        } catch (\Throwable $e) {
+            return redirect()->route('penempatan.index')->with('error', 'Gagal memperbarui penempatan: ' . $e->getMessage());
+        }
+    }
 
-        return redirect()->route('penempatan.index')->with('success', 'Detail penempatan murid berhasil diperbarui.');
+    private function sanitizeTime(?string $time): ?string
+    {
+        if (empty($time)) {
+            return null;
+        }
+        $time = trim($time);
+        if (preg_match('/^(\d{1,2}):(\d{2})(:(\d{2}))?$/', $time, $matches)) {
+            $hours = (int)$matches[1];
+            $minutes = (int)$matches[2];
+            $seconds = isset($matches[4]) ? (int)$matches[4] : 0;
+            return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+        }
+        return null;
     }
 
     public function destroyBulk(Request $request)
