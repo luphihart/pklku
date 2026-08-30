@@ -63,14 +63,31 @@
                             </div>
                             <div class="col-md-4 text-center mb-3">
                                 <label class="form-label small fw-semibold d-block">Logo Sekolah</label>
-                                @if(!empty($settings['logo_sekolah']))
-                                    <img src="{{ asset('storage/branding/' . $settings['logo_sekolah']) }}" class="img-thumbnail mb-2" style="max-height: 100px; object-fit: contain;">
+                                @php
+                                    $settingLogo = $settings['logo_sekolah'] ?? null;
+                                    $hasCustomLogo = !empty($settingLogo) && (file_exists(public_path('storage/branding/' . $settingLogo)) || file_exists(public_path($settingLogo)));
+                                    $logoUrl = $hasCustomLogo ? (file_exists(public_path('storage/branding/' . $settingLogo)) ? asset('storage/branding/' . $settingLogo) : asset($settingLogo)) : null;
+                                @endphp
+                                @if($hasCustomLogo)
+                                    <div class="mb-2 position-relative d-inline-block">
+                                        <img src="{{ $logoUrl }}" class="img-thumbnail" style="max-height: 100px; max-width: 140px; object-fit: contain;">
+                                    </div>
+                                    <div class="form-check d-flex justify-content-center align-items-center gap-1 mb-2">
+                                        <input class="form-check-input mt-0" type="checkbox" name="hapus_logo" value="1" id="hapus_logo">
+                                        <label class="form-check-label small text-danger fw-semibold" for="hapus_logo" style="font-size: 11px;">
+                                            Hapus Logo (Gunakan Icon Default)
+                                        </label>
+                                    </div>
                                 @else
-                                    <div class="border rounded d-flex align-items-center justify-content-center mx-auto mb-2 text-muted" style="width: 100px; height: 100px; background-color: var(--bg-canvas);">
-                                        No Logo
+                                    <div class="border rounded d-flex flex-column align-items-center justify-content-center mx-auto mb-2 p-2" style="width: 100px; height: 100px; background-color: var(--bg-canvas);">
+                                        <div class="p-2 rounded-3 text-primary d-flex align-items-center justify-content-center bg-primary-light mb-1" style="width: 42px; height: 42px;">
+                                            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='var(--accent-primary)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' width="24" height="24"><path d='M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z'></path><path d='M12 11v6'></path><path d='M9 14h6'></path></svg>
+                                        </div>
+                                        <small class="text-muted" style="font-size: 10px;">Icon Default</small>
                                     </div>
                                 @endif
                                 <input type="file" name="logo" class="form-control form-control-sm" accept="image/*">
+                                <small class="text-muted d-block mt-1" style="font-size: 11px;">Format: PNG, JPG, JPEG, SVG (Maks. 1MB)</small>
                             </div>
                         </div>
 

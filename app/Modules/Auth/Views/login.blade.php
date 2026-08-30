@@ -95,9 +95,21 @@
 <div class="auth-card">
     <div class="login-card">
         <div class="text-center mb-4">
-            <div class="logo-badge">
-                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' width="28" height="28"><path d='M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z'></path><path d='M12 11v6'></path><path d='M9 14h6'></path></svg>
-            </div>
+            @php
+                $loginLogo = $globalSettings['logo_sekolah'] ?? null;
+                $hasCustomLogo = !empty($loginLogo) && (file_exists(public_path('storage/branding/' . $loginLogo)) || file_exists(public_path($loginLogo)));
+                $loginLogoUrl = $hasCustomLogo ? (file_exists(public_path('storage/branding/' . $loginLogo)) ? asset('storage/branding/' . $loginLogo) : asset($loginLogo)) : null;
+            @endphp
+
+            @if($hasCustomLogo)
+                <div class="mb-3 d-flex justify-content-center">
+                    <img src="{{ $loginLogoUrl }}" alt="Logo Sekolah" style="max-height: 68px; max-width: 140px; object-fit: contain;">
+                </div>
+            @else
+                <div class="logo-badge">
+                    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' width="28" height="28"><path d='M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z'></path><path d='M12 11v6'></path><path d='M9 14h6'></path></svg>
+                </div>
+            @endif
             <h3 class="fw-bold font-heading m-0" style="color: var(--text-primary); letter-spacing: -0.5px;">PKLku</h3>
             <p class="text-muted mt-1 mb-0" style="font-size: 13px;">Sistem Informasi Praktek Kerja Lapangan</p>
         </div>

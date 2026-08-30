@@ -54,7 +54,8 @@ class SettingController extends Controller
             $settings['bobot_nilai_guru'] = 100 - $request->bobot_nilai_industri;
         }
 
-        $this->service->updateSettings($settings, $request->file('logo'));
+        $hapusLogo = $request->boolean('hapus_logo');
+        $this->service->updateSettings($settings, $request->file('logo'), $hapusLogo);
 
         return redirect()->route('setting.index')->with('success', 'Konfigurasi parameter sistem berhasil diperbarui.');
     }

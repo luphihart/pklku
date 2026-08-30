@@ -27,13 +27,24 @@
         <!-- Sidebar -->
         <nav id="sidebar" aria-label="Navigasi Utama Sistem" :class="{ 'collapsed': !sidebarOpen, 'show': sidebarOpen }">
             <div class="sidebar-header d-flex align-items-center justify-content-between">
+                @php
+                    $sidebarLogo = $globalSettings['logo_sekolah'] ?? null;
+                    $hasCustomLogo = !empty($sidebarLogo) && (file_exists(public_path('storage/branding/' . $sidebarLogo)) || file_exists(public_path($sidebarLogo)));
+                    $sidebarLogoUrl = $hasCustomLogo ? (file_exists(public_path('storage/branding/' . $sidebarLogo)) ? asset('storage/branding/' . $sidebarLogo) : asset($sidebarLogo)) : null;
+                @endphp
                 <div class="d-flex align-items-center gap-2">
-                    <div class="p-2 rounded-3 text-primary d-flex align-items-center justify-content-center bg-primary-light">
-                        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='var(--accent-primary)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' width="22" height="22"><path d='M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z'></path><path d='M12 11v6'></path><path d='M9 14h6'></path></svg>
-                    </div>
-                    <div>
+                    @if($hasCustomLogo)
+                        <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
+                            <img src="{{ $sidebarLogoUrl }}" alt="Logo Sekolah" style="max-height: 38px; max-width: 38px; object-fit: contain;">
+                        </div>
+                    @else
+                        <div class="p-2 rounded-3 text-primary d-flex align-items-center justify-content-center bg-primary-light flex-shrink-0" style="width: 38px; height: 38px;">
+                            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='var(--accent-primary)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' width="22" height="22"><path d='M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z'></path><path d='M12 11v6'></path><path d='M9 14h6'></path></svg>
+                        </div>
+                    @endif
+                    <div style="min-width: 0;">
                         <h5 class="m-0 font-heading fw-bold" style="color: var(--accent-primary); letter-spacing: -0.5px; line-height: 1.2;">PKLku</h5>
-                        <small class="text-muted" style="font-size: 12px; font-weight: 500; display: block; margin-top: 1px;">{{ $globalSettings['nama_sekolah'] ?? 'SMK N 1' }}</small>
+                        <small class="text-muted text-truncate d-block" style="font-size: 12px; font-weight: 500; margin-top: 1px; max-width: 140px;" title="{{ $globalSettings['nama_sekolah'] ?? 'SMK Negeri 2 Pati' }}">{{ $globalSettings['nama_sekolah'] ?? 'SMK Negeri 2 Pati' }}</small>
                     </div>
                 </div>
                 <button class="btn btn-sm d-md-none border-0 text-secondary" @click="sidebarOpen = false" aria-label="Tutup navigasi sidebar">

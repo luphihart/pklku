@@ -19,12 +19,19 @@ class SettingService
     /**
      * Update settings and log to audit logs.
      */
-    public function updateSettings(array $settings, $logoFile = null)
+    public function updateSettings(array $settings, $logoFile = null, bool $hapusLogo = false)
     {
-        if ($logoFile) {
+        $targetDir = public_path('storage/branding');
+        if (!file_exists($targetDir)) {
+            @mkdir($targetDir, 0755, true);
+        }
+
+        if ($hapusLogo) {
+            $settings['logo_sekolah'] = null;
+        } elseif ($logoFile) {
             // Process and save logo
             $filename = 'logo_' . time() . '.' . $logoFile->getClientOriginalExtension();
-            $logoFile->move(public_path('storage/branding'), $filename);
+            $logoFile->move($targetDir, $filename);
             
             // Set the logo key setting
             $settings['logo_sekolah'] = $filename;
