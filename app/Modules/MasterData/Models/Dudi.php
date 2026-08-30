@@ -22,6 +22,16 @@ class Dudi extends Model
         'hari_kerja',
     ];
 
+    /**
+     * Cast koordinat sebagai string desimal agar presisi tidak hilang saat PHP
+     * mengkonversi ke float (floating-point binary rounding).
+     * Nilai disimpan di DB sebagai DECIMAL(10,7) sehingga selalu akurat.
+     */
+    protected $casts = [
+        'latitude'  => 'decimal:7',
+        'longitude' => 'decimal:7',
+    ];
+
     public function pembimbingIndustri()
     {
         return $this->hasMany(PembimbingIndustri::class, 'dudi_id');
