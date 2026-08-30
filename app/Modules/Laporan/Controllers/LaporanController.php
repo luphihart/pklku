@@ -14,14 +14,38 @@ use Illuminate\Support\Facades\Cache;
 
 class LaporanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Get placements with evaluations for PDF certificate downloads (paginated)
-        $placements = PenempatanPkl::with(['murid.kelas.jurusan', 'dudi', 'penilaianPkl'])
-            ->whereHas('penilaianPkl')
-            ->paginate(20);
+        $role = auth()->user()->role;
+        
+        $query = PenempatanPkl::with([
+            'murid.kelas.jurusan',
+            'dudi',
+            'guru',
+            'penilaianPkl',
+            'pembimbingIndustri'
+        ]);
 
-        return view('laporan::index', compact('placements'));
+        if ($role === 'guru') {
+            $query->where('guru_id', auth()->user()->guru?->id);
+        }
+
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function($q) use ($search) {
+                $q->whereHas('murid', function($sq) use ($search) {
+                    $sq->where('nama', 'like', "%{$search}%")
+                       ->orWhere('nis', 'like', "%{$search}%");
+                })->orWhereHas('dudi', function($sq) use ($search) {
+                    $sq->where('nama', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        $allPlacements = (clone $query)->whereIn('status', ['aktif', 'selesai'])->orderBy('status', 'asc')->get();
+        $placements = $query->orderBy('status', 'asc')->paginate(15)->withQueryString();
+
+        return view('laporan::index', compact('placements', 'allPlacements'));
     }
 
     /**
@@ -72,20 +96,247 @@ class LaporanController extends Controller
     }
 
     /**
-     * Download student journal as PDF.
-     * Admin & Guru dapat mengakses lewat ?placement_id=X
-     * Murid otomatis diarahkan ke penempatan aktif miliknya.
+     * Export attendance recap as PDF (Portrait for Daily, Landscape for Multi-day).
      */
-    public function downloadStudentJournalPdf(Request $request)
+    public function downloadPresensiRekapPdf(Request $request)
+    {
+        $request->validate([
+            'filter_type' => 'required|in:harian,mingguan,bulanan,kustom',
+            'tanggal' => 'required_if:filter_type,harian|nullable|date',
+            'minggu' => 'required_if:filter_type,mingguan|nullable|string',
+            'bulan' => 'required_if:filter_type,bulanan|nullable|string',
+            'tahun' => 'required_if:filter_type,bulanan|nullable|string',
+            'tanggal_mulai' => 'required_if:filter_type,kustom|nullable|date',
+            'tanggal_selesai' => 'required_if:filter_type,kustom|nullable|date|after_or_equal:tanggal_mulai',
+        ]);
+
+        $filterType = $request->filter_type;
+        $startDate = null;
+        $endDate = null;
+        $label = '';
+
+        switch ($filterType) {
+            case 'harian':
+                $date = $request->tanggal ?? now()->toDateString();
+                $startDate = $date;
+                $endDate = $date;
+                $label = 'Tanggal: ' . \Carbon\Carbon::parse($date)->translatedFormat('d F Y');
+                break;
+
+            case 'mingguan':
+                $weekStr = $request->minggu ?? date('Y-\WW');
+                if (preg_match('/(\d+)-W(\d+)/', $weekStr, $matches)) {
+                    $year = (int)$matches[1];
+                    $week = (int)$matches[2];
+                    $dto = new \DateTime();
+                    $dto->setISODate($year, $week);
+                    $startDate = $dto->format('Y-m-d');
+                    $dto->modify('+6 days');
+                    $endDate = $dto->format('Y-m-d');
+                    $label = 'Minggu Ke-' . $week . ' Tahun ' . $year . ' (' . \Carbon\Carbon::parse($startDate)->format('d/m/Y') . ' s/d ' . \Carbon\Carbon::parse($endDate)->format('d/m/Y') . ')';
+                } else {
+                    $startDate = now()->startOfWeek()->toDateString();
+                    $endDate = now()->endOfWeek()->toDateString();
+                    $label = 'Minggu Ini';
+                }
+                break;
+
+            case 'bulanan':
+                $month = $request->bulan ?? date('m');
+                $year = $request->tahun ?? date('Y');
+                $startDate = \Carbon\Carbon::create($year, $month, 1)->startOfMonth()->toDateString();
+                $endDate = \Carbon\Carbon::create($year, $month, 1)->endOfMonth()->toDateString();
+                $label = 'Periode Bulan: ' . \Carbon\Carbon::create($year, $month, 1)->translatedFormat('F Y');
+                break;
+
+            case 'kustom':
+                $startDate = $request->tanggal_mulai ?? now()->toDateString();
+                $endDate = $request->tanggal_selesai ?? now()->toDateString();
+                $label = 'Periode: ' . \Carbon\Carbon::parse($startDate)->format('d/m/Y') . ' s/d ' . \Carbon\Carbon::parse($endDate)->format('d/m/Y');
+                break;
+        }
+
+        // Generate dates in range
+        $dates = [];
+        $current = \Carbon\Carbon::parse($startDate);
+        $last = \Carbon\Carbon::parse($endDate);
+        while ($current->lessThanOrEqualTo($last)) {
+            $dates[] = $current->toDateString();
+            $current->addDay();
+        }
+
+        $role = auth()->user()->role;
+        $placementsQuery = PenempatanPkl::select(['id', 'murid_id', 'dudi_id', 'guru_id', 'status'])
+            ->with([
+                'murid:id,nama,nis,kelas_id',
+                'murid.kelas:id,nama',
+                'dudi:id,nama'
+            ])
+            ->where('status', 'aktif');
+
+        if ($role === 'guru') {
+            $placementsQuery->where('guru_id', auth()->user()->guru?->id);
+        }
+
+        $placements = $placementsQuery->get();
+        $placementIds = $placements->pluck('id')->toArray();
+
+        // Fetch presensi logs
+        $presensiList = \App\Modules\Presensi\Models\Presensi::whereIn('penempatan_pkl_id', $placementIds)
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->select(['id', 'penempatan_pkl_id', 'tanggal', 'jam_masuk', 'jam_pulang', 'status_masuk', 'status_pulang'])
+            ->get();
+            
+        $presensiData = [];
+        foreach ($presensiList as $p) {
+            $presensiData[$p->penempatan_pkl_id][$p->tanggal] = $p;
+        }
+
+        // Fetch approved leave data
+        $leavesData = \App\Modules\Presensi\Models\IzinSakit::whereIn('penempatan_pkl_id', $placementIds)
+            ->where('status_approval', 'disetujui')
+            ->where(function($q) use ($startDate, $endDate) {
+                $q->whereBetween('tanggal_mulai', [$startDate, $endDate])
+                  ->orWhereBetween('tanggal_selesai', [$startDate, $endDate])
+                  ->orWhere(function($sub) use ($startDate, $endDate) {
+                      $sub->where('tanggal_mulai', '<=', $startDate)
+                          ->where('tanggal_selesai', '>=', $endDate);
+                  });
+            })
+            ->select(['id', 'penempatan_pkl_id', 'tipe', 'tanggal_mulai', 'tanggal_selesai', 'status_approval'])
+            ->get();
+
+        $leavesByPlacementAndDate = [];
+        foreach ($leavesData as $leave) {
+            $start = \Carbon\Carbon::parse($leave->tanggal_mulai);
+            $end = \Carbon\Carbon::parse($leave->tanggal_selesai);
+            $curr = $start->copy();
+            while ($curr->lessThanOrEqualTo($end)) {
+                $dateStr = $curr->toDateString();
+                $leavesByPlacementAndDate[$leave->penempatan_pkl_id][$dateStr] = ucfirst($leave->tipe);
+                $curr->addDay();
+            }
+        }
+
+        // Fetch holidays
+        $holidays = \App\Modules\MasterData\Models\HariLibur::where(function ($q) use ($startDate, $endDate) {
+            $q->whereBetween('tanggal_mulai', [$startDate, $endDate])
+              ->orWhereBetween('tanggal_selesai', [$startDate, $endDate])
+              ->orWhere(function ($sub) use ($startDate, $endDate) {
+                  $sub->where('tanggal_mulai', '<=', $startDate)
+                      ->where('tanggal_selesai', '>=', $endDate);
+              });
+        })->get();
+
+        $holidayMap = [];
+        foreach ($holidays as $h) {
+            $hStart = \Carbon\Carbon::parse($h->tanggal_mulai);
+            $hEnd = \Carbon\Carbon::parse($h->tanggal_selesai);
+            $curr = $hStart->copy();
+            while ($curr->lessThanOrEqualTo($hEnd)) {
+                $holidayMap[$curr->toDateString()] = 'Libur: ' . $h->nama;
+                $curr->addDay();
+            }
+        }
+
+        $branding = $this->getBranding();
+
+        $pdf = Pdf::loadView('laporan::pdf.presensi_rekap', compact(
+            'filterType', 'dates', 'placements', 'presensiData', 
+            'leavesByPlacementAndDate', 'holidayMap', 'label', 'branding'
+        ))->setPaper('a4', $filterType === 'harian' ? 'portrait' : 'landscape');
+
+        return $pdf->download('rekap_presensi_' . time() . '.pdf');
+    }
+
+    /**
+     * Export journal recap as PDF.
+     */
+    public function downloadJurnalRekapPdf(Request $request)
+    {
+        if ($request->filled('placement_id')) {
+            return $this->downloadStudentJournalPdf($request);
+        }
+
+        $request->validate([
+            'filter_type' => 'required|in:harian,bulanan,kustom',
+            'tanggal' => 'required_if:filter_type,harian|nullable|date',
+            'bulan' => 'required_if:filter_type,bulanan|nullable|string',
+            'tahun' => 'required_if:filter_type,bulanan|nullable|string',
+            'tanggal_mulai' => 'required_if:filter_type,kustom|nullable|date',
+            'tanggal_selesai' => 'required_if:filter_type,kustom|nullable|date|after_or_equal:tanggal_mulai',
+        ]);
+
+        $filterType = $request->filter_type;
+        $startDate = null;
+        $endDate = null;
+        $label = '';
+
+        switch ($filterType) {
+            case 'harian':
+                $date = $request->tanggal ?? now()->toDateString();
+                $startDate = $date;
+                $endDate = $date;
+                $label = 'Tanggal: ' . \Carbon\Carbon::parse($date)->translatedFormat('d F Y');
+                break;
+
+            case 'bulanan':
+                $month = $request->bulan ?? date('m');
+                $year = $request->tahun ?? date('Y');
+                $startDate = \Carbon\Carbon::create($year, $month, 1)->startOfMonth()->toDateString();
+                $endDate = \Carbon\Carbon::create($year, $month, 1)->endOfMonth()->toDateString();
+                $label = 'Periode Bulan: ' . \Carbon\Carbon::create($year, $month, 1)->translatedFormat('F Y');
+                break;
+
+            case 'kustom':
+                $startDate = $request->tanggal_mulai ?? now()->toDateString();
+                $endDate = $request->tanggal_selesai ?? now()->toDateString();
+                $label = 'Periode: ' . \Carbon\Carbon::parse($startDate)->format('d/m/Y') . ' s/d ' . \Carbon\Carbon::parse($endDate)->format('d/m/Y');
+                break;
+        }
+
+        $role = auth()->user()->role;
+        $placementsQuery = PenempatanPkl::select(['id', 'murid_id', 'dudi_id', 'guru_id', 'status'])
+            ->with([
+                'murid:id,nama,nis,kelas_id',
+                'murid.kelas:id,nama',
+                'dudi:id,nama'
+            ])
+            ->where('status', 'aktif');
+
+        if ($role === 'guru') {
+            $placementsQuery->where('guru_id', auth()->user()->guru?->id);
+        }
+
+        $placementIds = $placementsQuery->pluck('id')->toArray();
+
+        $journals = \App\Modules\Jurnal\Models\Jurnal::whereIn('penempatan_pkl_id', $placementIds)
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->with(['penempatanPkl.murid.kelas', 'penempatanPkl.dudi'])
+            ->orderBy('tanggal', 'desc')
+            ->get();
+
+        $branding = $this->getBranding();
+
+        $pdf = Pdf::loadView('laporan::pdf.jurnal_rekap', compact(
+            'journals', 'startDate', 'endDate', 'label', 'branding'
+        ))->setPaper('a4', 'portrait');
+
+        return $pdf->download('rekap_jurnal_' . time() . '.pdf');
+    }
+
+    /**
+     * Download student journal as PDF.
+     */
+    public function downloadStudentJournalPdf(Request $request, $placementId = null)
     {
         $role = auth()->user()->role;
+        $targetPlacementId = $placementId ?: ($request->query('placement_id') ?: $request->input('placement_id'));
 
-        if (in_array($role, ['admin', 'guru']) && $request->filled('placement_id')) {
-            // Admin / Guru: download PDF murid tertentu berdasarkan placement_id
+        if (in_array($role, ['admin', 'guru']) && $targetPlacementId) {
             $placement = PenempatanPkl::with(['murid.kelas.jurusan', 'dudi', 'guru', 'pembimbingIndustri'])
-                ->findOrFail($request->placement_id);
+                ->findOrFail($targetPlacementId);
 
-            // Guru hanya bisa download untuk murid bimbingannya
             if ($role === 'guru') {
                 $guruId = auth()->user()->guru?->id;
                 if (!$guruId || $placement->guru_id !== $guruId) {
@@ -93,7 +344,6 @@ class LaporanController extends Controller
                 }
             }
         } else {
-            // Murid: gunakan penempatan aktif milik sendiri
             $murid = auth()->user()->murid;
             $placement = $murid ? PenempatanPkl::with(['murid.kelas.jurusan', 'dudi', 'guru', 'pembimbingIndustri'])
                 ->where('murid_id', $murid->id)
@@ -120,19 +370,16 @@ class LaporanController extends Controller
 
     /**
      * Download student attendance as PDF.
-     * Admin & Guru dapat mengakses lewat ?placement_id=X
-     * Murid otomatis diarahkan ke penempatan aktif miliknya.
      */
-    public function downloadStudentAttendancePdf(Request $request)
+    public function downloadStudentAttendancePdf(Request $request, $placementId = null)
     {
         $role = auth()->user()->role;
+        $targetPlacementId = $placementId ?: ($request->query('placement_id') ?: $request->input('placement_id'));
 
-        if (in_array($role, ['admin', 'guru']) && $request->filled('placement_id')) {
-            // Admin / Guru: download PDF murid tertentu berdasarkan placement_id
+        if (in_array($role, ['admin', 'guru']) && $targetPlacementId) {
             $placement = PenempatanPkl::with(['murid.kelas.jurusan', 'dudi', 'guru', 'pembimbingIndustri'])
-                ->findOrFail($request->placement_id);
+                ->findOrFail($targetPlacementId);
 
-            // Guru hanya bisa download untuk murid bimbingannya
             if ($role === 'guru') {
                 $guruId = auth()->user()->guru?->id;
                 if (!$guruId || $placement->guru_id !== $guruId) {
@@ -140,7 +387,6 @@ class LaporanController extends Controller
                 }
             }
         } else {
-            // Murid: gunakan penempatan aktif milik sendiri
             $murid = auth()->user()->murid;
             $placement = $murid ? PenempatanPkl::with(['murid.kelas.jurusan', 'dudi', 'guru', 'pembimbingIndustri'])
                 ->where('murid_id', $murid->id)
@@ -186,7 +432,7 @@ class LaporanController extends Controller
                         'jam_masuk' => null,
                         'jam_pulang' => null,
                         'status' => ucfirst($l->tipe) . ' (Disetujui)',
-                        'type' => $l->tipe, // 'izin' or 'sakit'
+                        'type' => $l->tipe,
                         'keterangan' => ucfirst($l->tipe) . ': ' . $l->alasan,
                     ]);
                 }
