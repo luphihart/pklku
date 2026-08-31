@@ -8,26 +8,31 @@ Dokumen ini berisi panduan alur kerja (*standard operating procedure / workflow*
 
 ```mermaid
 graph TD
-    subgraph Fase 1: Persiapan & Master Data
-        A[Admin: Setup Tahun Ajaran & Master Data] --> B[Admin: Plotting Penempatan Siswa, DUDI & Guru]
-        B --> C[Siswa & Guru Mendapatkan Akun & Akses]
+    subgraph Fase 1: Persiapan, Kebijakan & Master Data
+        A1[Admin: Konfigurasi Parameter, Branding, Jam Multi-Shift & Kuota Libur] --> A2[Admin: Setup Tahun Ajaran, Jurusan, Kelas & Libur Nasional]
+        A2 --> A3[Admin: Master Guru, Siswa & Mitra DUDI Geofence]
+        A3 --> A4[Admin: Plotting Penempatan WFO/WFA/Hybrid, Shift Kerja & Hari Libur]
+        A4 --> A5[Siswa & Guru Menerima Akun & Akses Sistem]
     end
 
-    subgraph Fase 2: Pelaksanaan PKL (Operasional Harian)
-        C --> D[Siswa: Presensi Datang & Pulang GPS/Selfie]
-        C --> E[Siswa: Pengajuan Izin/Sakit jika Berhalangan]
-        E --> F[Guru/Admin: Verifikasi & Persetujuan Izin]
-        C --> G[Siswa: Tulis Jurnal Harian 5W+1H & Foto]
-        G --> H[Guru: Periksa & Validasi Jurnal Siswa]
-        C --> I[Guru: Kunjungan Monitoring DUDI & Catatan Evaluasi]
+    subgraph Fase 2: Pelaksanaan PKL Operasional Harian
+        A5 --> B1[Siswa: Presensi Datang & Pulang GPS/Selfie/Watermark]
+        A5 --> B2[Siswa: Tandai Libur Shift Mandiri Kuota Mingguan]
+        A5 --> B3[Siswa: Pengajuan Izin/Sakit + Lampiran Surat]
+        B3 --> B4[Guru/Admin: Verifikasi & Persetujuan Izin]
+        A5 --> B5[Siswa: Tulis Jurnal Harian 5W+1H + Foto Dokumentasi]
+        B5 --> B6[Guru: Periksa, Validasi & Beri Catatan Jurnal]
+        A5 --> B7[Guru: Kunjungan Monitoring DUDI + Catatan Evaluasi & Foto]
+        B7 --> B8[Guru: Cetak Laporan Kunjungan DUDI PDF]
+        B1 --> B9[Sistem: Cron Auto-Absent Otomatis Lewati Libur Shift/Izin/Libur DUDI]
     end
 
-    subgraph Fase 3: Pasca PKL & Penilaian Kelulusan
-        J[Admin: Buka Saklar Masa Penilaian] --> K[Siswa: Input Nilai DUDI + Upload Lembar Fisik]
-        K --> L[Guru: Verifikasi Nilai DUDI + Input Nilai Sekolah & TP]
-        L --> M[Guru: Pengesahan Nilai Akhir PKL]
-        M --> N[Siswa & Admin: Unduh Rapor Nilai PKL PDF]
-        M --> O[Admin/Guru: Rekapitulasi Laporan Akhir & Arsip]
+    subgraph Fase 3: Pasca PKL, Evaluasi Nilai & Pelaporan
+        C1[Admin: Buka Saklar Masa Penilaian] --> C2[Siswa: Input Nilai DUDI + Upload Scan Lembar Fisik + Capaian TP]
+        C2 --> C3[Guru: Verifikasi Bukti Fisik DUDI + Input Nilai Sekolah & TP]
+        C3 --> C4[Guru: Pengesahan Nilai Akhir PKL]
+        C4 --> C5[Siswa & Admin: Unduh Rapor Nilai PKL PDF Resmi]
+        C4 --> C6[Admin & Guru: Ekspor Rekap Presensi PDF/Excel & Jurnal PDF]
     end
 ```
 
@@ -35,213 +40,222 @@ graph TD
 
 ## 1. 🛠️ Alur Kerja Administrator (Panitia PKL)
 
-Administrator memegang kendali penuh atas manajemen data master, plotting penempatan, kebijakan operasional, pengumuman sekolah, serta rekapitulasi penilaian dan kehadiran.
+Administrator memegang kendali penuh atas manajemen parameter sekolah, data master, plotting penempatan, kebijakan shift kerja, pengumuman sekolah, serta penerbitan laporan akhir dan rekapitulasi data.
 
 ```mermaid
 flowchart TD
-    A1[1. Pengaturan Master Data] --> A2[2. Master Mitra DUDI & Guru]
-    A2 --> A3[3. Plotting Penempatan Massal]
-    A3 --> A4[4. Monitoring Harian & Pengumuman]
-    A4 --> A5[5. Kelola Masa Penilaian & Ekspor Laporan]
+    A1[1. Setup Parameter & Branding] --> A2[2. Kelola Data Master & Libur]
+    A2 --> A3[3. Plotting Penempatan Massal & Shift]
+    A3 --> A4[4. Pengawasan Realtime & Koreksi Presensi]
+    A4 --> A5[5. Kelola Masa Penilaian & Pusat Laporan]
 ```
 
-### Tahap 1: Persiapan & Konfigurasi Master Data
-1. **Manajemen Tahun Ajaran & Kelas**:
-   - Menambahkan Tahun Ajaran aktif (misal: `2026/2027`).
-   - Menyiapkan data Jurusan dan Kelas siswa.
+### Tahap 1: Konfigurasi Parameter & Branding Sekolah (`/setting`)
+1. **Pengaturan Identitas & Kop Resmi**:
+   - Menentukan Nama Sekolah Resmi, Alamat Lengkap, dan Kabupaten/Kota Sekolah (sebagai titimangsa tanda tangan otomatis pada dokumen PDF).
+   - Mengunggah Logo Sekolah resmi beresolusi tinggi atau memilih opsi icon default.
+   - Mengisi Nama Kepala Sekolah beserta NIP untuk lembar pengesahan rapor.
+   - Menyesuaikan teks petunjuk footer rapor dan copyright footer login.
+2. **Pengaturan Jam Multi-Shift & Geofence**:
+   - Mengatur konfigurasi jam buka masuk, batas terlambat, dan jam pulang untuk 4 varian shift standar: **Shift Reguler**, **Shift Pagi**, **Shift Siang**, dan **Shift Sore**.
+   - Menentukan radius toleransi geofence default dalam meter (misal: `50` meter).
+   - Menentukan **Kuota Libur Shift Mingguan** (misal: `2` hari untuk DUDI 5 hari kerja, atau `1` hari untuk DUDI 6 hari kerja).
+3. **Pengaturan Bobot Rapor**:
+   - Menentukan bobot kontribusi nilai Guru Sekolah vs Nilai Industri DUDI (contoh: 50% - 50%).
+
+### Tahap 2: Manajemen Master Data (`/master-data/*`)
+1. **Tahun Ajaran, Jurusan, dan Kelas**:
+   - Menyiapkan Tahun Ajaran aktif (misal: `2026/2027`), daftar kompetensi keahlian/jurusan, dan rombel kelas.
 2. **Sinkronisasi Hari Libur Nasional**:
-   - Membuka menu **Master Hari Libur** dan klik tombol **Sinkronisasi Libur Nasional** otomatis (atau menambah libur khusus sekolah secara manual).
-3. **Impor / Tambah Data Siswa & Guru**:
-   - Menambahkan akun Guru dan Siswa via form atau fitur **Impor Excel Massal**.
-   - Menyediakan fitur **Ekspor Excel** untuk rekap data master siswa, guru, dan DUDI.
-   - Mengatur password default melalui menu **Pengaturan Aplikasi** atau melakukan **Reset Password Massal** jika ada siswa/guru yang lupa sandi.
+   - Melakukan sinkronisasi tanggal merah dan cuti bersama nasional secara otomatis melalui API kalender Indonesia, serta menambahkan hari libur khusus internal sekolah.
+3. **Pendaftaran Guru & Siswa**:
+   - Menginput akun pengguna atau memanfaatkan fitur **Impor Excel Massal** untuk ratusan siswa/guru sekaligus.
+   - Tersedia fitur **Reset Password Massal** jika siswa/guru mengalami kendala login.
+4. **Registrasi Mitra DUDI & Penentuan Titik Koordinat**:
+   - Memasukkan profil DUDI, nama pembimbing industri/PIC, kontak WhatsApp, dan alamat.
+   - Mengunci titik koordinat (**Latitude & Longitude**) serta radius toleransi geofence khusus DUDI via peta interaktif Google Maps.
 
-### Tahap 2: Registrasi Mitra DUDI & Penentuan Radius Geolocation
-1. **Pendaftaran Mitra DUDI**:
-   - Memasukkan nama perusahaan/instansi, nama PIC & kontak WhatsApp, jam operasional, dan alamat lengkap.
-   - Menentukan **titik koordinat (Latitude & Longitude)** dan **Radius Presensi (Meter)** menggunakan peta interaktif Google Maps agar presensi siswa akurat di lokasi PKL.
-
-### Tahap 3: Plotting & Penempatan Siswa ke DUDI
+### Tahap 3: Plotting Penempatan Siswa (`/penempatan`)
 1. **Plotting Massal Siswa**:
-   - Memilih siswa-siswa dari kelas yang sama, menautkan ke Mitra DUDI tujuan, serta menunjuk Guru Pembimbing Sekolah dan Pembimbing Lapangan Industri.
-2. **Pengaturan Model Kerja & Hari Libur Spesifik**:
-   - Menentukan tipe kerja: **WFO (Work From Office)**, **WFA (Work From Anywhere)**, atau **Hybrid**.
-   - Jika **Hybrid**, tentukan hari-hari siswa bekerja secara WFA (misal: *Rabu, Jumat*).
-   - Menentukan jadwal **Hari Libur Rutin Siswa** (misal: *Sabtu & Minggu* untuk industri 5 hari kerja, atau *Minggu saja* untuk industri 6 hari kerja, atau hari kerja dinamis lainnya).
-3. **Pengaturan Shift & Jam Kerja Siswa**:
-   - Memilih template shift: **Shift Reguler**, **Shift Pagi**, **Shift Siang**, atau **Kustom Jam Khusus**.
-   - Jika industri memiliki jam kerja khusus (misal: ritel/hotel `14:00 - 21:00`), Admin dapat mengetikkan jam masuk, batas toleransi terlambat, dan jam pulang secara mandiri tanpa terikat jam standar sekolah.
+   - Memilih rombel siswa dari kelas yang sama, menautkan ke Mitra DUDI tujuan, serta menunjuk Guru Pembimbing Sekolah.
+2. **Konfigurasi Skema Kerja Fleksibel**:
+   - Menentukan model kerja: **100% WFO**, **100% WFA**, atau **Hybrid**.
+   - Pada model Hybrid, Admin menentukan hari-hari spesifik siswa bekerja dari mana saja (WFA), sehingga geofence dibebaskan pada hari tersebut.
+3. **Konfigurasi Jam & Shift Kerja**:
+   - Memilih template: **Shift Reguler**, **Shift Pagi**, **Shift Siang**, **Shift Sore**, **Rolling Shift (Auto-Detect)**, atau **Kustom Jam Khusus**.
+   - Untuk DUDI dengan jam kerja unik (misal ritel hotel `14:00 - 21:00`), Admin mengetikkan jam secara mandiri.
+4. **Penetapan Hari Libur DUDI**:
+   - Menentukan jadwal libur rutin mingguan siswa (contoh: *Sabtu & Minggu*, atau *Minggu saja*).
 
-### Tahap 4: Pengumuman & Pengawasan Operasional
+### Tahap 4: Pengumuman & Pengawasan Presensi Real-Time (`/presensi`)
 1. **Penerbitan Pengumuman**:
-   - Mengunggah surat edaran atau informasi penting sekolah melalui menu **Pengumuman** dengan target penerima (*Semua, Murid, Guru, atau Kustom*).
-2. **Pengawasan Real-Time**:
-   - Memantau presensi dan jurnal yang masuk setiap hari melalui dashboard analitik.
-   - Meninjau laporan kunjungan monitoring guru pembimbing.
+   - Mengunggah surat edaran atau pengumuman penting sekolah yang ditargetkan ke seluruh siswa, guru, atau kustom.
+2. **Pengawasan Kehadiran Realtime**:
+   - Memantau siswa yang hadir tepat waktu, terlambat, izin, sakit, libur shift, maupun yang belum presensi.
+3. **Input Presensi Manual & Koreksi**:
+   - Jika siswa mengalami kendala gawai rusak/baterai habis, Admin dapat melakukan input presensi manual atau mengoreksi jam dan status presensi siswa.
 
-### Tahap 5: Buka/Tutup Masa Penilaian & Ekspor Rekap
-1. **Saklar Masa Penilaian**:
-   - Ketika masa PKL mendekati akhir, Admin mengaktifkan tombol **"Buka Masa Penilaian"** di menu Penilaian agar siswa dan guru dapat mulai menginput nilai.
-2. **Ekspor Rekapitulasi Data**:
-   - Mengunduh rekapitulasi data dalam format Excel: **Data Murid**, **Data Guru**, **Data Mitra DUDI**, **Plotting Penempatan**, serta **Laporan Kehadiran Global**.
+### Tahap 5: Buka Masa Penilaian & Ekspor Dokumen (`/laporan`)
+1. **Aktivasi Saklar Penilaian**:
+   - Membuka akses penginputan nilai bagi siswa dan guru menjelang berakhirnya periode PKL.
+2. **Pusat Laporan & Ekspor Multi-Format**:
+   - **Ekspor Rekapitulasi Presensi**: Format **PDF Dokumen** (Portrait Harian, Landscape Mingguan/Bulanan/Kustom) atau format **Excel (.xlsx)** lengkap dengan statistik.
+   - **Ekspor Rekapitulasi Jurnal**: Format **PDF Dokumen** per periode tanggal atau per siswa.
+   - **Unduhan Cepat Dokumen Siswa**: Tombol akses cepat unduh Presensi PDF, Jurnal PDF, dan Rapor Nilai PDF per siswa.
 
 ---
 
 ## 2. 👨‍🏫 Alur Kerja Guru Pembimbing Sekolah
 
-Guru Pembimbing bertugas mendampingi, memvalidasi aktivitas harian, melakukan kunjungan berkala ke mitra DUDI, serta memproses nilai akhir kelulusan PKL.
+Guru Pembimbing bertugas memantau perkembangan harian siswa bimbingannya, memvalidasi jurnal aktivitas, memberikan persetujuan izin, melakukan kunjungan ke industri, dan mengesahkan nilai akhir kelulusan.
 
 ```mermaid
 flowchart TD
-    G1[1. Pantau Siswa Bimbingan & Presensi] --> G2[2. Validasi Jurnal Harian 5W+1H]
-    G2 --> G3[3. Persetujuan Pengajuan Izin/Sakit]
-    G3 --> G4[4. Laporan Kunjungan Monitoring DUDI]
-    G4 --> G5[5. Verifikasi Nilai DUDI & Sahkan Rapor]
+    G1[1. Monitoring Kehadiran & Peta Presensi] --> G2[2. Validasi Jurnal Harian 5W+1H]
+    G2 --> G3[3. Verifikasi Surat Izin/Sakit]
+    G3 --> G4[4. Pencatatan Kunjungan Monitoring DUDI]
+    G4 --> G5[5. Audit Nilai Fisik DUDI & Sahkan Rapor]
 ```
 
-### Tahap 1: Pemantauan Siswa Bimbingan & Presensi
+### Tahap 1: Pemantauan Siswa Bimbingan & Presensi Realtime (`/dashboard` & `/monitoring`)
 1. **Dashboard Khusus Guru**:
-   - Mengetahui daftar siswa yang menjadi tanggung jawab bimbingannya beserta lokasi DUDI masing-masing.
-   - Memeriksa riwayat kehadiran harian siswa bimbingan (Tepat Waktu, Terlambat, WFA, atau Alpha).
+   - Mengetahui daftar lengkap siswa bimbingan beserta penempatan DUDI masing-masing.
+   - Memeriksa status kehadiran harian siswa bimbingan secara realtime.
+2. **Peta Sebaran Titik Presensi**:
+   - Membuka peta interaktif yang memetakan titik koordinat selfie siswa bimbingan saat melakukan *check-in* dan *check-out*.
 
-### Tahap 2: Verifikasi & Catatan Jurnal PKL Siswa
-1. **Memeriksa Jurnal Harian**:
-   - Masuk ke menu **Jurnal Kegiatan**. Notifikasi lonceng akan memberi tahu jumlah jurnal baru berstatus *Menunggu*.
-   - Membaca deskripsi pekerjaan siswa (yang disusun berdasarkan prinsip 5W + 1H) dan melihat foto dokumentasi kegiatan.
-2. **Persetujuan & Umpan Balik**:
-   - Menekan tombol **Setujui** jika jurnal sesuai.
-   - Menekan tombol **Tolak / Minta Revisi** disertai catatan arahan edukatif jika pekerjaan belum lengkap atau format belum sesuai.
+### Tahap 2: Validasi & Umpan Balik Jurnal PKL Siswa (`/jurnal`)
+1. **Pemeriksaan Jurnal Harian**:
+   - Notifikasi lonceng akan memberi tahu jumlah jurnal baru yang menunggu pemeriksaan.
+   - Membaca deskripsi tugas yang disusun dengan kaidah 5W+1H serta meninjau foto dokumentasi kegiatan siswa.
+2. **Aksi Verifikasi**:
+   - Menekan tombol **"Setujui"** jika laporan kegiatan sesuai.
+   - Menekan tombol **"Tolak / Revisi"** disertai catatan arahan perbaikan jika isi jurnal kurang lengkap.
 
-### Tahap 3: Persetujuan Surat Izin / Sakit
-1. **Tinjau Pengajuan Izin**:
-   - Masuk ke menu **Presensi > Izin & Sakit**.
-   - Memeriksa tanggal izin, alasan ketidakhadiran, dan berkas surat dokter/surat orang tua pendukung.
+### Tahap 3: Persetujuan Surat Izin / Sakit (`/presensi/izin`)
+1. **Meninjau Pengajuan**:
+   - Memeriksa alasan permohonan izin/sakit siswa bimbingan beserta lampiran foto surat keterangan dokter / surat izin orang tua.
 2. **Memberikan Status**:
-   - Menyetujui atau menolak permohonan izin dengan menyertakan catatan guru.
+   - Menyetujui atau menolak pengajuan izin. Data kehadiran siswa otomatis terupdate menjadi *Izin (Disetujui)* atau *Sakit (Disetujui)* tanpa terkena sanksi Alpha.
 
-### Tahap 4: Pelaksanaan & Laporan Kunjungan Monitoring DUDI
-1. **Menginput Agenda Kunjungan**:
-   - Masuk ke menu **Kunjungan Monitoring**.
-   - Memilih DUDI yang dikunjungi, tanggal kunjungan, mengisi catatan evaluasi perkembangan siswa dari pihak industri, serta mengunggah foto dokumentasi kunjungan bersama pembimbing industri.
-2. **Cetak / Ekspor Laporan Kunjungan**:
-   - Mengunduh rekapitulasi laporan kunjungan monitoring dalam bentuk PDF resmi untuk arsip sekolah.
+### Tahap 4: Pelaksanaan & Laporan Kunjungan Monitoring DUDI (`/kunjungan`)
+1. **Pencatatan Kunjungan Industri**:
+   - Menginput agenda kunjungan ke mitra DUDI: tanggal, jenis kunjungan (*Pengantaran, Monitoring Rutin, Evaluasi Tengah, Penjemputan*), catatan evaluasi pembimbing industri, dan wajib unggah **Foto Dokumentasi Kunjungan**.
+2. **Ekspor Laporan Kunjungan PDF**:
+   - Mengunduh rekapitulasi lembar laporan kunjungan resmi dalam format PDF ber-kop sekolah sebagai bukti fisik kinerja pembimbingan.
 
-### Tahap 5: Verifikasi Nilai DUDI, Input Nilai Sekolah, & Pengesahan Rapor
-1. **Memeriksa Nilai dari Industri**:
-   - Membuka menu **Penilaian PKL**. Notifikasi lonceng akan menandai siswa yang telah mengunggah nilai DUDI.
-   - Membuka tautan pratinjau **Berkas Bukti Lembar Nilai Fisik DUDI** yang diunggah oleh siswa untuk mencocokkan keaslian nilai dan stempel/tanda tangan industri.
-2. **Menginput Indikator Nilai Sekolah & Keterangan TP**:
-   - Menginput nilai indikator internal sekolah (aspek soft skill, laporan, presentasi/ujian).
-   - Meninjau Keterangan Capaian per Tujuan Pembelajaran (TP) yang diajukan siswa (atau menyesuaikannya jika diperlukan).
-   - Mengisi catatan pembimbing keseluruhan.
-3. **Pengesahan Nilai**:
-   - Menekan tombol **"Simpan & Sahkan Penilaian"**. Nilai akhir secara otomatis dihitung dan rapor nilai PKL siap diterbitkan.
+### Tahap 5: Audit Bukti Fisik DUDI, Input Nilai Sekolah & Pengesahan Rapor (`/penilaian`)
+1. **Audit Lembar Nilai Fisik Industri**:
+   - Membuka tautan pratinjau **Berkas Bukti Lembar Nilai DUDI** yang diunggah siswa untuk mencocokkan keaslian nilai angka dengan stempel basah/tanda tangan industri.
+2. **Input Nilai Aspek Sekolah & Keterangan TP**:
+   - Menginput nilai aspek internal sekolah (Laporan PKL, Sikap/Soft Skill, Ujian/Presentasi).
+   - Meninjau atau menyempurnakan narasi Keterangan Capaian per Tujuan Pembelajaran (TP).
+3. **Pengesahan & Penerbitan Rapor**:
+   - Menekan tombol **"Simpan & Sahkan Penilaian"**. Nilai akhir gabungan dihitung otomatis dan lembar **Rapor Penilaian PKL (PDF)** langsung terbit.
 
 ---
 
 ## 3. 🎓 Alur Kerja Murid (Siswa PKL)
 
-Siswa melaksanakan kegiatan operasional PKL sehari-hari secara mandiri melalui antarmuka web yang responsif di ponsel (*smartphone*).
+Siswa melaksanakan operasional magang sehari-hari secara mandiri melalui antarmuka web yang responsif di ponsel pintar (*smartphone*).
 
 ```mermaid
 flowchart TD
-    M1[1. Login & Cek Penempatan] --> M2[2. Presensi Datang/Pulang via GPS]
-    M2 --> M3[3. Pengajuan Izin Jika Sakit/Berhalangan]
-    M2 --> M4[4. Tulis Jurnal Harian 5W+1H & Foto]
-    M4 --> M5[5. Akhir PKL: Input Nilai DUDI & Bukti Fisik]
-    M5 --> M6[6. Unduh Rapor Nilai PKL PDF]
+    M1[1. Cek Profil Penempatan & Shift] --> M2[2. Presensi Datang/Pulang via GPS & Selfie]
+    M2 --> M3[3. Opsi Libur Shift Mandiri jika Jadwal Off]
+    M2 --> M4[4. Pengajuan Izin/Sakit jika Berhalangan]
+    M2 --> M5[5. Tulis Jurnal Harian 5W+1H & Unggah Foto]
+    M5 --> M6[6. Akhir PKL: Input Nilai DUDI & Bukti Lembar Fisik]
+    M6 --> C5[7. Unduh Mandiri Rapor Nilai PKL PDF]
 ```
 
-### Tahap 1: Informasi Penempatan & Profil PKL
-1. **Dashboard Siswa**:
-   - Siswa melihat detail penempatan: Nama Mitra DUDI, Alamat & Radius Lokasi, Nama Pembimbing Industri & Guru Pembimbing Sekolah, serta Model Kerja (WFO/WFA/Hybrid) dan jadwal hari liburnya.
+### Tahap 1: Informasi Penempatan & Jadwal Kerja (`/dashboard`)
+1. Siswa melihat profil penempatan: Nama Mitra DUDI, Lokasi & Radius Geofence, Guru Pembimbing Sekolah, Pembimbing Lapangan, Skema Kerja (WFO/WFA/Hybrid), dan Jam Shift Kerja.
 
-### Tahap 2: Presensi Harian (Datang & Pulang)
-1. **Presensi Masuk (Datang)**:
-   - Membuka menu **Presensi**.
-   - Mengaktifkan GPS ponsel. Jika sistem mendeteksi posisi siswa berada di dalam radius lokasi DUDI (atau jika hari tersebut terjadwal WFA), kamera selfie akan aktif.
-   - Mengambil foto selfie langsung dan klik **"Kirim Presensi Masuk"**.
-2. **Presensi Pulang**:
-   - Setelah jam kerja berakhir, siswa kembali melakukan foto selfie dan mengirim presensi pulang.
+### Tahap 2: Presensi Harian Masuk & Pulang (`/presensi`)
+1. **Check-In (Presensi Masuk)**:
+   - Membuka halaman presensi saat jam kerja dimulai.
+   - Mengaktifkan GPS gawai. Jika posisi berada dalam radius geofence kantor DUDI (atau hari tersebut terjadwal WFA), preview kamera selfie terbuka.
+   - Mengambil foto selfie di lingkungan kerja dan menekan **"Check In Sekarang"**. Foto selfie otomatis diberi watermark digital (tanggal, waktu, koordinat, status kerja).
+2. **Check-Out (Presensi Pulang)**:
+   - Saat jam kerja berakhir, siswa kembali mengambil foto selfie dan menekan **"Check Out Sekarang"**.
 
-### Tahap 3: Pengajuan Izin / Sakit (Jika Berhalangan Hadir)
-1. **Mengajukan Izin**:
-   - Jika siswa sakit atau memiliki urusan darurat yang sah, siswa membuka menu **Izin & Sakit**.
-   - Memilih tipe (*Sakit* atau *Izin*), menentukan rentang tanggal, menuliskan alasan, dan melampirkan foto surat keterangan dokter / surat izin orang tua.
-2. **Menerima Status**:
-   - Notifikasi lonceng akan memberi tahu siswa jika pengajuan telah disetujui atau ditolak oleh Guru Pembimbing.
+### Tahap 3: Penggunaan Fitur "Libur Shift Mandiri" (Untuk Jadwal Rolling/Roster)
+1. Jika tempat DUDI menerapkan sistem libur bergantian acak (*roster/rolling day-off* non-Sabtu/Minggu), siswa membuka menu **Presensi** pada hari liburnya.
+2. Klik tombol **"🌴 Tandai Libur Shift Hari Ini"** (sistem menampilkan sisa kuota mingguan, default max 2 hari/minggu).
+3. Halaman presensi beralih ke mode Libur Shift dan siswa **bebas dari sanksi Alpha Cron Job**.
+4. Jika mendadak dipanggil masuk bekerja oleh supervisor industri, siswa dapat menekan tombol **"Batalkan Libur (Masuk Bekerja)"** untuk membuka kembali tombol presensi.
 
-### Tahap 4: Pengisian Jurnal Kegiatan Harian (Kaidah 5W + 1H)
-1. **Menulis Catatan Jurnal**:
-   - Membuka menu **Jurnal Harian**.
-   - Mengisi catatan kegiatan harian secara terstruktur menggunakan panduan kaidah **5W + 1H**:
-     - **What:** Pekerjaan/tugas apa yang dikerjakan hari ini?
-     - **Why:** Apa fungsi/kegunaan dari pekerjaan tersebut?
-     - **Where:** Di bagian/divisi/lokasi mana tugas itu dilakukan?
-     - **When:** Kapan waktu pengerjaannya?
-     - **Who:** Bersama siapa / di bawah instruksi siapa pekerjaan dilaksanakan?
-     - **How:** Bagaimana langkah-langkah teknis pengerjaan dan apa hasil akhirnya?
-2. **Melampirkan Dokumentasi**:
-   - Mengunggah foto hasil pekerjaan atau dokumentasi kegiatan kerja hari itu.
-   - Mengirimkan jurnal untuk diperiksa oleh Guru Pembimbing.
+### Tahap 4: Pengajuan Surat Izin / Sakit (`/presensi/izin`)
+1. Jika berhalangan hadir karena sakit atau urusan penting yang sah, siswa membuka menu **Izin & Sakit**.
+2. Memilih tipe (*Sakit* atau *Izin*), menentukan rentang tanggal, menuliskan alasan, dan melampirkan foto surat dokter / surat izin orang tua.
+3. Notifikasi lonceng akan memberi tahu siswa jika pengajuan telah disetujui oleh Guru Pembimbing.
 
-### Tahap 5: Penginputan Nilai DUDI & Unggah Bukti Fisik (Akhir PKL)
-1. **Menerima Lembar Nilai Fisik dari Industri**:
-   - Di akhir masa PKL, siswa menerima lembar sertifikat/penilaian fisik asli yang telah dinilai, ditandatangani, dan dicap basah oleh Mitra DUDI.
-2. **Input Nilai ke Sistem PKLku**:
-   - Setelah masa penilaian dibuka oleh Admin, siswa membuka menu **Penilaian PKL**.
-   - Menginput nilai angka untuk setiap butir indikator industri sesuai lembar fisik.
-   - Mengisi deskripsi **Keterangan Capaian per Tujuan Pembelajaran (TP)** sesuai capaian yang diperoleh di tempat kerja.
-   - Mengunggah foto/scan berkas lembar penilaian fisik (format JPG, PNG, atau PDF).
-   - Menekan tombol **"Kirim Nilai DUDI & Bukti Fisik"**.
+### Tahap 5: Pengisian Jurnal Harian 5W+1H (`/jurnal`)
+1. Membuka menu **Jurnal Harian** setiap selesai bertugas di industri.
+2. Menuliskan deskripsi pekerjaan secara sistematis mengikuti kaidah **5W + 1H**:
+   - **What:** Pekerjaan/tugas apa yang dikerjakan hari ini?
+   - **Why:** Apa fungsi/tujuan pekerjaan tersebut?
+   - **Where:** Di bagian/divisi mana tugas dilakukan?
+   - **When:** Kapan waktu dan berapa lama pelaksanaannya?
+   - **Who:** Bersama siapa / di bawah instruksi siapa pekerjaan dilaksanakan?
+   - **How:** Bagaimana langkah-langkah teknis pengerjaan dan hasilnya?
+3. Mengunggah 1 foto dokumentasi pekerjaan sebagai bukti fisik aktivitas magang.
 
-### Tahap 6: Penerbitan & Unduh Rapor Nilai PKL PDF
-1. **Melihat Nilai Akhir**:
-   - Setelah Guru Pembimbing memeriksa berkas bukti dan mengesahkan nilai akhir, status penilaian siswa akan berubah menjadi **"Sudah Diverifikasi & Disahkan"**.
-2. **Unduh Rapor PDF**:
-   - Siswa dapat langsung melihat nilai akhir (konversi predikat kelulusan) dan mengunduh dokumen resmi **Rapor Penilaian PKL (PDF)** lengkap dengan tanda tangan kepala sekolah/pembimbing.
+### Tahap 6: Penginputan Nilai DUDI & Unggah Bukti Lembar Fisik (`/penilaian`)
+1. Menerima lembar sertifikat/penilaian fisik asli yang telah dinilai, ditandatangani, dan dicap basah oleh Mitra DUDI.
+2. Ketika masa penilaian dibuka oleh Admin, siswa membuka menu **Penilaian PKL**.
+3. Memasukkan nilai angka per indikator industri sesuai lembar fisik.
+4. Mengisi deskripsi **Keterangan Capaian per Tujuan Pembelajaran (TP)**.
+5. Mengunggah scan/foto berkas bukti fisik lembar nilai DUDI (format JPG, PNG, atau PDF).
+6. Menekan tombol **"Kirim Nilai DUDI"**.
+
+### Tahap 7: Penerbitan & Unduh Mandiri Rapor Nilai PKL PDF Resmi (`/penilaian`)
+1. Setelah Guru Pembimbing memverifikasi berkas fisik dan mengesahkan nilai akhir, status penilaian berubah menjadi **"Sudah Diverifikasi & Disahkan"**.
+2. Siswa dapat langsung mengunduh berkas resmi **Rapor Penilaian PKL (PDF)** lengkap dengan tanda tangan digital kepala sekolah dan pembimbing.
 
 ---
 
-## 🔔 Ringkasan Notifikasi Sistem (Lonceng Otomatis)
+## ⚙️ Mekanisme Otomatisasi Sistem Cerdas
 
-Sistem lonceng notifikasi di navbar atas bekerja secara cerdas dan otomatis:
-
-| Kategori | Penerima | Pemicu Notifikasi |
-|---|---|---|
-| 📢 **Pengumuman Baru** | Semua Role | Terbitnya pengumuman baru sekolah dalam 7 hari terakhir. |
-| 🎂 **Ulang Tahun Hari Ini** | Semua Role | Ucapan selamat ultah untuk diri sendiri & kabar ultah siswa bimbingan / teman sekelas. |
-| 📝 **Pengingat Jurnal** | Murid | Siswa belum mengisi jurnal di hari kerja aktif (sore hari). |
-| 📝 **Verifikasi Jurnal** | Guru | Ada jurnal siswa bimbingan baru yang menunggu diperiksa. |
-| 📋 **Persetujuan Izin** | Guru & Admin | Ada siswa yang mengajukan permohonan surat izin/sakit baru. |
-| 📋 **Status Izin** | Murid | Pemberitahuan bahwa permohonan izinnya telah Disetujui / Ditolak. |
-| 🏆 **Masa Penilaian Buka** | Murid | Admin mengaktifkan masa input nilai PKL. |
-| 🏆 **Verifikasi Nilai DUDI**| Guru | Siswa telah mengunggah nilai DUDI & bukti lembar fisik. |
-| 🎓 **Rapor PKL Terbit** | Murid | Nilai akhir telah disahkan guru dan siap diunduh. |
+1. **Cron Auto-Absent Protection**:
+   - Setiap malam pukul `21:00`, sistem menjalankan cron job untuk mencatat status **Alpha** pada siswa yang tidak hadir.
+   - Cron secara cerdas **melewati (*skip*)** siswa yang:
+     - Telah melakukan presensi masuk.
+     - Berstatus `Libur Shift` mandiri.
+     - Memiliki izin/sakit yang telah disetujui.
+     - Berada pada hari libur nasional atau jadwal libur rutin DUDI.
+2. **Engine Auto-Detect Multi-Shift (Rolling Shift)**:
+   - Pada siswa dengan mode penempatan *Rolling Shift*, sistem secara cerdas mencocokkan jam presensi masuk siswa dengan jendela waktu Shift Pagi, Shift Siang, atau Shift Sore sekolah tanpa perlu diubah manual.
+3. **Digital Watermarking Engine**:
+   - Setiap foto presensi yang diunggah otomatis di-watermark dengan label tanggal, jam, koordinat GPS, serta label skema kerja `(WFO)` atau `(WFA)`.
 
 ---
 
 ## 📊 Matriks Fitur & Hak Akses Peran
 
-| Fitur / Modul | Administrator | Guru Pembimbing | Siswa / Murid |
+| Modul & Fitur Sistem | Administrator | Guru Pembimbing | Siswa / Murid |
 |---|:---:|:---:|:---:|
-| **Konfigurasi Tahun Ajaran, Jurusan, Kelas, Libur** | ✅ Penuh | ❌ | ❌ |
-| **Kelola Master Guru & Mitra DUDI** | ✅ Penuh | ❌ | ❌ |
-| **Kelola & Reset Password Siswa** | ✅ Penuh | ❌ | ❌ |
-| **Plotting Penempatan Siswa (WFO/WFA/Libur)** | ✅ Penuh | ❌ | ❌ |
-| **Ekspor Excel (Murid, Guru, DUDI, Plotting)** | ✅ Penuh | ❌ | ❌ |
-| **Presensi GPS & Selfie Masuk/Pulang** | ❌ | ❌ | ✅ Mandiri |
-| **Pengajuan Izin / Sakit** | ❌ | ❌ | ✅ Mandiri |
-| **Persetujuan Izin / Sakit** | ✅ Backup | ✅ Utama | ❌ |
-| **Tulis Jurnal Harian 5W+1H** | ❌ | ❌ | ✅ Mandiri |
-| **Pemeriksaan & Validasi Jurnal** | ❌ | ✅ Utama | ❌ |
-| **Input Laporan Kunjungan Monitoring DUDI** | ✅ Monitoring | ✅ Utama | ❌ |
-| **Buka/Tutup Saklar Masa Penilaian** | ✅ Penuh | ❌ | ❌ |
-| **Input Nilai DUDI + Upload Lembar Bukti Fisik** | ❌ | ❌ | ✅ Mandiri |
-| **Verifikasi Nilai DUDI & Input Nilai Sekolah** | ❌ | ✅ Utama | ❌ |
-| **Cetak / Unduh Rapor Nilai PKL PDF** | ✅ Penuh | ✅ Penuh | ✅ Mandiri |
+| **Konfigurasi Parameter, Branding, Jam Shift & Kuota Libur** | ✅ Penuh | ❌ | ❌ |
+| **Kelola Master Data (Tahun Ajaran, Jurusan, Kelas, Libur)** | ✅ Penuh | ❌ | ❌ |
+| **Kelola Akun Guru, Siswa & Reset Password** | ✅ Penuh | ❌ | ❌ |
+| **Plotting Penempatan (WFO/WFA/Hybrid, Multi-Shift, Libur)** | ✅ Penuh | ❌ | ❌ |
+| **Presensi Selfie & GPS Masuk/Pulang** | ❌ | ❌ | ✅ Mandiri |
+| **Fitur Libur Shift Mandiri (Kuota Mingguan)** | ❌ | ❌ | ✅ Mandiri |
+| **Input / Koreksi Presensi Manual** | ✅ Penuh | ✅ Guru Pembimbing | ❌ |
+| **Pengajuan Surat Izin / Sakit** | ❌ | ❌ | ✅ Mandiri |
+| **Persetujuan Surat Izin / Sakit** | ✅ Cadangan | ✅ Utama | ❌ |
+| **Tulis Jurnal Harian Kaidah 5W+1H & Foto** | ❌ | ❌ | ✅ Mandiri |
+| **Pemeriksaan & Validasi Jurnal Siswa** | ❌ | ✅ Utama | ❌ |
+| **Input Laporan Kunjungan Monitoring DUDI & Foto** | ✅ Monitoring | ✅ Utama | ❌ |
+| **Buka / Tutup Saklar Masa Penilaian** | ✅ Penuh | ❌ | ❌ |
+| **Input Nilai DUDI + Unggah Bukti Lembar Fisik & TP** | ❌ | ❌ | ✅ Mandiri |
+| **Audit Nilai Fisik DUDI, Nilai Sekolah & Sahkan Nilai** | ❌ | ✅ Utama | ❌ |
+| **Unduh Rapor Penilaian PKL PDF Resmi** | ✅ Penuh | ✅ Penuh | ✅ Mandiri |
+| **Ekspor Rekapitulasi Presensi (PDF & Excel)** | ✅ Penuh | ✅ Siswa Bimbingan | ❌ |
+| **Ekspor Rekapitulasi Jurnal (PDF)** | ✅ Penuh | ✅ Siswa Bimbingan | ❌ |
 | **Penerbitan Pengumuman Sekolah** | ✅ Penuh | ❌ | ❌ |
 
 ---
 
-*Dokumen ini dibuat otomatis sebagai panduan operasional standar implementasi aplikasi **PKLku**.*
+*Dokumen ini diperbarui secara berkala sebagai standar operasional prosedur implementasi aplikasi **PKLku** versi 2.3.*
