@@ -231,6 +231,21 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Section 6: Kuota Libur Shift Mingguan -->
+                        <div class="card p-3 mb-3 border" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                            <h6 class="fw-bold font-heading mb-3 d-flex align-items-center gap-2 text-dark">
+                                <span class="badge bg-info-light text-info" style="background-color: rgba(14, 165, 233, 0.12); color: #0284c7;">5</span>
+                                Kuota Libur Shift Mingguan (Jadwal Rolling / Roster DUDI)
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="kuota_libur_shift_mingguan" class="form-label small fw-semibold">Jatah Libur Shift Mandiri per Minggu (Hari)</label>
+                                    <input type="number" name="kuota_libur_shift_mingguan" id="kuota_libur_shift_mingguan" class="form-control form-control-sm" value="{{ $settings['kuota_libur_shift_mingguan'] ?? 2 }}" min="1" max="6" required>
+                                    <small class="text-muted">Maksimal hari libur shift mandiri yang dapat ditandai oleh siswa dalam 1 minggu berjalan Senin–Minggu (Default: 2 hari untuk 5 hari kerja, atau 1 hari untuk 6 hari kerja).</small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Tab 3: Grading Weights -->

@@ -48,6 +48,7 @@ class SettingController extends Controller
             'shift_sore_pulang' => 'nullable|string|max:5',
             'shift_sore_tutup_pulang' => 'nullable|string|max:5',
             'radius_presensi' => 'nullable|integer|min:10',
+            'kuota_libur_shift_mingguan' => 'nullable|integer|min:1|max:6',
             'bobot_nilai_guru' => 'nullable|numeric|min:0|max:100',
             'bobot_nilai_industri' => 'nullable|numeric|min:0|max:100',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:1024',
@@ -59,7 +60,7 @@ class SettingController extends Controller
             'shift_pagi_masuk', 'shift_pagi_terlambat', 'shift_pagi_pulang', 'shift_pagi_tutup_pulang',
             'shift_siang_masuk', 'shift_siang_terlambat', 'shift_siang_pulang', 'shift_siang_tutup_pulang',
             'shift_sore_masuk', 'shift_sore_terlambat', 'shift_sore_pulang', 'shift_sore_tutup_pulang',
-            'radius_presensi', 'bobot_nilai_guru', 'bobot_nilai_industri', 'kota_sekolah', 'footer_rapor', 'footer_login'
+            'radius_presensi', 'kuota_libur_shift_mingguan', 'bobot_nilai_guru', 'bobot_nilai_industri', 'kota_sekolah', 'footer_rapor', 'footer_login'
         ]);
 
         // Auto balance weights if only one is updated (safely clamped between 0 and 100)
