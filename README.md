@@ -256,6 +256,12 @@ Atau jalankan perintah langsung:
   * Direct route link notifikasi siswa bimbingan ultah untuk guru langsung menuju halaman `/monitoring`.
 * 🔔 **Redesain Dropdown Notifikasi**:
   * Lebar dropdown diperluas menjadi `360px`, penghapusan truncate berlebih pada nama siswa, dan perbaikan padding vertikal badge.
+* 🌴 **Fitur Baru: Pengaturan Libur Shift Mandiri (*Self-Service Day-Off*) dengan Proteksi Kuota Mingguan**:
+  * Mengakomodasi DUDI dengan jadwal libur bergantian/roster acak (*rotating day-off*) tanpa menambah pekerjaan admin.
+  * Tombol mandiri **"Tandai Libur Shift"** pada panel presensi murid dengan validasi kuota mingguan (maksimal 2 hari per minggu).
+  * Fitur pembatalan libur shift mandiri (*"Batalkan Libur / Masuk Bekerja"*) jika terjadi panggilan kerja mendadak dari supervisor DUDI.
+  * Proteksi *Cron Auto-Absent* otomatis melewati siswa yang berstatus `Libur Shift` sehingga tidak terkena Alpha.
+  * Badge visual status `🌴 Libur Shift` pada tabel monitoring guru/admin, rekap spreadsheet Excel, dan lembar laporan PDF resmi.
 * 📄 **Fitur Baru: Ekspor Rekapitulasi Presensi & Jurnal Kegiatan ke PDF Resmi**:
   * Opsi ekspor Rekapitulasi Presensi dalam format **PDF Document (.pdf)** (Portrait untuk Harian, Landscape untuk Mingguan/Bulanan/Kustom) di samping format **Excel Spreadsheet (.xlsx)**.
   * Modul ekspor Rekapitulasi Jurnal Kegiatan Siswa ke format PDF (per periode atau per siswa spesifik).
