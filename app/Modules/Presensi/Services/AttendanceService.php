@@ -22,6 +22,105 @@ class AttendanceService
     public function getTodayLeave(int $placementId) { return $this->repo->getTodayApprovedLeave($placementId); }
 
     /**
+     * Get max allowed weekly off days quota from setting (default: 2 days/week).
+     */
+    public function getWeeklyOffDaysQuota(): int
+    {
+        try {
+            return (int) (Setting::where('key', 'kuota_libur_shift_mingguan')->value('value') ?: 2);
+        } catch (\Throwable $e) {
+            return 2;
+        }
+    }
+
+    /**
+     * Get number of weekly off days used by student in current week (Monday to Sunday).
+     */
+    public function getWeeklyOffDaysUsed(int $placementId): int
+    {
+        $startOfWeek = now()->startOfWeek()->toDateString();
+        $endOfWeek = now()->endOfWeek()->toDateString();
+
+        return \App\Modules\Presensi\Models\Presensi::where('penempatan_pkl_id', $placementId)
+            ->whereBetween('tanggal', [$startOfWeek, $endOfWeek])
+            ->where('status_masuk', 'libur_shift')
+            ->count();
+    }
+
+    /**
+     * Student marks today as Day Off / Libur Shift.
+     */
+    public function markLiburShift(int $placementId, ?string $alasan = null)
+    {
+        $today = now()->toDateString();
+
+        // 1. Check if already has attendance
+        $existing = $this->getToday($placementId);
+        if ($existing && $existing->jam_masuk) {
+            throw new \Exception("Anda sudah melakukan Check In hari ini, tidak dapat mengubah status menjadi Libur Shift.");
+        }
+
+        if ($existing && $existing->status_masuk === 'libur_shift') {
+            throw new \Exception("Hari ini sudah tercatat sebagai Libur Shift.");
+        }
+
+        // 2. Check weekly quota
+        $quota = $this->getWeeklyOffDaysQuota();
+        $used = $this->getWeeklyOffDaysUsed($placementId);
+
+        if ($used >= $quota) {
+            throw new \Exception("Batas kuota libur shift minggu ini telah tercapai (Maksimal {$quota} hari per minggu). Silakan hubungi Guru Pembimbing jika ada jadwal khusus.");
+        }
+
+        // 3. Save or update attendance record as libur_shift
+        $placement = \App\Modules\PKL\Models\PenempatanPkl::findOrFail($placementId);
+
+        if ($existing) {
+            return $this->repo->updateAttendance($existing->id, [
+                'status_masuk' => 'libur_shift',
+                'status_pulang' => null,
+                'keterangan' => $alasan ?: 'Libur Shift DUDI',
+            ]);
+        }
+
+        return $this->repo->saveAttendance([
+            'penempatan_pkl_id' => $placementId,
+            'tanggal' => $today,
+            'jam_masuk' => null,
+            'jam_pulang' => null,
+            'lat_masuk' => null,
+            'lng_masuk' => null,
+            'lat_pulang' => null,
+            'lng_pulang' => null,
+            'foto_masuk' => null,
+            'foto_pulang' => null,
+            'status_masuk' => 'libur_shift',
+            'status_pulang' => null,
+            'shift_harian' => $placement->tipe_shift ?? 'reguler',
+            'is_wfa' => 0,
+            'keterangan' => $alasan ?: 'Libur Shift DUDI',
+        ]);
+    }
+
+    /**
+     * Cancel today's Libur Shift mark.
+     */
+    public function cancelLiburShift(int $placementId)
+    {
+        $existing = $this->getToday($placementId);
+
+        if (!$existing || $existing->status_masuk !== 'libur_shift') {
+            throw new \Exception("Tidak ada catatan libur shift untuk hari ini yang dapat dibatalkan.");
+        }
+
+        if ($existing->jam_masuk) {
+            throw new \Exception("Presensi masuk sudah tercatat.");
+        }
+
+        return \App\Modules\Presensi\Models\Presensi::where('id', $existing->id)->delete();
+    }
+
+    /**
      * Calculate distance between two coordinates using Haversine formula.
      * Returns distance in meters.
      */

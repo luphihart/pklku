@@ -133,6 +133,7 @@
             $totTelat = 0;
             $totIzin = 0;
             $totSakit = 0;
+            $totLiburShift = 0;
             $totAlpha = 0;
         @endphp
         <table class="table-data">
@@ -156,7 +157,9 @@
                         $holiday = $holidayMap[$targetDate] ?? null;
                         
                         if ($presensi) {
-                            if ($presensi->status_masuk === 'tepat_waktu') $totHadir++;
+                            if ($presensi->status_masuk === 'libur_shift') $totLiburShift++;
+                            elseif ($presensi->status_masuk === 'alpha') $totAlpha++;
+                            elseif ($presensi->status_masuk === 'tepat_waktu') $totHadir++;
                             else $totTelat++;
                         } elseif ($leave) {
                             if (strtolower($leave) === 'izin') $totIzin++;
@@ -175,9 +178,15 @@
                         <td class="text-center">{{ $presensi && $presensi->jam_pulang ? substr($presensi->jam_pulang, 0, 5) : '-' }}</td>
                         <td class="text-center">
                             @if($presensi)
-                                <span class="{{ $presensi->status_masuk === 'tepat_waktu' ? 'badge-hadir' : 'badge-terlambat' }}">
-                                    {{ $presensi->status_masuk === 'tepat_waktu' ? 'Hadir (Tepat Waktu)' : 'Terlambat' }}
-                                </span>
+                                @if($presensi->status_masuk === 'libur_shift')
+                                    <span style="color: #0284c7; font-weight: bold;">Libur Shift DUDI</span>
+                                @elseif($presensi->status_masuk === 'alpha')
+                                    <span class="badge-alpha">Alpha (Tidak Hadir)</span>
+                                @else
+                                    <span class="{{ $presensi->status_masuk === 'tepat_waktu' ? 'badge-hadir' : 'badge-terlambat' }}">
+                                        {{ $presensi->status_masuk === 'tepat_waktu' ? 'Hadir (Tepat Waktu)' : 'Terlambat' }}
+                                    </span>
+                                @endif
                             @elseif($leave)
                                 <span class="{{ strtolower($leave) === 'izin' ? 'badge-izin' : 'badge-sakit' }}">
                                     {{ $leave }} (Disetujui)
@@ -200,12 +209,13 @@
         <!-- Ringkasan Harian -->
         <table class="summary-box">
             <tr>
-                <td style="font-weight: bold; width: 20%;">Total Siswa Aktif: {{ count($placements) }}</td>
-                <td class="badge-hadir">Hadir Tepat Waktu: {{ $totHadir }}</td>
-                <td class="badge-terlambat">Terlambat: {{ $totTelat }}</td>
+                <td style="font-weight: bold; width: 18%;">Total Siswa: {{ count($placements) }}</td>
+                <td class="badge-hadir">Hadir: {{ $totHadir }}</td>
+                <td class="badge-terlambat">Telat: {{ $totTelat }}</td>
                 <td class="badge-izin">Izin: {{ $totIzin }}</td>
                 <td class="badge-sakit">Sakit: {{ $totSakit }}</td>
-                <td class="badge-alpha">Belum/Tidak Hadir: {{ $totAlpha }}</td>
+                <td style="color: #0284c7; font-weight: bold;">Libur Shift: {{ $totLiburShift }}</td>
+                <td class="badge-alpha">Alpha: {{ $totAlpha }}</td>
             </tr>
         </table>
     @else
@@ -222,7 +232,8 @@
                     <th style="width: 6%;">Telat</th>
                     <th style="width: 6%;">Izin</th>
                     <th style="width: 6%;">Sakit</th>
-                    <th style="width: 10%;">% Kehadiran</th>
+                    <th style="width: 6%;">Off</th>
+                    <th style="width: 8%;">% Hadir</th>
                 </tr>
             </thead>
             <tbody>
@@ -232,13 +243,15 @@
                         $telatCount = 0;
                         $izinCount = 0;
                         $sakitCount = 0;
+                        $liburShiftCount = 0;
 
                         foreach ($dates as $d) {
                             $presensi = $presensiData[$p->id][$d] ?? null;
                             $leave = $leavesByPlacementAndDate[$p->id][$d] ?? null;
                             if ($presensi) {
-                                if ($presensi->status_masuk === 'tepat_waktu') $hadirCount++;
-                                else $telatCount++;
+                                if ($presensi->status_masuk === 'libur_shift') $liburShiftCount++;
+                                elseif ($presensi->status_masuk === 'tepat_waktu') $hadirCount++;
+                                elseif ($presensi->status_masuk === 'terlambat') $telatCount++;
                             } elseif ($leave) {
                                 if (strtolower($leave) === 'izin') $izinCount++;
                                 else $sakitCount++;
@@ -246,8 +259,8 @@
                         }
 
                         $totalMasuk = $hadirCount + $telatCount;
-                        $totalHariAktif = count($dates);
-                        $persen = $totalHariAktif > 0 ? round(($totalMasuk / $totalHariAktif) * 100, 1) : 0;
+                        $totalHariAktif = max(1, count($dates) - $liburShiftCount);
+                        $persen = round(($totalMasuk / $totalHariAktif) * 100, 1);
                     @endphp
                     <tr>
                         <td class="text-center">{{ $index + 1 }}</td>
@@ -259,6 +272,7 @@
                         <td class="text-center badge-terlambat">{{ $telatCount }}</td>
                         <td class="text-center badge-izin">{{ $izinCount }}</td>
                         <td class="text-center badge-sakit">{{ $sakitCount }}</td>
+                        <td class="text-center" style="color: #0284c7; font-weight: bold;">{{ $liburShiftCount }}</td>
                         <td class="text-center fw-bold">{{ $persen }}%</td>
                     </tr>
                 @empty

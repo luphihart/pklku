@@ -78,11 +78,18 @@
                 <p class="text-secondary small mt-1 mb-0">Hari ini merupakan jadwal libur rutin penempatan Anda. Anda tidak perlu melakukan presensi dan tidak terhitung Alpha.</p>
             </div>
         @else
+            @php
+                $isTodayLiburShift = $today && $today->status_masuk === 'libur_shift';
+            @endphp
             <!-- Daily Presence Status Hero Banner -->
-            <div class="card-premium mb-4 p-3 d-flex flex-row align-items-center justify-content-between flex-wrap gap-2" style="background-color: var(--bg-card); border-left: 4px solid {{ $today && $today->jam_masuk ? 'var(--success)' : 'var(--warning)' }} !important;">
+            <div class="card-premium mb-4 p-3 d-flex flex-row align-items-center justify-content-between flex-wrap gap-2" style="background-color: var(--bg-card); border-left: 4px solid {{ $isTodayLiburShift ? '#0284c7' : ($today && $today->jam_masuk ? 'var(--success)' : 'var(--warning)') }} !important;">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="p-2 rounded-circle {{ $today && $today->jam_masuk ? 'bg-success-light text-success' : 'bg-warning-light text-warning' }} d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
-                        @if($today && $today->jam_masuk)
+                    <div class="p-2 rounded-circle {{ $isTodayLiburShift ? 'bg-info-light text-info' : ($today && $today->jam_masuk ? 'bg-success-light text-success' : 'bg-warning-light text-warning') }} d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                        @if($isTodayLiburShift)
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                        @elseif($today && $today->jam_masuk)
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
@@ -94,7 +101,9 @@
                     </div>
                     <div>
                         <span class="text-muted text-uppercase fw-bold d-block" style="font-size: 11px; letter-spacing: 0.5px;">Status Hari Ini: {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}</span>
-                        @if($today && $today->jam_pulang)
+                        @if($isTodayLiburShift)
+                            <span class="fw-bold text-info font-heading" style="font-size: 15px; color: #0284c7 !important;">🌴 Hari Ini Jadwal Libur Shift DUDI (Off Day)</span>
+                        @elseif($today && $today->jam_pulang)
                             <span class="fw-bold text-success font-heading" style="font-size: 15px;">Selesai Presensi Hari Ini (Masuk: {{ substr($today->jam_masuk, 0, 5) }} | Pulang: {{ substr($today->jam_pulang, 0, 5) }})</span>
                         @elseif($today && $today->jam_masuk)
                             <span class="fw-bold text-primary font-heading" style="font-size: 15px;">Sudah Check In Pagi ({{ substr($today->jam_masuk, 0, 5) }}) — Jangan lupa Check Out saat jam pulang</span>
@@ -103,7 +112,15 @@
                         @endif
                     </div>
                 </div>
-                <div>
+                <div class="d-flex align-items-center gap-2">
+                    @if($isTodayLiburShift)
+                        <button type="button" class="btn btn-sm btn-outline-danger font-heading d-flex align-items-center gap-1" @click="cancelLiburShift()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                            Batalkan Libur (Masuk Kerja)
+                        </button>
+                    @endif
                     <a href="{{ route('jurnal.index') }}" class="btn btn-sm btn-outline-primary font-heading d-flex align-items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -119,6 +136,7 @@
             $activeShift = ($today && $today->shift_harian) ? $today->shift_harian : null;
             $shiftInfo = $placement ? $placement->getEffectiveShiftHours($activeShift) : null;
             $globalSettings = \App\Modules\Setting\Models\Setting::pluck('value', 'key');
+            $isTodayLiburShift = $today && $today->status_masuk === 'libur_shift';
         @endphp
 
         <div class="row">
@@ -127,7 +145,11 @@
                 <div class="card-premium">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold font-heading m-0 text-dark dark-text-light">Panel Presensi Mandiri</h5>
-                        @if($isWfaToday)
+                        @if($isTodayLiburShift)
+                            <span class="badge bg-info-light text-info fw-semibold px-2 py-1" style="font-size: 12px; background-color: rgba(14, 165, 233, 0.12); color: #0284c7;">
+                                🌴 Libur Shift Aktif
+                            </span>
+                        @elseif($isWfaToday)
                             <span class="badge bg-primary-light text-primary fw-semibold px-2 py-1" style="font-size: 12px;">
                                 🏠 Mode WFA (Bebas Radius)
                             </span>
@@ -138,99 +160,142 @@
                         @endif
                     </div>
 
-                    <!-- Shift & Schedule Info Banner -->
-                    @if($shiftInfo)
-                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 p-2 px-3 rounded" style="background-color: var(--bg-canvas); border: 1px solid var(--border-color);">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="badge bg-indigo-light text-indigo fw-semibold" style="font-size: 12px; background-color: rgba(79, 70, 229, 0.12); color: #4f46e5;">
-                                    ⏱️ {{ $shiftInfo['label'] }}
-                                </span>
-                                @if(($placement->tipe_shift ?? 'reguler') === 'rolling' && !$activeShift)
-                                    <span class="badge bg-purple-light text-purple" style="font-size: 11px; background-color: rgba(147, 51, 234, 0.1); color: #9333ea;">Auto-Detect Saat Check-In</span>
-                                @endif
+                    @if($isTodayLiburShift)
+                        <!-- Libur Shift Active Banner -->
+                        <div class="p-4 rounded text-center my-3" style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(99, 102, 241, 0.06) 100%); border: 1px dashed #0284c7;">
+                            <div class="p-3 d-inline-flex rounded-circle bg-white shadow-sm mb-3 text-info" style="color: #0284c7 !important;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                </svg>
                             </div>
-                            <div class="small text-muted" style="font-size: 12px;">
-                                @if(($placement->tipe_shift ?? 'reguler') === 'rolling' && !$activeShift)
-                                    Buka Pagi: <strong class="text-dark">{{ substr($globalSettings['shift_pagi_masuk'] ?? '07:00', 0, 5) }}</strong> | Buka Siang: <strong class="text-dark">{{ substr($globalSettings['shift_siang_masuk'] ?? '11:00', 0, 5) }}</strong> | Buka Sore: <strong class="text-dark">{{ substr($globalSettings['shift_sore_masuk'] ?? '15:00', 0, 5) }}</strong>
-                                @else
-                                    Batas Tepat Waktu: <strong class="text-dark">{{ $shiftInfo['batas_terlambat'] }}</strong> | Mulai Pulang: <strong class="text-dark">{{ $shiftInfo['jam_pulang'] }}</strong>
-                                @endif
+                            <h5 class="fw-bold font-heading text-dark mb-1">Hari Ini Libur / Off Shift</h5>
+                            <p class="text-secondary small mb-3">Status hari ini tercatat sebagai libur shift resmi dari DUDI. Anda tidak dikenakan catatan Alpha.</p>
+                            <div class="d-flex justify-content-center gap-2">
+                                <button type="button" class="btn btn-sm btn-outline-danger" @click="cancelLiburShift()">
+                                    Batalkan Libur (Jika Masuk Bekerja)
+                                </button>
                             </div>
-                        </div>
-                    @endif
-                    
-                    <!-- DUDI Info -->
-                    @if($isWfaToday)
-                        <div class="alert alert-primary border-0 mb-3" style="background-color: rgba(59, 130, 246, 0.08); color: #2563eb;">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <strong class="font-heading" style="font-size: 14px;">DUDI: {{ $placement->dudi->nama }}</strong>
-                                <span class="badge bg-primary text-white" style="font-size: 11px;">Jadwal Hari Ini: WFA</span>
-                            </div>
-                            <small class="d-block" style="font-size: 12px;">🏠 <strong>Mode Bebas Radius Aktif:</strong> Anda dapat melakukan presensi dari mana saja hari ini.</small>
-                            <small class="d-block text-muted mt-1" style="font-size: 11px;">Status GPS Anda: <span class="fw-bold text-dark" x-text="distanceString">Mendeteksi...</span></small>
                         </div>
                     @else
-                        <div class="alert alert-info border-0 mb-3" style="background-color: rgba(79, 70, 229, 0.08); color: var(--accent-primary);">
-                            <strong class="font-heading" style="font-size: 14px;">DUDI: {{ $placement->dudi->nama }}</strong><br>
-                            <small class="d-block mt-1" style="font-size: 12px;">Koordinat Target: {{ $placement->dudi->latitude }}, {{ $placement->dudi->longitude }}</small>
-                            <small class="d-block" style="font-size: 12px;">Radius Aman: {{ $placement->dudi->radius_meter }} Meter | Jarak Anda: <span class="fw-bold" x-text="distanceString">Mendeteksi...</span></small>
-                        </div>
-                    @endif
-
-                    <!-- Leaflet map -->
-                    <div id="map"></div>
-
-                    <!-- Camera Section -->
-                    <div class="text-center mb-3">
-                        <video id="camera-preview" autoplay playsinline></video>
-                        <canvas id="selfie-canvas" width="640" height="480"></canvas>
-                        
-                        <div class="mt-2" x-show="cameraActive">
-                            <span class="badge bg-success-light text-success fw-semibold" style="font-size: 12px;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="align-middle me-1">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                </svg>
-                                Kamera Aktif
-                            </span>
-                        </div>
-                    </div>
-                                 <!-- Today Leave Banner -->
-                    @if(isset($todayLeave) && $todayLeave)
-                        <div class="alert alert-warning border-0 mb-3" style="background-color: rgba(245, 158, 11, 0.12); color: #b45309; border-left: 4px solid #f59e0b !important;">
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <span class="badge {{ $todayLeave->tipe === 'sakit' ? 'bg-danger' : 'bg-primary' }} text-white">
-                                    {{ $todayLeave->tipe === 'sakit' ? '🏥 Sakit' : '📝 Izin' }} (Disetujui)
-                                </span>
-                                <strong class="font-heading" style="font-size: 13px;">Anda Sedang Izin/Sakit Hari Ini</strong>
+                        <!-- Shift & Schedule Info Banner -->
+                        @if($shiftInfo)
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 p-2 px-3 rounded" style="background-color: var(--bg-canvas); border: 1px solid var(--border-color);">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-indigo-light text-indigo fw-semibold" style="font-size: 12px; background-color: rgba(79, 70, 229, 0.12); color: #4f46e5;">
+                                        ⏱️ {{ $shiftInfo['label'] }}
+                                    </span>
+                                    @if(($placement->tipe_shift ?? 'reguler') === 'rolling' && !$activeShift)
+                                        <span class="badge bg-purple-light text-purple" style="font-size: 11px; background-color: rgba(147, 51, 234, 0.1); color: #9333ea;">Auto-Detect Saat Check-In</span>
+                                    @endif
+                                </div>
+                                <div class="small text-muted" style="font-size: 12px;">
+                                    @if(($placement->tipe_shift ?? 'reguler') === 'rolling' && !$activeShift)
+                                        Buka Pagi: <strong class="text-dark">{{ substr($globalSettings['shift_pagi_masuk'] ?? '07:00', 0, 5) }}</strong> | Buka Siang: <strong class="text-dark">{{ substr($globalSettings['shift_siang_masuk'] ?? '11:00', 0, 5) }}</strong> | Buka Sore: <strong class="text-dark">{{ substr($globalSettings['shift_sore_masuk'] ?? '15:00', 0, 5) }}</strong>
+                                    @else
+                                        Batas Tepat Waktu: <strong class="text-dark">{{ $shiftInfo['batas_terlambat'] }}</strong> | Mulai Pulang: <strong class="text-dark">{{ $shiftInfo['jam_pulang'] }}</strong>
+                                    @endif
+                                </div>
                             </div>
-                            <small class="d-block" style="font-size: 12px;">Alasan: <strong>{{ $todayLeave->alasan }}</strong></small>
-                            <small class="d-block text-muted mt-1" style="font-size: 11px;">Periode: {{ \Carbon\Carbon::parse($todayLeave->tanggal_mulai)->format('d/m/Y') }} s/d {{ \Carbon\Carbon::parse($todayLeave->tanggal_selesai)->format('d/m/Y') }}. Anda tidak perlu presensi hari ini.</small>
-                        </div>
-                    @endif
+                        @endif
+                        
+                        <!-- DUDI Info -->
+                        @if($isWfaToday)
+                            <div class="alert alert-primary border-0 mb-3" style="background-color: rgba(59, 130, 246, 0.08); color: #2563eb;">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <strong class="font-heading" style="font-size: 14px;">DUDI: {{ $placement->dudi->nama }}</strong>
+                                    <span class="badge bg-primary text-white" style="font-size: 11px;">Jadwal Hari Ini: WFA</span>
+                                </div>
+                                <small class="d-block" style="font-size: 12px;">🏠 <strong>Mode Bebas Radius Aktif:</strong> Anda dapat melakukan presensi dari mana saja hari ini.</small>
+                                <small class="d-block text-muted mt-1" style="font-size: 11px;">Status GPS Anda: <span class="fw-bold text-dark" x-text="distanceString">Mendeteksi...</span></small>
+                            </div>
+                        @else
+                            <div class="alert alert-info border-0 mb-3" style="background-color: rgba(79, 70, 229, 0.08); color: var(--accent-primary);">
+                                <strong class="font-heading" style="font-size: 14px;">DUDI: {{ $placement->dudi->nama }}</strong><br>
+                                <small class="d-block mt-1" style="font-size: 12px;">Koordinat Target: {{ $placement->dudi->latitude }}, {{ $placement->dudi->longitude }}</small>
+                                <small class="d-block" style="font-size: 12px;">Radius Aman: {{ $placement->dudi->radius_meter }} Meter | Jarak Anda: <span class="fw-bold" x-text="distanceString">Mendeteksi...</span></small>
+                            </div>
+                        @endif
 
-                    <!-- Actions -->
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <button class="btn btn-success w-100 py-3 font-heading fw-bold btn-attendance" 
-                                    :disabled="!inRadius || todayHasCheckIn || submitting" 
-                                    @click="submitAttendance('checkin')"
-                                    aria-label="Lakukan Check In Pagi">
-                                <span x-text="todayHasCheckIn ? 'Sudah Check In' : 'CHECK IN PAGI'"></span>
-                            </button>
+                        <!-- Leaflet map -->
+                        <div id="map"></div>
+
+                        <!-- Camera Section -->
+                        <div class="text-center mb-3">
+                            <video id="camera-preview" autoplay playsinline></video>
+                            <canvas id="selfie-canvas" width="640" height="480"></canvas>
+                            
+                            <div class="mt-2" x-show="cameraActive">
+                                <span class="badge bg-success-light text-success fw-semibold" style="font-size: 12px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="align-middle me-1">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Kamera Aktif
+                                </span>
+                            </div>
                         </div>
-                        <div class="col-6">
-                            <button class="btn btn-warning w-100 py-3 font-heading fw-bold btn-attendance" 
-                                    :disabled="!inRadius || !todayHasCheckIn || todayHasCheckOut || submitting" 
-                                    @click="submitAttendance('checkout')"
-                                    aria-label="Lakukan Check Out Sore">
-                                <span x-text="todayHasCheckOut ? 'Sudah Check Out' : 'CHECK OUT SORE'"></span>
-                            </button>
+
+                        <!-- Today Leave Banner -->
+                        @if(isset($todayLeave) && $todayLeave)
+                            <div class="alert alert-warning border-0 mb-3" style="background-color: rgba(245, 158, 11, 0.12); color: #b45309; border-left: 4px solid #f59e0b !important;">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <span class="badge {{ $todayLeave->tipe === 'sakit' ? 'bg-danger' : 'bg-primary' }} text-white">
+                                        {{ $todayLeave->tipe === 'sakit' ? '🏥 Sakit' : '📝 Izin' }} (Disetujui)
+                                    </span>
+                                    <strong class="font-heading" style="font-size: 13px;">Anda Sedang Izin/Sakit Hari Ini</strong>
+                                </div>
+                                <small class="d-block" style="font-size: 12px;">Alasan: <strong>{{ $todayLeave->alasan }}</strong></small>
+                                <small class="d-block text-muted mt-1" style="font-size: 11px;">Periode: {{ \Carbon\Carbon::parse($todayLeave->tanggal_mulai)->format('d/m/Y') }} s/d {{ \Carbon\Carbon::parse($todayLeave->tanggal_selesai)->format('d/m/Y') }}. Anda tidak perlu presensi hari ini.</small>
+                            </div>
+                        @endif
+
+                        <!-- Actions -->
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <button class="btn btn-success w-100 py-3 font-heading fw-bold btn-attendance" 
+                                        :disabled="!inRadius || todayHasCheckIn || submitting" 
+                                        @click="submitAttendance('checkin')"
+                                        aria-label="Lakukan Check In Pagi">
+                                    <span x-text="todayHasCheckIn ? 'Sudah Check In' : 'CHECK IN PAGI'"></span>
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-warning w-100 py-3 font-heading fw-bold btn-attendance" 
+                                        :disabled="!inRadius || !todayHasCheckIn || todayHasCheckOut || submitting" 
+                                        @click="submitAttendance('checkout')"
+                                        aria-label="Lakukan Check Out Sore">
+                                    <span x-text="todayHasCheckOut ? 'Sudah Check Out' : 'CHECK OUT SORE'"></span>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="mt-3 text-center" x-show="!isWfa && !inRadius">
-                        <span class="text-danger small fw-bold">⚠️ Anda tidak berada di dalam wilayah DUDI. Tombol absen dinonaktifkan.</span>
-                    </div>
+                        
+                        <div class="mt-3 text-center" x-show="!isWfa && !inRadius">
+                            <span class="text-danger small fw-bold">⚠️ Anda tidak berada di dalam wilayah DUDI. Tombol absen dinonaktifkan.</span>
+                        </div>
+
+                        <!-- Libur Shift Self-Service Option -->
+                        @if(!$today || !$today->jam_masuk)
+                            @php
+                                $remainingOff = max(0, ($weeklyOffQuota ?? 2) - ($weeklyOffUsed ?? 0));
+                            @endphp
+                            <div class="mt-3 pt-3 border-top">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 p-2 rounded bg-light border">
+                                    <div class="text-start">
+                                        <small class="d-block fw-semibold text-dark font-heading">🌴 Hari Ini Jadwal Libur / Off Shift DUDI?</small>
+                                        <small class="text-muted" style="font-size: 11px;">
+                                            Sisa kuota libur shift minggu ini: <strong class="text-primary">{{ $remainingOff }} hari</strong> (dari {{ $weeklyOffQuota ?? 2 }} hari)
+                                        </small>
+                                    </div>
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-info font-heading d-flex align-items-center gap-1"
+                                            @click="markLiburShift()"
+                                            {{ $remainingOff <= 0 ? 'disabled' : '' }}
+                                            title="{{ $remainingOff <= 0 ? 'Kuota libur shift minggu ini telah habis' : 'Tandai libur shift' }}">
+                                        <span>Tandai Libur Shift</span>
+                                    </button>
+                                </div>
+                            </div>
+                        @endif
+                    @endif
                 </div>
             </div>
 
@@ -262,7 +327,7 @@
                                     <tr>
                                         <td>{{ \Carbon\Carbon::parse($h->tanggal)->translatedFormat('d M Y') }}</td>
                                         <td>
-                                            @if($h->type === 'izin' || $h->type === 'sakit')
+                                            @if($h->type === 'izin' || $h->type === 'sakit' || $h->type === 'libur_shift' || $h->type === 'alpha')
                                                 <span class="text-muted" style="font-size: 11px;">-</span>
                                             @else
                                                 <span class="text-success fw-semibold">{{ $h->jam_masuk ? substr($h->jam_masuk, 0, 5) : '-' }}</span>
@@ -276,7 +341,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @if($h->type === 'izin' || $h->type === 'sakit')
+                                            @if($h->type === 'izin' || $h->type === 'sakit' || $h->type === 'libur_shift' || $h->type === 'alpha')
                                                 <span class="text-muted" style="font-size: 11px;">-</span>
                                             @else
                                                 <span class="text-warning fw-semibold">{{ $h->jam_pulang ? substr($h->jam_pulang, 0, 5) : '-' }}</span>
@@ -290,7 +355,15 @@
                                             @endif
                                         </td>
                                         <td class="text-end">
-                                            @if($h->type === 'izin')
+                                            @if($h->type === 'libur_shift' || $h->status_masuk === 'libur_shift')
+                                                <span class="badge bg-info-light text-info fw-semibold py-1 px-2" style="background-color: rgba(14, 165, 233, 0.12); color: #0284c7; font-size: 11px;" title="{{ $h->keterangan ?? 'Libur Shift DUDI' }}">
+                                                    🌴 Libur Shift
+                                                </span>
+                                            @elseif($h->type === 'alpha' || $h->status_masuk === 'alpha')
+                                                <span class="badge bg-danger-light text-danger fw-semibold py-1 px-2" style="background-color: rgba(239, 68, 68, 0.12); color: #dc2626; font-size: 11px;" title="Tidak Hadir Tanpa Keterangan">
+                                                    ❌ Alpha
+                                                </span>
+                                            @elseif($h->type === 'izin')
                                                 <span class="badge bg-info-light text-info fw-semibold py-1 px-2" style="background-color: rgba(14, 165, 233, 0.12); color: #0284c7; font-size: 11px;" title="{{ $h->keterangan }}">
                                                     📝 Izin
                                                 </span>
@@ -549,6 +622,110 @@
                         confirmButtonColor: 'var(--accent-primary)'
                     });
                     this.submitting = false;
+                });
+            },
+
+            markLiburShift() {
+                Swal.fire({
+                    title: 'Konfirmasi Libur Shift',
+                    text: 'Apakah hari ini adalah jadwal libur / off shift Anda dari DUDI?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Tandai Libur Shift',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#0284c7',
+                    cancelButtonColor: '#6b7280'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submitting = true;
+                        fetch('{{ route("presensi.libur_shift") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                penempatan_pkl_id: this.placementId
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: data.message,
+                                    confirmButtonColor: '#0284c7'
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: data.message,
+                                    confirmButtonColor: 'var(--accent-primary)'
+                                });
+                                this.submitting = false;
+                            }
+                        })
+                        .catch(err => {
+                            Swal.fire('Error', 'Terjadi kesalahan koneksi server.', 'error');
+                            this.submitting = false;
+                        });
+                    }
+                });
+            },
+
+            cancelLiburShift() {
+                Swal.fire({
+                    title: 'Batalkan Libur Shift?',
+                    text: 'Apakah Anda ingin membatalkan tanda libur shift hari ini dan melakukan presensi masuk?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Batalkan Libur',
+                    cancelButtonText: 'Kembali',
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonColor: '#6b7280'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submitting = true;
+                        fetch('{{ route("presensi.cancel_libur_shift") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                penempatan_pkl_id: this.placementId
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Dibatalkan',
+                                    text: data.message,
+                                    confirmButtonColor: '#0284c7'
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: data.message,
+                                    confirmButtonColor: 'var(--accent-primary)'
+                                });
+                                this.submitting = false;
+                            }
+                        })
+                        .catch(err => {
+                            Swal.fire('Error', 'Terjadi kesalahan koneksi server.', 'error');
+                            this.submitting = false;
+                        });
+                    }
                 });
             }
         }

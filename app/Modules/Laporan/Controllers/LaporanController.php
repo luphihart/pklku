@@ -410,13 +410,27 @@ class LaporanController extends Controller
         $attendanceRecords = collect();
 
         foreach ($presensiList as $p) {
+            $status = $p->status_masuk === 'tepat_waktu' ? 'Hadir (Tepat Waktu)' : 'Terlambat';
+            $type = $p->status_masuk === 'tepat_waktu' ? 'hadir' : 'terlambat';
+            $keterangan = '-';
+
+            if ($p->status_masuk === 'libur_shift') {
+                $status = 'Libur Shift DUDI';
+                $type = 'libur_shift';
+                $keterangan = 'Libur Shift / Off Day';
+            } elseif ($p->status_masuk === 'alpha') {
+                $status = 'Alpha (Tidak Hadir)';
+                $type = 'alpha';
+                $keterangan = 'Tidak Hadir Tanpa Keterangan';
+            }
+
             $attendanceRecords->push((object)[
                 'tanggal' => $p->tanggal,
                 'jam_masuk' => $p->jam_masuk,
                 'jam_pulang' => $p->jam_pulang,
-                'status' => $p->status_masuk === 'tepat_waktu' ? 'Hadir (Tepat Waktu)' : 'Terlambat',
-                'type' => $p->status_masuk === 'tepat_waktu' ? 'hadir' : 'terlambat',
-                'keterangan' => '-',
+                'status' => $status,
+                'type' => $type,
+                'keterangan' => $keterangan,
             ]);
         }
 
@@ -447,6 +461,8 @@ class LaporanController extends Controller
             'total_terlambat' => $presensis->where('type', 'terlambat')->count(),
             'total_izin' => $presensis->where('type', 'izin')->count(),
             'total_sakit' => $presensis->where('type', 'sakit')->count(),
+            'total_libur_shift' => $presensis->where('type', 'libur_shift')->count(),
+            'total_alpha' => $presensis->where('type', 'alpha')->count(),
         ];
 
         $branding = $this->getBranding();

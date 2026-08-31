@@ -33,14 +33,18 @@ class PresensiController extends Controller
             $history = [];
             $today = null;
             $todayLeave = null;
+            $weeklyOffQuota = 2;
+            $weeklyOffUsed = 0;
 
             if ($placement) {
                 $history = $this->service->getHistory($placement->id);
                 $today = $this->service->getToday($placement->id);
                 $todayLeave = $this->service->getTodayLeave($placement->id);
+                $weeklyOffQuota = $this->service->getWeeklyOffDaysQuota();
+                $weeklyOffUsed = $this->service->getWeeklyOffDaysUsed($placement->id);
             }
 
-            return view('presensi::murid.index', compact('placement', 'history', 'today', 'todayLeave'));
+            return view('presensi::murid.index', compact('placement', 'history', 'today', 'todayLeave', 'weeklyOffQuota', 'weeklyOffUsed'));
         }
 
         // Sisi Guru / Admin: List all attendance
@@ -139,6 +143,63 @@ class PresensiController extends Controller
     }
 
     /**
+     * Process student marking today as Libur Shift / Off Day.
+     */
+    public function markLiburShift(Request $request)
+    {
+        $request->validate([
+            'penempatan_pkl_id' => 'required|exists:penempatan_pkl,id',
+            'alasan' => 'nullable|string|max:255',
+        ]);
+
+        $user = auth()->user();
+        if ($user->role === 'murid') {
+            $muridPlacementId = $user->murid?->penempatanAktif?->id;
+            if ($muridPlacementId !== (int) $request->penempatan_pkl_id) {
+                return response()->json(['success' => false, 'message' => 'Anda tidak diizinkan menandai libur shift untuk penempatan ini.'], 403);
+            }
+        }
+
+        try {
+            $this->service->markLiburShift($request->penempatan_pkl_id, $request->alasan);
+            return response()->json([
+                'success' => true, 
+                'message' => 'Status hari ini berhasil dicatat sebagai Libur Shift DUDI!'
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+        }
+    }
+
+    /**
+     * Cancel today's Libur Shift mark.
+     */
+    public function cancelLiburShift(Request $request)
+    {
+        $request->validate([
+            'penempatan_pkl_id' => 'required|exists:penempatan_pkl,id',
+        ]);
+
+        $user = auth()->user();
+        if ($user->role === 'murid') {
+            $muridPlacementId = $user->murid?->penempatanAktif?->id;
+            if ($muridPlacementId !== (int) $request->penempatan_pkl_id) {
+                return response()->json(['success' => false, 'message' => 'Anda tidak diizinkan membatalkan libur shift untuk penempatan ini.'], 403);
+            }
+        }
+
+        try {
+            $this->service->cancelLiburShift($request->penempatan_pkl_id);
+            return response()->json([
+                'success' => true, 
+                'message' => 'Tanda libur shift hari ini telah dibatalkan. Anda dapat melakukan Check In sekarang.'
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+        }
+    }
+
+    /**
      * Delete attendance log (Admin only).
      */
     public function destroy(int $id)
@@ -165,13 +226,10 @@ class PresensiController extends Controller
         $request->validate([
             'penempatan_pkl_id' => 'required|exists:penempatan_pkl,id',
             'tanggal' => 'required|date',
-            'jam_masuk' => 'nullable|required_without:jam_pulang|string',
-            'status_masuk' => 'nullable|required_with:jam_masuk|in:tepat_waktu,terlambat',
-            'jam_pulang' => 'nullable|required_without:jam_masuk|string',
-            'status_pulang' => 'nullable|required_with:jam_pulang|in:tepat_waktu,pulang_cepat',
-        ], [
-            'jam_masuk.required_without' => 'Jam Masuk atau Jam Pulang harus diisi.',
-            'jam_pulang.required_without' => 'Jam Masuk atau Jam Pulang harus diisi.',
+            'jam_masuk' => 'nullable|string',
+            'status_masuk' => 'nullable|in:tepat_waktu,terlambat,libur_shift,alpha',
+            'jam_pulang' => 'nullable|string',
+            'status_pulang' => 'nullable|in:tepat_waktu,pulang_cepat',
         ]);
 
         // Check if attendance already exists for this student on this day
@@ -189,14 +247,16 @@ class PresensiController extends Controller
             $parsed = strtotime($request->jam_masuk);
             $jamMasuk = ($parsed !== false) ? date('H:i:s', $parsed) : null;
         }
-        $statusMasuk = $jamMasuk ? $request->status_masuk : null;
+        $statusMasuk = $request->status_masuk ?: ($jamMasuk ? 'tepat_waktu' : null);
 
         $jamPulang = null;
         if ($request->filled('jam_pulang')) {
             $parsed = strtotime($request->jam_pulang);
             $jamPulang = ($parsed !== false) ? date('H:i:s', $parsed) : null;
         }
-        $statusPulang = $jamPulang ? $request->status_pulang : null;
+        $statusPulang = $jamPulang ? ($request->status_pulang ?: 'tepat_waktu') : null;
+
+        $placement = PenempatanPkl::findOrFail($request->penempatan_pkl_id);
 
         Presensi::create([
             'penempatan_pkl_id' => $request->penempatan_pkl_id,
@@ -205,15 +265,12 @@ class PresensiController extends Controller
             'status_masuk' => $statusMasuk,
             'jam_pulang' => $jamPulang,
             'status_pulang' => $statusPulang,
-            'lat_masuk' => null,
-            'lng_masuk' => null,
-            'lat_pulang' => null,
-            'lng_pulang' => null,
-            'foto_masuk' => null,
-            'foto_pulang' => null,
+            'shift_harian' => $placement->tipe_shift ?? 'reguler',
+            'is_wfa' => 0,
+            'keterangan' => $statusMasuk === 'libur_shift' ? 'Libur Shift DUDI (Input Manual)' : ($statusMasuk === 'alpha' ? 'Alpha (Input Manual)' : null),
         ]);
 
-        return redirect()->back()->with('success', 'Koreksi presensi manual berhasil ditambahkan.');
+        return redirect()->back()->with('success', 'Catatan presensi manual berhasil disimpan.');
     }
 
     /**
@@ -222,13 +279,10 @@ class PresensiController extends Controller
     public function updateManual(Request $request, int $id)
     {
         $request->validate([
-            'jam_masuk' => 'nullable|required_without:jam_pulang|string',
-            'status_masuk' => 'nullable|required_with:jam_masuk|in:tepat_waktu,terlambat',
-            'jam_pulang' => 'nullable|required_without:jam_masuk|string',
-            'status_pulang' => 'nullable|required_with:jam_pulang|in:tepat_waktu,pulang_cepat',
-        ], [
-            'jam_masuk.required_without' => 'Jam Masuk atau Jam Pulang harus diisi.',
-            'jam_pulang.required_without' => 'Jam Masuk atau Jam Pulang harus diisi.',
+            'jam_masuk' => 'nullable|string',
+            'status_masuk' => 'nullable|in:tepat_waktu,terlambat,libur_shift,alpha',
+            'jam_pulang' => 'nullable|string',
+            'status_pulang' => 'nullable|in:tepat_waktu,pulang_cepat',
         ]);
 
         $presensi = Presensi::findOrFail($id);
@@ -238,22 +292,23 @@ class PresensiController extends Controller
             $parsed = strtotime($request->jam_masuk);
             $jamMasuk = ($parsed !== false) ? date('H:i:s', $parsed) : null;
         }
-        $statusMasuk = $jamMasuk ? $request->status_masuk : null;
+        $statusMasuk = $request->status_masuk ?: ($jamMasuk ? 'tepat_waktu' : null);
 
         $jamPulang = null;
         if ($request->filled('jam_pulang')) {
             $parsed = strtotime($request->jam_pulang);
             $jamPulang = ($parsed !== false) ? date('H:i:s', $parsed) : null;
         }
-        $statusPulang = $jamPulang ? $request->status_pulang : null;
+        $statusPulang = $jamPulang ? ($request->status_pulang ?: 'tepat_waktu') : null;
 
         $presensi->update([
             'jam_masuk' => $jamMasuk,
             'status_masuk' => $statusMasuk,
             'jam_pulang' => $jamPulang,
             'status_pulang' => $statusPulang,
+            'keterangan' => $statusMasuk === 'libur_shift' ? 'Libur Shift DUDI (Koreksi Admin)' : ($statusMasuk === 'alpha' ? 'Alpha (Koreksi Admin)' : $presensi->keterangan),
         ]);
 
-        return redirect()->back()->with('success', 'Koreksi presensi manual berhasil diperbarui.');
+        return redirect()->back()->with('success', 'Data presensi berhasil diperbarui.');
     }
 }

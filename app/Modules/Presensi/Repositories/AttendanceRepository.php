@@ -19,9 +19,16 @@ class AttendanceRepository implements AttendanceRepositoryInterface
         $combined = collect();
 
         foreach ($presensis as $p) {
+            $type = 'hadir';
+            if ($p->status_masuk === 'libur_shift') {
+                $type = 'libur_shift';
+            } elseif ($p->status_masuk === 'alpha') {
+                $type = 'alpha';
+            }
+
             $combined->push((object)[
                 'id' => $p->id,
-                'type' => 'hadir',
+                'type' => $type,
                 'tanggal' => $p->tanggal,
                 'jam_masuk' => $p->jam_masuk,
                 'jam_pulang' => $p->jam_pulang,
@@ -30,7 +37,7 @@ class AttendanceRepository implements AttendanceRepositoryInterface
                 'status_masuk' => $p->status_masuk,
                 'status_pulang' => $p->status_pulang,
                 'shift_harian' => $p->shift_harian ?? null,
-                'keterangan' => null,
+                'keterangan' => $p->keterangan ?? ($p->status_masuk === 'libur_shift' ? 'Libur Shift DUDI' : null),
                 'surat_pendukung' => null,
             ]);
         }

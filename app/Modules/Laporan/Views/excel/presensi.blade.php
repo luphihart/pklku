@@ -40,17 +40,31 @@
                     <td style="border: 1px solid #000;">{{ $p->dudi->nama ?? '-' }}</td>
                     
                     @if($presensi)
-                        <td style="border: 1px solid #000; text-align: center;">{{ $presensi->jam_masuk ? substr($presensi->jam_masuk, 0, 5) : '-' }}</td>
-                        <td style="border: 1px solid #000; text-align: center;">{{ $presensi->jam_pulang ? substr($presensi->jam_pulang, 0, 5) : '-' }}</td>
-                        <td style="border: 1px solid #000; text-align: center;">{{ $presensi->status_masuk === 'tepat_waktu' ? 'Tepat Waktu' : 'Terlambat' }}</td>
-                        <td style="border: 1px solid #000; text-align: center;">
-                            @if($presensi->jam_pulang)
-                                {{ $presensi->status_pulang === 'tepat_waktu' ? 'Tepat Waktu' : 'Pulang Cepat' }}
-                            @else
-                                -
-                            @endif
-                        </td>
-                        <td style="border: 1px solid #000; text-align: center;">-</td>
+                        @if($presensi->status_masuk === 'libur_shift')
+                            <td style="border: 1px solid #000; text-align: center;">-</td>
+                            <td style="border: 1px solid #000; text-align: center;">-</td>
+                            <td style="border: 1px solid #000; text-align: center;">Libur Shift</td>
+                            <td style="border: 1px solid #000; text-align: center;">-</td>
+                            <td style="border: 1px solid #000; text-align: center;">Libur Shift DUDI</td>
+                        @elseif($presensi->status_masuk === 'alpha')
+                            <td style="border: 1px solid #000; text-align: center;">-</td>
+                            <td style="border: 1px solid #000; text-align: center;">-</td>
+                            <td style="border: 1px solid #000; text-align: center;">Alpha</td>
+                            <td style="border: 1px solid #000; text-align: center;">-</td>
+                            <td style="border: 1px solid #000; text-align: center;">Tidak Hadir Tanpa Keterangan</td>
+                        @else
+                            <td style="border: 1px solid #000; text-align: center;">{{ $presensi->jam_masuk ? substr($presensi->jam_masuk, 0, 5) : '-' }}</td>
+                            <td style="border: 1px solid #000; text-align: center;">{{ $presensi->jam_pulang ? substr($presensi->jam_pulang, 0, 5) : '-' }}</td>
+                            <td style="border: 1px solid #000; text-align: center;">{{ $presensi->status_masuk === 'tepat_waktu' ? 'Tepat Waktu' : 'Terlambat' }}</td>
+                            <td style="border: 1px solid #000; text-align: center;">
+                                @if($presensi->jam_pulang)
+                                    {{ $presensi->status_pulang === 'tepat_waktu' ? 'Tepat Waktu' : 'Pulang Cepat' }}
+                                @else
+                                    -
+                                @endif
+                            </td>
+                            <td style="border: 1px solid #000; text-align: center;">-</td>
+                        @endif
                     @elseif($leave)
                         <td style="border: 1px solid #000; text-align: center;">-</td>
                         <td style="border: 1px solid #000; text-align: center;">-</td>
@@ -68,12 +82,12 @@
                         <td style="border: 1px solid #000; text-align: center;">-</td>
                         <td style="border: 1px solid #000; text-align: center;">-</td>
                         <td style="border: 1px solid #000; text-align: center;">-</td>
-                        <td style="border: 1px solid #000; text-align: center;">-</td>
+                        <td style="border: 1px solid #000; text-align: center;">Alpha</td>
                     @endif
                 </tr>
             @empty
                 <tr>
-                    <td colspan="10" style="border: 1px solid #000; text-align: center;">Tidak ada data penempatan aktif.</td>
+                    <td colspan="10" style="border: 1px solid #000; text-align: center;">Tidak ada data penempatan PKL aktif.</td>
                 </tr>
             @endforelse
         </tbody>
@@ -85,30 +99,19 @@
     <table>
         <thead>
             <tr>
-                <th colspan="{{ $totalCols }}" style="font-weight: bold; font-size: 14px; text-align: center;">LAPORAN KEHADIRAN REKAPITULASI SISWA PKL</th>
-            </tr>
-            <tr>
-                <th colspan="{{ $totalCols }}" style="font-weight: bold; text-align: center;">{{ $label }}</th>
-            </tr>
-            <tr>
-                <th colspan="{{ $totalCols }}"></th>
-            </tr>
-            <tr style="background-color: #f2f2f2; font-weight: bold; text-align: center;">
-                <th rowspan="2" style="border: 1px solid #000; vertical-align: middle; width: 5%;">No</th>
-                <th rowspan="2" style="border: 1px solid #000; vertical-align: middle; width: 25%;">Nama Siswa</th>
-                <th rowspan="2" style="border: 1px solid #000; vertical-align: middle; width: 12%;">NIS</th>
-                <th rowspan="2" style="border: 1px solid #000; vertical-align: middle; width: 12%;">Kelas</th>
-                <th rowspan="2" style="border: 1px solid #000; vertical-align: middle; width: 20%;">Tempat DUDI</th>
+                <th rowspan="2" style="font-weight: bold; border: 1px solid #000; text-align: center;">No</th>
+                <th rowspan="2" style="font-weight: bold; border: 1px solid #000;">Nama Siswa</th>
+                <th rowspan="2" style="font-weight: bold; border: 1px solid #000; text-align: left;">NIS</th>
+                <th rowspan="2" style="font-weight: bold; border: 1px solid #000;">Kelas</th>
+                <th rowspan="2" style="font-weight: bold; border: 1px solid #000;">Tempat DUDI</th>
                 @foreach($dates as $date)
-                    <th colspan="2" style="border: 1px solid #000; text-align: center; width: 28px;">
-                        {{ \Carbon\Carbon::parse($date)->format('d/m/Y') }}
-                    </th>
+                    <th colspan="2" style="font-weight: bold; border: 1px solid #000; text-align: center;">{{ \Carbon\Carbon::parse($date)->format('d/m/Y') }}</th>
                 @endforeach
             </tr>
-            <tr style="background-color: #f2f2f2; font-weight: bold; text-align: center;">
+            <tr>
                 @foreach($dates as $date)
-                    <th style="border: 1px solid #000; text-align: center; width: 14px;">Waktu</th>
-                    <th style="border: 1px solid #000; text-align: center; width: 14px;">Keterangan</th>
+                    <th style="font-weight: bold; border: 1px solid #000; text-align: center;">Waktu</th>
+                    <th style="font-weight: bold; border: 1px solid #000; text-align: center;">Status</th>
                 @endforeach
             </tr>
         </thead>
@@ -130,17 +133,25 @@
                         
                         @if($presensi)
                             @php
-                                $waktu = substr($presensi->jam_masuk, 0, 5) . ' - ' . ($presensi->jam_pulang ? substr($presensi->jam_pulang, 0, 5) : '-');
-                                
-                                $statusParts = [];
-                                if ($presensi->status_masuk === 'terlambat') {
-                                    $statusParts[] = 'Terlambat';
+                                if ($presensi->status_masuk === 'libur_shift') {
+                                    $waktu = '-';
+                                    $keterangan = 'Libur Shift';
+                                } elseif ($presensi->status_masuk === 'alpha') {
+                                    $waktu = '-';
+                                    $keterangan = 'Alpha';
+                                } else {
+                                    $waktu = substr($presensi->jam_masuk, 0, 5) . ' - ' . ($presensi->jam_pulang ? substr($presensi->jam_pulang, 0, 5) : '-');
+                                    
+                                    $statusParts = [];
+                                    if ($presensi->status_masuk === 'terlambat') {
+                                        $statusParts[] = 'Terlambat';
+                                    }
+                                    if ($presensi->jam_pulang && $presensi->status_pulang === 'pulang_cepat') {
+                                        $statusParts[] = 'Pulang Cepat';
+                                    }
+                                    
+                                    $keterangan = empty($statusParts) ? 'Tepat Waktu' : implode(' & ', $statusParts);
                                 }
-                                if ($presensi->jam_pulang && $presensi->status_pulang === 'pulang_cepat') {
-                                    $statusParts[] = 'Pulang Cepat';
-                                }
-                                
-                                $keterangan = empty($statusParts) ? 'Tepat Waktu' : implode(' & ', $statusParts);
                             @endphp
                             <td style="border: 1px solid #000; text-align: center;">{{ $waktu }}</td>
                             <td style="border: 1px solid #000; text-align: center;">{{ $keterangan }}</td>

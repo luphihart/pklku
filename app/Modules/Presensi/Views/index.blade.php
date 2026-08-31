@@ -96,9 +96,17 @@
                             </td>
                             <td class="text-center pe-4">
                                 <div class="mb-1">
-                                    <span class="badge {{ $p->status_masuk === 'tepat_waktu' ? 'bg-success' : 'bg-danger' }}">
-                                        {{ $p->status_masuk === 'tepat_waktu' ? 'Tepat Waktu' : 'Terlambat' }}
-                                    </span>
+                                    @if($p->status_masuk === 'libur_shift')
+                                        <span class="badge bg-info text-white" style="background-color: #0284c7 !important;">🌴 Libur Shift</span>
+                                    @elseif($p->status_masuk === 'alpha')
+                                        <span class="badge bg-danger">❌ Alpha</span>
+                                    @elseif($p->status_masuk === 'tepat_waktu')
+                                        <span class="badge bg-success">Tepat Waktu</span>
+                                    @elseif($p->status_masuk === 'terlambat')
+                                        <span class="badge bg-danger">Terlambat</span>
+                                    @else
+                                        <span class="badge bg-secondary">-</span>
+                                    @endif
                                 </div>
                                 @if($p->status_pulang === 'pulang_cepat')
                                     <div class="mb-1">
@@ -113,7 +121,7 @@
                                     <div class="mt-2 d-flex justify-content-center gap-1">
                                         <button type="button" class="btn btn-sm btn-outline-warning btn-action" title="Koreksi Presensi" data-bs-toggle="modal" data-bs-target="#modalEditManual" onclick="editPresensi({{ json_encode([
                                             'id' => $p->id,
-                                            'tanggal' => \Carbon\Carbon::parse($p->tanggal)->translatedFormat('d F Y'),
+                                            'tanggal' => $p->tanggal,
                                             'jam_masuk' => $p->jam_masuk,
                                             'status_masuk' => $p->status_masuk,
                                             'jam_pulang' => $p->jam_pulang,
@@ -141,7 +149,12 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-4 text-muted">Tidak ada catatan presensi untuk tanggal ini.</td>
+                            <td colspan="7" class="text-center py-4">
+                                <div class="empty-state py-4">
+                                    <h6 class="empty-state-title">Tidak ada data presensi</h6>
+                                    <p class="empty-state-text">Belum ada murid yang melakukan presensi pada tanggal ini.</p>
+                                </div>
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -149,9 +162,10 @@
         </div>
 
         @if($presensis->hasPages())
-        <div class="px-4 py-3 border-top d-flex justify-content-end" style="border-top-color: var(--border-color) !important;">
-            {{ $presensis->withQueryString()->links() }}
-        </div>
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                <small class="text-muted">Menampilkan {{ $presensis->firstItem() }} - {{ $presensis->lastItem() }} dari {{ $presensis->total() }} data</small>
+                {{ $presensis->links('pagination::bootstrap-5') }}
+            </div>
         @endif
     </div>
 </div>
@@ -162,24 +176,26 @@
     <div class="modal-dialog">
         <div class="modal-content" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color);">
             <div class="modal-header">
-                <h6 class="modal-title fw-bold" id="modalTambahManualLabel">Tambah Presensi Manual</h6>
+                <h6 class="modal-title fw-bold" id="modalTambahManualLabel">Input Presensi Manual</h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{ route('presensi.store_manual') }}" method="POST">
                 @csrf
                 <div class="modal-body text-start">
                     <div class="mb-3">
-                        <label for="penempatan_pkl_id" class="form-label small fw-semibold">Pilih Murid</label>
+                        <label for="penempatan_pkl_id" class="form-label small fw-semibold">Pilih Murid & DUDI</label>
                         <select name="penempatan_pkl_id" id="penempatan_pkl_id" class="form-select form-select-sm" required>
                             <option value="">-- Pilih Murid --</option>
-                            @foreach($activePlacements as $ap)
-                                <option value="{{ $ap->id }}">{{ $ap->murid->nama }} (Kelas: {{ $ap->murid->kelas->nama }} - DUDI: {{ $ap->dudi->nama }})</option>
+                            @foreach($activePlacements as $item)
+                                <option value="{{ $item->id }}">
+                                    {{ $item->murid->nama }} ({{ $item->murid->kelas->nama }}) - {{ $item->dudi->nama }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="tanggal" class="form-label small fw-semibold">Tanggal Kehadiran</label>
-                        <input type="date" name="tanggal" id="tanggal" class="form-control form-control-sm" value="{{ request('tanggal', now()->toDateString()) }}" required>
+                        <label for="tanggal" class="form-label small fw-semibold">Tanggal</label>
+                        <input type="date" name="tanggal" id="tanggal" class="form-control form-control-sm" value="{{ request('tanggal', date('Y-m-d')) }}" required>
                     </div>
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
@@ -189,9 +205,11 @@
                         <div class="col-md-6">
                             <label for="status_masuk" class="form-label small fw-semibold">Status Masuk (Opsional)</label>
                             <select name="status_masuk" id="status_masuk" class="form-select form-select-sm">
-                                <option value="">-- Tanpa Status Masuk --</option>
+                                <option value="">-- Pilih Status Masuk --</option>
                                 <option value="tepat_waktu">Tepat Waktu</option>
                                 <option value="terlambat">Terlambat</option>
+                                <option value="libur_shift">🌴 Libur Shift DUDI</option>
+                                <option value="alpha">❌ Alpha</option>
                             </select>
                         </div>
                     </div>
@@ -210,7 +228,7 @@
                         </div>
                     </div>
                     <div class="text-muted small" style="font-size: 11px;">
-                        * Isikan salah satu (Jam Masuk saja / Jam Pulang saja) or isi keduanya.
+                        * Isikan Jam Masuk / Jam Pulang, atau pilih status khusus seperti Libur Shift / Alpha.
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -250,9 +268,11 @@
                         <div class="col-md-6">
                             <label for="edit_status_masuk" class="form-label small fw-semibold">Status Masuk (Opsional)</label>
                             <select name="status_masuk" id="edit_status_masuk" class="form-select form-select-sm">
-                                <option value="">-- Tanpa Status Masuk --</option>
+                                <option value="">-- Pilih Status Masuk --</option>
                                 <option value="tepat_waktu">Tepat Waktu</option>
                                 <option value="terlambat">Terlambat</option>
+                                <option value="libur_shift">🌴 Libur Shift DUDI</option>
+                                <option value="alpha">❌ Alpha</option>
                             </select>
                         </div>
                     </div>

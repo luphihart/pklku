@@ -23,6 +23,7 @@ class Presensi extends Model
         'status_pulang',
         'shift_harian',
         'is_wfa',
+        'keterangan',
     ];
 
     public function penempatanPkl()
