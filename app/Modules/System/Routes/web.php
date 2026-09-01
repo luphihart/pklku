@@ -5,6 +5,7 @@ use App\Modules\System\Controllers\SystemController;
 
 Route::middleware(['web', 'auth', 'role:admin'])->group(function () {
     Route::get('/system', [SystemController::class, 'index'])->name('system.index');
+    Route::get('/system/export-logs', [SystemController::class, 'exportLogs'])->name('system.export_logs');
     Route::get('/system/backup', [SystemController::class, 'downloadBackup'])->name('system.backup');
     Route::post('/system/restore', [SystemController::class, 'restoreBackup'])->name('system.restore');
     Route::post('/system/wipe-db', [SystemController::class, 'wipeDatabase'])->name('system.wipe_db');

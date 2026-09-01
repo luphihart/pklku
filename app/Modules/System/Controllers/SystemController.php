@@ -15,10 +15,64 @@ class SystemController extends Controller
         $this->service = $service;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $logs = $this->service->getLogs();
-        return view('system::index', compact('logs'));
+        $filters = $request->only(['search', 'role', 'kategori', 'tanggal_mulai', 'tanggal_selesai']);
+        $logs = $this->service->getLogs($filters);
+        $logs->withQueryString();
+
+        return view('system::index', compact('logs', 'filters'));
+    }
+
+    /**
+     * Export audit logs to CSV (Excel compatible with UTF-8 BOM).
+     */
+    public function exportLogs(Request $request)
+    {
+        $filters = $request->only(['search', 'role', 'kategori', 'tanggal_mulai', 'tanggal_selesai']);
+        $logs = $this->service->getLogsForExport($filters);
+
+        $filename = 'audit_log_' . date('Ymd_His') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0'
+        ];
+
+        $callback = function() use ($logs) {
+            $file = fopen('php://output', 'w');
+            // Write UTF-8 BOM for Excel compatibility
+            fputs($file, "\xEF\xBB\xBF");
+
+            // Header row
+            fputcsv($file, ['No', 'Waktu (WIB)', 'Nama Pengguna', 'Email', 'Role', 'Aktivitas', 'IP Address', 'Perangkat (User Agent)', 'Detail Payload']);
+
+            foreach ($logs as $index => $log) {
+                $payloadText = '';
+                if ($log->payload) {
+                    $payloadText = is_array($log->payload) ? json_encode($log->payload, JSON_UNESCAPED_UNICODE) : (string)$log->payload;
+                }
+
+                fputcsv($file, [
+                    $index + 1,
+                    $log->created_at->format('Y-m-d H:i:s'),
+                    $log->user ? $log->user->name : 'Sistem Otomatis',
+                    $log->user ? $log->user->email : '-',
+                    $log->user ? ucfirst($log->user->role) : 'System',
+                    $log->aktivitas,
+                    $log->ip_address,
+                    $log->user_agent,
+                    $payloadText
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     /**
@@ -67,12 +121,24 @@ class SystemController extends Controller
     }
 
     /**
-     * Wipe logs.
+     * Wipe logs (with retention options).
      */
-    public function clearLogs()
+    public function clearLogs(Request $request)
     {
-        $this->service->wipeLogs();
-        return redirect()->route('system.index')->with('success', 'Log audit berhasil dibersihkan.');
+        $retention = $request->input('retention', 'all');
+        $days = null;
+
+        if (in_array($retention, ['30', '90', '180'])) {
+            $days = (int) $retention;
+        }
+
+        $this->service->wipeLogs($days);
+
+        $msg = $days 
+            ? "Log audit yang lebih lama dari {$days} hari berhasil dibersihkan." 
+            : 'Seluruh riwayat log audit berhasil dibersihkan.';
+
+        return redirect()->route('system.index')->with('success', $msg);
     }
 
     /**

@@ -15,8 +15,9 @@ class SystemService
         $this->repo = $repo;
     }
 
-    public function getLogs() { return $this->repo->getPaginatedLogs(); }
-    public function wipeLogs() { return $this->repo->clearLogs(); }
+    public function getLogs(array $filters = []) { return $this->repo->getPaginatedLogs($filters); }
+    public function getLogsForExport(array $filters = []) { return $this->repo->getFilteredLogs($filters); }
+    public function wipeLogs(?int $olderThanDays = null) { return $this->repo->clearLogs($olderThanDays); }
 
     /**
      * Generate pure PHP MySQL backup (cPanel safe, doesn't need binary tools like mysqldump).
