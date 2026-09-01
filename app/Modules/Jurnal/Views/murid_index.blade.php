@@ -18,116 +18,7 @@
     @else
         <div class="row">
             <!-- Journal submission form -->
-            <div class="col-md-5 mb-4" x-data="{
-                filePreview: null,
-                fileName: '',
-                isPdf: false,
-                rawBlob: null,
-                submitting: false,
-                handleFileSelect(e) {
-                    const file = e.target.files[0];
-                    if (!file) {
-                        this.filePreview = null;
-                        this.fileName = '';
-                        this.rawBlob = null;
-                        return;
-                    }
-                    this.fileName = file.name;
-                    
-                    // Immediately read file into memory to prevent Android Chrome ERR_UPLOAD_FILE_CHANGED
-                    if (file.type.startsWith('image/')) {
-                        this.isPdf = false;
-                        const reader = new FileReader();
-                        reader.onload = (ev) => {
-                            this.filePreview = ev.target.result;
-                        };
-                        reader.readAsDataURL(file);
-
-                        // Read ArrayBuffer for clean Blob
-                        const blobReader = new FileReader();
-                        blobReader.onload = (ev) => {
-                            this.rawBlob = new Blob([ev.target.result], { type: file.type || 'image/jpeg' });
-                        };
-                        blobReader.readAsArrayBuffer(file);
-                    } else if (file.type === 'application/pdf') {
-                        this.isPdf = true;
-                        this.filePreview = 'pdf';
-                        const blobReader = new FileReader();
-                        blobReader.onload = (ev) => {
-                            this.rawBlob = new Blob([ev.target.result], { type: 'application/pdf' });
-                        };
-                        blobReader.readAsArrayBuffer(file);
-                    } else {
-                        this.rawBlob = file;
-                    }
-                },
-                async submitForm(e) {
-                    e.preventDefault();
-                    if (this.submitting) return;
-
-                    const form = e.target;
-                    const deskripsi = form.querySelector('#deskripsi_aktivitas').value.trim();
-                    const tanggal = form.querySelector('#tanggal').value;
-
-                    if (!deskripsi) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Perhatian',
-                            text: 'Rincian aktivitas harian wajib diisi.',
-                            confirmButtonColor: 'var(--accent-primary)'
-                        });
-                        return;
-                    }
-
-                    this.submitting = true;
-                    const formData = new FormData(form);
-
-                    // If in-memory Blob exists, attach it to FormData directly
-                    if (this.rawBlob) {
-                        formData.set('foto', this.rawBlob, this.fileName || 'bukti_kegiatan.jpg');
-                    }
-
-                    try {
-                        const res = await fetch(form.action, {
-                            method: 'POST',
-                            body: formData,
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name=\"csrf-token\"]').getAttribute('content')
-                            }
-                        });
-
-                        const data = await res.json().catch(() => ({}));
-                        if (res.ok && data.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil!',
-                                text: data.message || 'Jurnal harian berhasil dikirim.',
-                                timer: 1800,
-                                showConfirmButton: false
-                            }).then(() => {
-                                window.location.reload();
-                            });
-                        } else {
-                            let msg = data.message || 'Gagal mengirim jurnal. Silakan periksa kembali isian form Anda.';
-                            if (data.errors) {
-                                msg = Object.values(data.errors).flat().join('\n');
-                            }
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal Mengirim Jurnal',
-                                text: msg,
-                                confirmButtonColor: 'var(--accent-primary)'
-                            });
-                            this.submitting = false;
-                        }
-                    } catch (err) {
-                        console.error('Fetch submit error:', err);
-                        // Fallback to standard form submit
-                        form.submit();
-                    }
-                }
-            }">
+            <div class="col-md-5 mb-4" x-data="journalHandler()">
                 <div class="card-premium">
                     <h5 class="fw-bold font-heading mb-3 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">Tulis Jurnal Baru</h5>
                     
@@ -304,4 +195,121 @@
         </div>
     @endif
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    function journalHandler() {
+        return {
+            filePreview: null,
+            fileName: '',
+            isPdf: false,
+            rawBlob: null,
+            submitting: false,
+            handleFileSelect(e) {
+                const file = e.target.files[0];
+                if (!file) {
+                    this.filePreview = null;
+                    this.fileName = '';
+                    this.rawBlob = null;
+                    return;
+                }
+                this.fileName = file.name;
+                
+                // Immediately read file into memory to prevent Android Chrome ERR_UPLOAD_FILE_CHANGED
+                if (file.type.startsWith('image/')) {
+                    this.isPdf = false;
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        this.filePreview = ev.target.result;
+                    };
+                    reader.readAsDataURL(file);
+
+                    // Read ArrayBuffer for clean Blob
+                    const blobReader = new FileReader();
+                    blobReader.onload = (ev) => {
+                        this.rawBlob = new Blob([ev.target.result], { type: file.type || 'image/jpeg' });
+                    };
+                    blobReader.readAsArrayBuffer(file);
+                } else if (file.type === 'application/pdf') {
+                    this.isPdf = true;
+                    this.filePreview = 'pdf';
+                    const blobReader = new FileReader();
+                    blobReader.onload = (ev) => {
+                        this.rawBlob = new Blob([ev.target.result], { type: 'application/pdf' });
+                    };
+                    blobReader.readAsArrayBuffer(file);
+                } else {
+                    this.rawBlob = file;
+                }
+            },
+            async submitForm(e) {
+                e.preventDefault();
+                if (this.submitting) return;
+
+                const form = e.target;
+                const deskripsi = form.querySelector('#deskripsi_aktivitas').value.trim();
+
+                if (!deskripsi) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Perhatian',
+                        text: 'Rincian aktivitas harian wajib diisi.',
+                        confirmButtonColor: 'var(--accent-primary)'
+                    });
+                    return;
+                }
+
+                this.submitting = true;
+                const formData = new FormData(form);
+
+                // If in-memory Blob exists, attach it to FormData directly
+                if (this.rawBlob) {
+                    formData.set('foto', this.rawBlob, this.fileName || 'bukti_kegiatan.jpg');
+                }
+
+                try {
+                    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                    const res = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': token || ''
+                        }
+                    });
+
+                    const data = await res.json().catch(() => ({}));
+                    if (res.ok && data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: data.message || 'Jurnal harian berhasil dikirim.',
+                            timer: 1800,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        let msg = data.message || 'Gagal mengirim jurnal. Silakan periksa kembali isian form Anda.';
+                        if (data.errors) {
+                            msg = Object.values(data.errors).flat().join('\n');
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal Mengirim Jurnal',
+                            text: msg,
+                            confirmButtonColor: 'var(--accent-primary)'
+                        });
+                        this.submitting = false;
+                    }
+                } catch (err) {
+                    console.error('Fetch submit error:', err);
+                    // Fallback to standard form submit
+                    form.submit();
+                }
+            }
+        };
+    }
+</script>
 @endsection
