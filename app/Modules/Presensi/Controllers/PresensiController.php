@@ -71,12 +71,12 @@ class PresensiController extends Controller
             });
         }
 
-        if ($request->filled('nama')) {
-            $nama = trim($request->nama);
-            $query->whereHas('penempatanPkl.murid', function($q) use ($nama) {
-                $q->where(function($sub) use ($nama) {
-                    $sub->where('nama', 'like', "%{$nama}%")
-                        ->orWhere('nis', 'like', "%{$nama}%");
+        $search = trim($request->get('search', $request->get('nama', '')));
+        if (!empty($search)) {
+            $query->whereHas('penempatanPkl.murid', function($q) use ($search) {
+                $q->where(function($sub) use ($search) {
+                    $sub->where('nama', 'like', "%{$search}%")
+                        ->orWhere('nis', 'like', "%{$search}%");
                 });
             });
         }

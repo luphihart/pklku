@@ -363,9 +363,11 @@ h1, h2, h3, h4, h5, h6, .font-heading, .sidebar-header, .modal-title, .sidebar-h
 .bg-danger-light { background-color: rgba(225, 29, 72, 0.08) !important; }
 .bg-primary-light { background-color: rgba(79, 70, 229, 0.08) !important; }
 .bg-secondary-light { background-color: rgba(100, 116, 139, 0.08) !important; }
+.bg-info-light { background-color: rgba(14, 165, 233, 0.08) !important; }
 .bg-indigo-light { background-color: rgba(99, 102, 241, 0.08) !important; }
 .bg-blue-light { background-color: rgba(59, 130, 246, 0.08) !important; }
 .bg-amber-light { background-color: rgba(245, 158, 11, 0.08) !important; }
+.bg-orange-light { background-color: rgba(249, 115, 22, 0.08) !important; }
 .bg-purple-light { background-color: rgba(147, 51, 234, 0.08) !important; }
 
 .text-success { color: var(--success) !important; }
@@ -373,9 +375,11 @@ h1, h2, h3, h4, h5, h6, .font-heading, .sidebar-header, .modal-title, .sidebar-h
 .text-danger { color: var(--danger) !important; }
 .text-primary { color: var(--accent-primary) !important; }
 .text-secondary { color: var(--text-secondary) !important; }
+.text-info { color: #0284c7 !important; }
 .text-indigo { color: #6366f1 !important; }
 .text-blue { color: #3b82f6 !important; }
 .text-amber { color: #d97706 !important; }
+.text-orange { color: #ea580c !important; }
 .text-purple { color: #9333ea !important; }
 
 @media (max-width: 768px) {

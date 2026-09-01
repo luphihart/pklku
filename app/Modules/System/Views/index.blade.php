@@ -61,34 +61,34 @@ if (!function_exists('formatAktivitas')) {
 if (!function_exists('getActivityBadge')) {
     function getActivityBadge($text) {
         if (empty($text)) {
-            return '<span class="badge bg-light text-dark px-2 py-1 fw-semibold border" style="font-size: 10px; border-radius: 6px;"><i class="bi bi-info-circle me-1"></i>Sistem</span>';
+            return '<span class="badge bg-secondary-light text-secondary px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">⚙️ Sistem</span>';
         }
         // Critical / Danger actions
         if (stripos($text, 'hapus') !== false || stripos($text, 'membatalkan') !== false || stripos($text, 'wipe') !== false || stripos($text, 'kosongkan') !== false) {
-            return '<span class="badge bg-danger-light text-danger px-2 py-1 fw-semibold" style="font-size: 10px; border-radius: 6px;"><i class="bi bi-exclamation-triangle me-1"></i>Hapus / Kritis</span>';
+            return '<span class="badge bg-danger-light text-danger px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">⚠️ Hapus / Kritis</span>';
         }
         if (stripos($text, 'masuk') !== false || stripos($text, 'Login') !== false) {
-            return '<span class="badge bg-success-light text-success px-2 py-1 fw-semibold" style="font-size: 10px; border-radius: 6px;"><i class="bi bi-shield-check me-1"></i>Keamanan</span>';
+            return '<span class="badge bg-success-light text-success px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">🛡️ Login</span>';
         }
         if (stripos($text, 'keluar') !== false || stripos($text, 'Logout') !== false) {
-            return '<span class="badge bg-secondary-light text-secondary px-2 py-1 fw-semibold" style="font-size: 10px; border-radius: 6px;"><i class="bi bi-box-arrow-left me-1"></i>Keamanan</span>';
+            return '<span class="badge bg-secondary-light text-secondary px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">🚪 Logout</span>';
         }
         if (stripos($text, 'password') !== false) {
-            return '<span class="badge bg-warning-light text-warning px-2 py-1 fw-semibold" style="font-size: 10px; border-radius: 6px;"><i class="bi bi-key me-1"></i>Sandi</span>';
+            return '<span class="badge bg-warning-light text-warning px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">🔑 Sandi</span>';
         }
         if (stripos($text, 'pengaturan') !== false || stripos($text, 'konfigurasi') !== false || stripos($text, 'branding') !== false) {
-            return '<span class="badge bg-indigo-light text-indigo px-2 py-1 fw-semibold" style="font-size: 10px; border-radius: 6px;"><i class="bi bi-gear me-1"></i>Sistem</span>';
+            return '<span class="badge bg-indigo-light text-indigo px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">⚙️ Pengaturan</span>';
         }
         if (stripos($text, 'jurnal') !== false) {
-            return '<span class="badge bg-blue-light text-blue px-2 py-1 fw-semibold" style="font-size: 10px; border-radius: 6px;"><i class="bi bi-journal-text me-1"></i>Jurnal</span>';
+            return '<span class="badge bg-blue-light text-blue px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">📝 Jurnal</span>';
         }
         if (stripos($text, 'penilaian') !== false || stripos($text, 'nilai') !== false) {
-            return '<span class="badge bg-amber-light text-amber px-2 py-1 fw-semibold" style="font-size: 10px; border-radius: 6px;"><i class="bi bi-star me-1"></i>Penilaian</span>';
+            return '<span class="badge bg-amber-light text-amber px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">🏆 Penilaian</span>';
         }
         if (stripos($text, 'murid') !== false || stripos($text, 'siswa') !== false || stripos($text, 'guru') !== false || stripos($text, 'dudi') !== false || stripos($text, 'industri') !== false || stripos($text, 'penempatan') !== false) {
-            return '<span class="badge bg-purple-light text-purple px-2 py-1 fw-semibold" style="font-size: 10px; border-radius: 6px;"><i class="bi bi-folder2-open me-1"></i>Master</span>';
+            return '<span class="badge bg-purple-light text-purple px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">📁 Master</span>';
         }
-        return '<span class="badge bg-light text-dark px-2 py-1 fw-semibold border" style="font-size: 10px; border-radius: 6px;"><i class="bi bi-info-circle me-1"></i>Sistem</span>';
+        return '<span class="badge bg-secondary-light text-secondary px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">⚙️ Sistem</span>';
     }
 }
 
@@ -214,8 +214,8 @@ if (!function_exists('parseUserAgent')) {
                     <div class="col-md-5">
                         <label class="form-label small fw-semibold">Kata Kunci (Nama / Email / Aktivitas / IP)</label>
                         <div class="input-group input-group-sm">
-                            <span class="input-group-text bg-light border-end-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <span class="input-group-text bg-transparent border-end-0 text-muted">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                 </svg>
                             </span>
@@ -252,17 +252,18 @@ if (!function_exists('parseUserAgent')) {
                         <input type="date" name="tanggal_selesai" class="form-control form-control-sm" value="{{ request('tanggal_selesai') }}">
                     </div>
                     <div class="col-md-4 d-flex align-items-end gap-2">
-                        <button type="submit" class="btn btn-sm btn-primary flex-fill font-heading">
-                            <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: inline-block; vertical-align: middle;">
+                        <button type="submit" class="btn btn-sm btn-primary flex-fill font-heading d-flex align-items-center justify-content-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
                             </svg>
-                            Terapkan Filter
+                            <span>Filter</span>
                         </button>
                         @if(request()->hasAny(['search', 'role', 'kategori', 'tanggal_mulai', 'tanggal_selesai']) && (request('search') || request('role') || request('kategori') || request('tanggal_mulai') || request('tanggal_selesai')))
-                            <a href="{{ route('system.index') }}" class="btn btn-sm btn-outline-secondary" title="Reset Semua Filter">
+                            <a href="{{ route('system.index') }}" class="btn btn-sm btn-outline-secondary font-heading d-flex align-items-center justify-content-center px-2.5" title="Reset Semua Filter">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                                 </svg>
+                                <span>Reset</span>
                             </a>
                         @endif
                     </div>
@@ -379,9 +380,13 @@ if (!function_exists('parseUserAgent')) {
                 </div>
 
                 @if($logs->hasPages())
-                <div class="px-4 py-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2" style="border-top-color: var(--border-color) !important;">
-                    <small class="text-muted">Menampilkan {{ $logs->firstItem() }} - {{ $logs->lastItem() }} dari {{ $logs->total() }} log</small>
-                    {{ $logs->links('pagination::bootstrap-5') }}
+                <div class="p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2" style="border-top-color: var(--border-color) !important;">
+                    <div class="small text-muted font-heading">
+                        Menampilkan <strong>{{ $logs->firstItem() }}</strong> - <strong>{{ $logs->lastItem() }}</strong> dari <strong>{{ $logs->total() }}</strong> log
+                    </div>
+                    <div>
+                        {{ $logs->withQueryString()->links() }}
+                    </div>
                 </div>
                 @endif
             </div>

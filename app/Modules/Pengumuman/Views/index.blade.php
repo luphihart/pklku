@@ -49,7 +49,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100 font-heading">Publikasikan Pengumuman</button>
+                    <button type="submit" class="btn btn-sm btn-primary w-100 font-heading">Publikasikan Pengumuman</button>
                 </form>
             </div>
         </div>
@@ -57,14 +57,14 @@
         <!-- History List Column -->
         <div class="col-md-8 mb-4">
             <div class="card-premium p-0 overflow-hidden">
-                <div class="p-3 border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="border-bottom-color: var(--border-color) !important;">
                     <h6 class="fw-bold m-0 text-dark dark-text-light">Riwayat Pengumuman Terbit</h6>
                 </div>
 
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0" style="color: var(--text-primary); font-size: 13px;">
-                        <thead>
-                            <tr class="text-muted">
+                        <thead class="table-light">
+                            <tr class="font-heading" style="font-size: 13px; font-weight: 600;">
                                 <th class="ps-4" style="width: 100px;">Tanggal</th>
                                 <th>Pengumuman</th>
                                 <th>Target</th>
@@ -108,7 +108,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-info text-capitalize">{{ $a->target_role }}</span>
+                                        <span class="badge bg-primary-light text-primary fw-semibold text-capitalize">{{ $a->target_role }}</span>
                                     </td>
                                     <td class="text-center pe-4">
                                         <div class="d-flex gap-1 justify-content-center">
@@ -203,8 +203,13 @@
                 </div>
 
                 @if($announcements->hasPages())
-                <div class="px-4 py-3 border-top d-flex justify-content-end" style="border-top-color: var(--border-color) !important;">
-                    {{ $announcements->links() }}
+                <div class="p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2" style="border-top-color: var(--border-color) !important;">
+                    <div class="small text-muted font-heading">
+                        Menampilkan <strong>{{ $announcements->firstItem() }}</strong> - <strong>{{ $announcements->lastItem() }}</strong> dari <strong>{{ $announcements->total() }}</strong> pengumuman
+                    </div>
+                    <div>
+                        {{ $announcements->withQueryString()->links() }}
+                    </div>
                 </div>
                 @endif
             </div>

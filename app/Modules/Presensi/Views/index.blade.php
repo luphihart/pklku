@@ -19,7 +19,7 @@
 
     <!-- Search / Filter Card -->
     <div class="card-premium mb-4">
-        <form action="{{ route('presensi.index') }}" method="GET" class="row g-3 align-items-end">
+        <form action="{{ route('presensi.index') }}" method="GET" class="row g-2 align-items-end">
             <div class="col-lg-3 col-md-6">
                 <label class="form-label small fw-semibold">Tanggal Presensi</label>
                 <input type="date" name="tanggal" class="form-control form-control-sm" value="{{ request('tanggal', now()->toDateString()) }}">
@@ -40,26 +40,27 @@
             <div class="col-lg-4 col-md-8">
                 <label class="form-label small fw-semibold">Cari Nama / NIS Murid</label>
                 <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-light border-end-0">
+                    <span class="input-group-text bg-transparent border-end-0 text-muted">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </span>
-                    <input type="text" name="nama" class="form-control form-control-sm border-start-0 ps-0" placeholder="Ketik nama atau NIS murid..." value="{{ request('nama') }}">
+                    <input type="text" name="search" class="form-control form-control-sm border-start-0 ps-0" placeholder="Ketik nama atau NIS murid..." value="{{ request('search', request('nama')) }}">
                 </div>
             </div>
             <div class="col-lg-2 col-md-4 d-flex gap-2">
-                <button type="submit" class="btn btn-sm btn-primary flex-fill font-heading">
-                    <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: inline-block; vertical-align: middle;">
+                <button type="submit" class="btn btn-sm btn-primary font-heading d-flex align-items-center justify-content-center gap-1 px-3 flex-fill">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
                     </svg>
-                    Filter
+                    <span>Filter</span>
                 </button>
-                @if(request()->hasAny(['kelas_id', 'nama', 'tanggal']) && (request('kelas_id') || request('nama') || request('tanggal') != now()->toDateString()))
-                    <a href="{{ route('presensi.index') }}" class="btn btn-sm btn-outline-secondary" title="Reset Filter">
+                @if(request()->hasAny(['kelas_id', 'nama', 'search', 'tanggal']) && (request('kelas_id') || request('nama') || request('search') || request('tanggal') != now()->toDateString()))
+                    <a href="{{ route('presensi.index') }}" class="btn btn-sm btn-outline-secondary font-heading d-flex align-items-center justify-content-center gap-1 px-2.5" title="Reset Filter">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                         </svg>
+                        <span>Reset</span>
                     </a>
                 @endif
             </div>
@@ -68,6 +69,12 @@
 
     <!-- Attendance Table -->
     <div class="card-premium p-0 overflow-hidden">
+        <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="border-bottom-color: var(--border-color) !important;">
+            <h6 class="fw-bold m-0 text-dark">Data Presensi Harian</h6>
+            <span class="badge bg-primary-light text-primary font-heading px-2.5 py-1" style="font-size: 11px;">
+                Total: {{ $presensis->total() }} Data
+            </span>
+        </div>
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0" style="color: var(--text-primary);">
                 <thead class="table-light">
@@ -92,17 +99,17 @@
                                 <div class="fw-semibold">{{ $p->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</div>
                                 <div class="d-flex align-items-center gap-1 flex-wrap mt-1">
                                     @if($p->is_wfa)
-                                        <span class="badge bg-primary-light text-primary" style="font-size: 11px;">🏠 WFA</span>
+                                        <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 11px;">🏠 WFA</span>
                                     @else
-                                        <span class="badge bg-secondary-light text-secondary" style="font-size: 11px;">🏢 WFO</span>
+                                        <span class="badge bg-secondary-light text-secondary fw-semibold" style="font-size: 11px;">🏢 WFO</span>
                                     @endif
 
                                     @if($p->shift_harian === 'pagi')
-                                        <span class="badge bg-success-light text-success" style="font-size: 11px;">🌅 Shift Pagi</span>
+                                        <span class="badge bg-success-light text-success fw-semibold" style="font-size: 11px;">🌅 Shift Pagi</span>
                                     @elseif($p->shift_harian === 'siang')
-                                        <span class="badge bg-warning-light text-warning" style="font-size: 11px;">🌆 Shift Siang</span>
+                                        <span class="badge bg-warning-light text-warning fw-semibold" style="font-size: 11px;">🌆 Shift Siang</span>
                                     @elseif($p->shift_harian === 'sore')
-                                        <span class="badge bg-orange-light text-orange" style="font-size: 11px; background-color: rgba(249, 115, 22, 0.12); color: #ea580c;">🌇 Shift Sore</span>
+                                        <span class="badge bg-orange-light text-orange fw-semibold" style="font-size: 11px;">🌇 Shift Sore</span>
                                     @endif
                                 </div>
                             </td>
@@ -133,24 +140,24 @@
                             <td class="text-center pe-4">
                                 <div class="mb-1">
                                     @if($p->status_masuk === 'libur_shift')
-                                        <span class="badge bg-info text-white" style="background-color: #0284c7 !important;">🌴 Libur Shift</span>
+                                        <span class="badge bg-info-light text-info fw-semibold">🌴 Libur Shift</span>
                                     @elseif($p->status_masuk === 'alpha')
-                                        <span class="badge bg-danger">❌ Alpha</span>
+                                        <span class="badge bg-danger-light text-danger fw-semibold">❌ Alpha</span>
                                     @elseif($p->status_masuk === 'tepat_waktu')
-                                        <span class="badge bg-success">Tepat Waktu</span>
+                                        <span class="badge bg-success-light text-success fw-semibold">Tepat Waktu</span>
                                     @elseif($p->status_masuk === 'terlambat')
-                                        <span class="badge bg-danger">Terlambat</span>
+                                        <span class="badge bg-danger-light text-danger fw-semibold">Terlambat</span>
                                     @else
-                                        <span class="badge bg-secondary">-</span>
+                                        <span class="badge bg-secondary-light text-secondary">-</span>
                                     @endif
                                 </div>
                                 @if($p->status_pulang === 'pulang_cepat')
                                     <div class="mb-1">
-                                        <span class="badge bg-warning text-dark">Pulang Cepat</span>
+                                        <span class="badge bg-warning-light text-warning fw-semibold">Pulang Cepat</span>
                                     </div>
                                 @elseif($p->status_pulang === 'tepat_waktu')
                                     <div class="mb-1">
-                                        <span class="badge bg-success">Pulang Tepat Waktu</span>
+                                        <span class="badge bg-success-light text-success fw-semibold">Pulang Tepat Waktu</span>
                                     </div>
                                 @endif
                                 @if(auth()->user()->role === 'admin')
@@ -198,9 +205,13 @@
         </div>
 
         @if($presensis->hasPages())
-            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-                <small class="text-muted">Menampilkan {{ $presensis->firstItem() }} - {{ $presensis->lastItem() }} dari {{ $presensis->total() }} data</small>
-                {{ $presensis->links('pagination::bootstrap-5') }}
+            <div class="p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2" style="border-top-color: var(--border-color) !important;">
+                <div class="small text-muted font-heading">
+                    Menampilkan <strong>{{ $presensis->firstItem() }}</strong> - <strong>{{ $presensis->lastItem() }}</strong> dari <strong>{{ $presensis->total() }}</strong> data presensi
+                </div>
+                <div>
+                    {{ $presensis->withQueryString()->links() }}
+                </div>
             </div>
         @endif
     </div>

@@ -22,18 +22,19 @@
 
 @section('content')
 <div class="container-fluid p-0">
+    <!-- Action Header -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
-        <h5 class="fw-bold font-heading m-0 text-dark dark-text-light">Plotting Penempatan Murid & Guru Pembimbing</h5>
+        <h5 class="fw-bold font-heading m-0 text-dark dark-text-light">Plotting Penempatan PKL Murid</h5>
         <div class="d-flex gap-2 mt-2 mt-sm-0 flex-wrap">
             <!-- Export Excel Button -->
-            <a href="{{ route('penempatan.export', request()->query()) }}" class="btn btn-sm btn-outline-success d-flex align-items-center">
+            <a href="{{ route('penempatan.export', request()->query()) }}" class="btn btn-sm btn-outline-success d-flex align-items-center font-heading">
                 <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
                 Ekspor Excel
             </a>
             <!-- Trigger Mass Plot Modal -->
-            <button class="btn btn-sm btn-primary d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#massPlotModal">
+            <button class="btn btn-sm btn-primary d-flex align-items-center font-heading" data-bs-toggle="modal" data-bs-target="#massPlotModal">
                 <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
                 </svg>
@@ -43,8 +44,8 @@
     </div>
 
     <!-- Search & Filter Card -->
-    <div class="card-premium mb-3 p-3">
-        <form action="{{ route('penempatan.index') }}" method="GET" class="row g-2 align-items-center">
+    <div class="card-premium mb-4">
+        <form action="{{ route('penempatan.index') }}" method="GET" class="row g-2 align-items-center p-3">
             <div class="col-md-3 col-lg-3">
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-transparent border-end-0 text-muted">
@@ -78,7 +79,7 @@
                     document.getElementById('penempatan_order').value = val[1];
                     this.form.submit();
                 ">
-                    <option value="nama:asc" {{ (request('sort_by') == 'nama' && request('order', 'asc') == 'asc') ? 'selected' : '' }}>Nama (A ➔ Z)</option>
+                    <option value="nama:asc" {{ (request('sort_by', 'nama') == 'nama' && request('order', 'asc') == 'asc') ? 'selected' : '' }}>Nama (A ➔ Z)</option>
                     <option value="nama:desc" {{ (request('sort_by') == 'nama' && request('order') == 'desc') ? 'selected' : '' }}>Nama (Z ➔ A)</option>
                     <option value="nis:asc" {{ (request('sort_by') == 'nis' && request('order', 'asc') == 'asc') ? 'selected' : '' }}>NIS (Terkecil ➔ Terbesar)</option>
                     <option value="nis:desc" {{ (request('sort_by') == 'nis' && request('order') == 'desc') ? 'selected' : '' }}>NIS (Terbesar ➔ Terkecil)</option>
@@ -93,9 +94,19 @@
                 <input type="hidden" name="order" id="penempatan_order" value="{{ request('order', 'asc') }}">
             </div>
             <div class="col-md-2 col-lg-2 d-flex gap-2">
-                <button type="submit" class="btn btn-sm btn-primary px-3">Cari</button>
-                @if(request()->filled('search') || request()->filled('dudi_id') || request()->filled('guru_id') || request()->filled('sort_by') || request()->filled('order'))
-                    <a href="{{ route('penempatan.index') }}" class="btn btn-sm btn-outline-secondary">Reset</a>
+                <button type="submit" class="btn btn-sm btn-primary font-heading d-flex align-items-center justify-content-center gap-1 px-3 flex-fill">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                    </svg>
+                    <span>Filter</span>
+                </button>
+                @if(request()->filled('search') || request()->filled('dudi_id') || request()->filled('guru_id') || (request()->filled('sort_by') && request('sort_by') !== 'nama') || (request()->filled('order') && request('order') !== 'asc'))
+                    <a href="{{ route('penempatan.index') }}" class="btn btn-sm btn-outline-secondary font-heading d-flex align-items-center justify-content-center gap-1 px-2.5" title="Reset Filter">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        <span>Reset</span>
+                    </a>
                 @endif
             </div>
         </form>
@@ -217,7 +228,7 @@
                                 <td class="ps-4"><input type="checkbox" name="ids[]" value="{{ $p->id }}" class="row-checkbox"></td>
                                 <td class="fw-semibold">{{ $p->murid ? $p->murid->nis : '-' }}</td>
                                 <td class="fw-bold text-dark">{{ $p->murid ? $p->murid->nama : 'Murid Terhapus' }}</td>
-                                <td><span class="badge bg-secondary">{{ $p->murid && $p->murid->kelas ? $p->murid->kelas->nama : '-' }}</span></td>
+                                <td><span class="badge bg-primary-light text-primary fw-semibold">{{ $p->murid && $p->murid->kelas ? $p->murid->kelas->nama : '-' }}</span></td>
                                 <td><span class="fw-semibold text-primary">{{ $p->dudi ? $p->dudi->nama : 'DUDI Terhapus' }}</span></td>
                                 <td>{{ $p->guru ? $p->guru->nama : 'Guru Terhapus' }}</td>
                                 <td>{{ $p->pembimbingIndustri ? $p->pembimbingIndustri->nama : ($p->dudi?->pic_nama ?? '-') }}</td>
@@ -289,8 +300,13 @@
         </form>
         
         @if($placements->hasPages())
-        <div class="px-4 py-3 border-top d-flex justify-content-end" style="border-top-color: var(--border-color) !important;">
-            {{ $placements->withQueryString()->links() }}
+        <div class="p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2" style="border-top-color: var(--border-color) !important;">
+            <div class="small text-muted font-heading">
+                Menampilkan <strong>{{ $placements->firstItem() }}</strong> - <strong>{{ $placements->lastItem() }}</strong> dari <strong>{{ $placements->total() }}</strong> penempatan
+            </div>
+            <div>
+                {{ $placements->withQueryString()->links() }}
+            </div>
         </div>
         @endif
     </div>

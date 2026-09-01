@@ -28,7 +28,7 @@
                         </select>
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-sm w-100 font-heading">Simpan Kelas</button>
+                    <button type="submit" class="btn btn-sm btn-primary w-100 font-heading">Simpan Kelas</button>
                 </form>
             </div>
         </div>
@@ -63,8 +63,8 @@
                     @csrf
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0" style="color: var(--text-primary); font-size: 13px;">
-                            <thead>
-                                <tr class="text-muted">
+                            <thead class="table-light">
+                                <tr class="font-heading" style="font-size: 13px; font-weight: 600;">
                                     <th class="ps-4" style="width: 40px;"><input type="checkbox" id="selectAll"></th>
                                     <th style="width: 80px;">No</th>
                                     <th>Nama Kelas</th>
@@ -79,7 +79,7 @@
                                         <td class="fw-semibold">{{ $kelases->firstItem() + $index }}</td>
                                         <td class="fw-bold text-dark">{{ $k->name ?? $k->nama }}</td>
                                         <td>
-                                            <span class="badge bg-light text-dark border">{{ $k->jurusan->nama }} ({{ $k->jurusan->kode }})</span>
+                                            <span class="badge bg-primary-light text-primary fw-semibold">{{ $k->jurusan->nama }} ({{ $k->jurusan->kode }})</span>
                                         </td>
                                         <td class="text-center pe-4">
                                             <div class="d-flex gap-1 justify-content-center">
@@ -117,6 +117,17 @@
                             </tbody>
                         </table>
                     </div>
+
+                    @if(method_exists($kelases, 'hasPages') && $kelases->hasPages())
+                        <div class="p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2" style="border-top-color: var(--border-color) !important;">
+                            <div class="small text-muted font-heading">
+                                Menampilkan <strong>{{ $kelases->firstItem() }}</strong> - <strong>{{ $kelases->lastItem() }}</strong> dari <strong>{{ $kelases->total() }}</strong> kelas
+                            </div>
+                            <div>
+                                {{ $kelases->withQueryString()->links() }}
+                            </div>
+                        </div>
+                    @endif
                 </form>
 
                 <!-- Hidden Delete Forms for Single Delete -->

@@ -5,18 +5,10 @@
 
 @section('content')
 <div class="container-fluid p-0">
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
-            <strong>Berhasil!</strong> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
-            <strong>Error!</strong> {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
+    <!-- Action Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <h5 class="fw-bold font-heading m-0 text-dark dark-text-light">Verifikasi Jurnal Harian Siswa</h5>
+    </div>
 
     <!-- Filter & Search Card -->
     <div class="card-premium mb-4">
@@ -46,7 +38,7 @@
         </div>
 
         <!-- Filter Form -->
-        <form action="{{ route('jurnal.index') }}" method="GET" class="row g-2">
+        <form action="{{ route('jurnal.index') }}" method="GET" class="row g-2 align-items-end">
             @if(request('status'))
                 <input type="hidden" name="status" value="{{ request('status') }}">
             @endif
@@ -54,8 +46,8 @@
             <div class="col-md-4">
                 <label class="form-label small fw-semibold">Cari Nama Siswa / NIS / DUDI / Isi Laporan</label>
                 <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-light border-end-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <span class="input-group-text bg-transparent border-end-0 text-muted">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </span>
@@ -85,14 +77,14 @@
                 <input type="date" name="tanggal_selesai" class="form-control form-control-sm" value="{{ request('tanggal_selesai') }}">
             </div>
 
-            <div class="col-md-1 col-6 d-flex align-items-end gap-1">
-                <button type="submit" class="btn btn-sm btn-primary w-100 font-heading" title="Terapkan Filter">
+            <div class="col-md-1 col-6 d-flex gap-1">
+                <button type="submit" class="btn btn-sm btn-primary font-heading d-flex align-items-center justify-content-center flex-fill" title="Filter Jurnal" style="min-height: 31px;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
                     </svg>
                 </button>
                 @if(request()->hasAny(['search', 'nama', 'kelas_id', 'tanggal_mulai', 'tanggal_selesai', 'status']) && (request('search') || request('nama') || request('kelas_id') || request('tanggal_mulai') || request('tanggal_selesai') || request('status')))
-                    <a href="{{ route('jurnal.index') }}" class="btn btn-sm btn-outline-secondary" title="Reset Semua Filter">
+                    <a href="{{ route('jurnal.index') }}" class="btn btn-sm btn-outline-secondary font-heading d-flex align-items-center justify-content-center" title="Reset Semua Filter" style="min-height: 31px; width: 34px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                         </svg>
@@ -264,9 +256,13 @@
         </div>
 
         @if($journals->hasPages())
-        <div class="px-4 py-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2" style="border-top-color: var(--border-color) !important;">
-            <small class="text-muted">Menampilkan {{ $journals->firstItem() }} - {{ $journals->lastItem() }} dari {{ $journals->total() }} jurnal</small>
-            {{ $journals->links('pagination::bootstrap-5') }}
+        <div class="p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2" style="border-top-color: var(--border-color) !important;">
+            <div class="small text-muted font-heading">
+                Menampilkan <strong>{{ $journals->firstItem() }}</strong> - <strong>{{ $journals->lastItem() }}</strong> dari <strong>{{ $journals->total() }}</strong> jurnal
+            </div>
+            <div>
+                {{ $journals->withQueryString()->links() }}
+            </div>
         </div>
         @endif
     </div>

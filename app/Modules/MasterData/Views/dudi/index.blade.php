@@ -5,38 +5,26 @@
 
 @section('content')
 <div class="container-fluid p-0">
-    @if($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
-            <strong class="font-heading">Gagal Menyimpan Data!</strong>
-            <ul class="mb-0 ps-3 mt-1 small">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
     <!-- Action Header -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
         <h5 class="fw-bold font-heading m-0 text-dark dark-text-light">Daftar Mitra Dunia Usaha / Industri</h5>
         <div class="d-flex gap-2 mt-2 mt-sm-0 flex-wrap">
             <!-- Export Excel Button -->
-            <a href="{{ route('dudi.export', request()->query()) }}" class="btn btn-sm btn-outline-success d-flex align-items-center">
+            <a href="{{ route('dudi.export', request()->query()) }}" class="btn btn-sm btn-outline-success d-flex align-items-center font-heading">
                 <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
                 Ekspor Excel
             </a>
             <!-- Trigger Import Modal -->
-            <button class="btn btn-sm btn-outline-primary d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#importModal">
+            <button class="btn btn-sm btn-outline-primary d-flex align-items-center font-heading" data-bs-toggle="modal" data-bs-target="#importModal">
                 <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                 </svg>
                 Impor Excel
             </button>
             <!-- Trigger Add Modal -->
-            <button class="btn btn-sm btn-primary d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#addModal">
+            <button class="btn btn-sm btn-primary d-flex align-items-center font-heading" data-bs-toggle="modal" data-bs-target="#addModal">
                 <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
@@ -46,7 +34,7 @@
     </div>
 
     <!-- Search & Filter Card -->
-    <div class="card-premium mb-3 p-3">
+    <div class="card-premium mb-4">
         <form action="{{ route('dudi.index') }}" method="GET" class="row g-2 align-items-center">
             <div class="col-md-6 col-lg-5">
                 <div class="input-group input-group-sm">
@@ -59,18 +47,25 @@
                 </div>
             </div>
             <div class="col-md-4 col-lg-3">
-                <div class="d-flex align-items-center gap-2">
-                    <label class="small text-muted text-nowrap" style="font-size: 12px;">Urutan Nama DUDI:</label>
-                    <select name="sort" class="form-select form-select-sm" onchange="this.form.submit()">
-                        <option value="asc" {{ request('sort', 'asc') == 'asc' ? 'selected' : '' }}>A ➔ Z (Abjad)</option>
-                        <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Z ➔ A (Terbalik)</option>
-                    </select>
-                </div>
+                <select name="sort" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="asc" {{ request('sort', 'asc') == 'asc' ? 'selected' : '' }}>Urutan Nama: A ➔ Z (Abjad)</option>
+                    <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Urutan Nama: Z ➔ A (Terbalik)</option>
+                </select>
             </div>
             <div class="col-md-2 col-lg-4 d-flex gap-2">
-                <button type="submit" class="btn btn-sm btn-primary px-3">Cari</button>
-                @if(request()->filled('search') || request()->filled('sort'))
-                    <a href="{{ route('dudi.index') }}" class="btn btn-sm btn-outline-secondary">Reset</a>
+                <button type="submit" class="btn btn-sm btn-primary font-heading d-flex align-items-center justify-content-center gap-1 px-3 flex-fill">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                    </svg>
+                    <span>Filter</span>
+                </button>
+                @if(request()->filled('search') || (request()->filled('sort') && request('sort') !== 'asc'))
+                    <a href="{{ route('dudi.index') }}" class="btn btn-sm btn-outline-secondary font-heading d-flex align-items-center justify-content-center gap-1 px-2.5" title="Reset Filter">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        <span>Reset</span>
+                    </a>
                 @endif
             </div>
         </form>
@@ -78,6 +73,9 @@
 
     <!-- Table Card -->
     <div class="card-premium p-0 overflow-hidden">
+        <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="border-bottom-color: var(--border-color) !important;">
+            <h6 class="fw-bold m-0 text-dark">Data Mitra DUDI</h6>
+        </div>
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0" style="color: var(--text-primary);">
                 <thead class="table-light" style="background-color: var(--bg-canvas);">
@@ -106,7 +104,7 @@
                             <td>{{ Str::limit($dudi->alamat, 40) }}</td>
                             <td><code style="font-size: 11px;">{{ $dudi->latitude }}, {{ $dudi->longitude }}</code></td>
                             <td>
-                                <span class="badge bg-info d-block mb-1" style="max-width: 90px;">{{ $dudi->radius_meter }} Meter</span>
+                                <span class="badge bg-primary-light text-primary fw-semibold d-block mb-1" style="max-width: 90px;">{{ $dudi->radius_meter }} Meter</span>
                                 <small class="text-muted d-block" style="font-size: 10px;" title="Hari Kerja: {{ $dudi->hari_kerja ?? 'Senin,Selasa,Rabu,Kamis,Jumat' }}">
                                     <strong>Kerja:</strong> {{ Str::limit($dudi->hari_kerja ?? 'Senin,Selasa,Rabu,Kamis,Jumat', 15) }}
                                 </small>
@@ -223,8 +221,13 @@
         </div>
 
         @if($dudis->hasPages())
-        <div class="px-4 py-3 border-top d-flex justify-content-end" style="border-top-color: var(--border-color) !important;">
-            {{ $dudis->withQueryString()->links() }}
+        <div class="p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2" style="border-top-color: var(--border-color) !important;">
+            <div class="small text-muted font-heading">
+                Menampilkan <strong>{{ $dudis->firstItem() }}</strong> - <strong>{{ $dudis->lastItem() }}</strong> dari <strong>{{ $dudis->total() }}</strong> mitra DUDI
+            </div>
+            <div>
+                {{ $dudis->withQueryString()->links() }}
+            </div>
         </div>
         @endif
     </div>

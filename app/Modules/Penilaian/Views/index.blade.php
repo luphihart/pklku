@@ -5,21 +5,14 @@
 
 @section('content')
 <div class="container-fluid p-0">
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
-            <strong>Berhasil!</strong> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
-            <strong>Error!</strong> {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
+    <!-- Action Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <h5 class="fw-bold font-heading m-0 text-dark dark-text-light">Evaluasi Nilai Kelulusan PKL Siswa</h5>
+    </div>
+
     @if(auth()->user()->role === 'admin')
         <!-- Admin Assessment Switch -->
-        <div class="card-premium mb-3 p-3 d-flex flex-row align-items-center justify-content-between flex-wrap gap-2" style="background-color: var(--bg-card); border-left: 4px solid {{ $isMasaPenilaianOpen ? 'var(--success)' : 'var(--danger)' }} !important;">
+        <div class="card-premium mb-4 p-3 d-flex flex-row align-items-center justify-content-between flex-wrap gap-2" style="background-color: var(--bg-card); border-left: 4px solid {{ $isMasaPenilaianOpen ? 'var(--success)' : 'var(--danger)' }} !important;">
             <div class="d-flex align-items-center gap-3">
                 <div class="p-2 rounded-circle {{ $isMasaPenilaianOpen ? 'bg-success-light text-success' : 'bg-danger-light text-danger' }} d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
                     @if($isMasaPenilaianOpen)
@@ -70,7 +63,7 @@
                     </svg>
                     Download Template Excel
                 </a>
-                <button type="button" class="btn btn-sm btn-success font-heading d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#importExcelModal">
+                <button type="button" class="btn btn-sm btn-outline-primary font-heading d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#importExcelModal">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                     </svg>
@@ -313,8 +306,13 @@
         </div>
 
         @if($placements->hasPages())
-        <div class="px-4 py-3 border-top d-flex justify-content-end" style="border-top-color: var(--border-color) !important;">
-            {{ $placements->links() }}
+        <div class="p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2" style="border-top-color: var(--border-color) !important;">
+            <div class="small text-muted font-heading">
+                Menampilkan <strong>{{ $placements->firstItem() }}</strong> - <strong>{{ $placements->lastItem() }}</strong> dari <strong>{{ $placements->total() }}</strong> siswa
+            </div>
+            <div>
+                {{ $placements->withQueryString()->links() }}
+            </div>
         </div>
         @endif
     </div>
