@@ -256,6 +256,12 @@ Atau jalankan perintah langsung:
   * Direct route link notifikasi siswa bimbingan ultah untuk guru langsung menuju halaman `/monitoring`.
 * 🔔 **Redesain Dropdown Notifikasi**:
   * Lebar dropdown diperluas menjadi `360px`, penghapusan truncate berlebih pada nama siswa, dan perbaikan padding vertikal badge.
+* 🛡️ **Penyempurnaan Modul Utilitas Sistem & Audit Log**:
+  * Filter pencarian log multi-kriteria: Kata kunci (Nama/Email/Aktivitas/IP), Role pengguna, Kategori aktivitas, dan Rentang tanggal.
+  * Modal inspeksi **"Lihat Detail Payload Data"** untuk menelusuri data mentah JSON sebelum dan sesudah perubahan.
+  * Fitur **Ekspor Log Audit ke format CSV / Excel** ber-encoding UTF-8 BOM.
+  * Modal **Pembersihan Riwayat Log Bertahap (*Retention Cleanup*)** berbasis umur data (30 hari, 90 hari, 180 hari, atau kosongkan total).
+  * Indikator tingkat risiko aktivitas visual (*Info/Keamanan, Peringatan, Hapus/Kritis*).
 * 🌴 **Fitur Baru: Pengaturan Libur Shift Mandiri (*Self-Service Day-Off*) dengan Proteksi Kuota Mingguan**:
   * Mengakomodasi DUDI dengan jadwal libur bergantian/roster acak (*rotating day-off*) tanpa menambah pekerjaan admin.
   * Tombol mandiri **"Tandai Libur Shift"** pada panel presensi murid dengan validasi kuota mingguan (maksimal 2 hari per minggu).
