@@ -96,15 +96,15 @@ class DashboardService
         } elseif ($user->role === 'guru') {
             $placementIds = $placements->pluck('id');
             $pendingJournalsCount = \App\Modules\Jurnal\Models\Jurnal::whereIn('penempatan_pkl_id', $placementIds)
-                ->where('status', 'pending')
+                ->where('status_verifikasi', 'pending')
                 ->count();
-            $pendingIzinCount = \App\Modules\Presensi\Models\Izin::whereIn('penempatan_pkl_id', $placementIds)
-                ->where('status', 'pending')
+            $pendingIzinCount = \App\Modules\Presensi\Models\IzinSakit::whereIn('penempatan_pkl_id', $placementIds)
+                ->where('status_approval', 'pending')
                 ->count();
         } else {
             // Admin
-            $pendingJournalsCount = \App\Modules\Jurnal\Models\Jurnal::where('status', 'pending')->count();
-            $pendingIzinCount = \App\Modules\Presensi\Models\Izin::where('status', 'pending')->count();
+            $pendingJournalsCount = \App\Modules\Jurnal\Models\Jurnal::where('status_verifikasi', 'pending')->count();
+            $pendingIzinCount = \App\Modules\Presensi\Models\IzinSakit::where('status_approval', 'pending')->count();
         }
 
         return [
@@ -118,6 +118,7 @@ class DashboardService
             'recentJournals' => $recentJournals,
             'pendingJournalsCount' => $pendingJournalsCount,
             'pendingIzinCount' => $pendingIzinCount,
+            'todayHoliday' => \App\Modules\MasterData\Models\HariLibur::getHoliday(now()->toDateString()),
         ];
     }
 }
