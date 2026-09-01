@@ -76,37 +76,6 @@ class DashboardService
             unset($dItem);
         }
 
-        $muridTodayPresensi = null;
-        $recentJournals = collect();
-        $pendingJournalsCount = 0;
-        $pendingIzinCount = 0;
-
-        if ($user->role === 'murid') {
-            $penempatan = $user->murid ? $user->murid->penempatanAktif : null;
-            if ($penempatan) {
-                $muridTodayPresensi = \App\Modules\Presensi\Models\Presensi::where('penempatan_pkl_id', $penempatan->id)
-                    ->where('tanggal', now()->toDateString())
-                    ->first();
-                $recentJournals = \App\Modules\Jurnal\Models\Jurnal::where('penempatan_pkl_id', $penempatan->id)
-                    ->orderBy('tanggal', 'desc')
-                    ->orderBy('created_at', 'desc')
-                    ->limit(3)
-                    ->get();
-            }
-        } elseif ($user->role === 'guru') {
-            $placementIds = $placements->pluck('id');
-            $pendingJournalsCount = \App\Modules\Jurnal\Models\Jurnal::whereIn('penempatan_pkl_id', $placementIds)
-                ->where('status', 'pending')
-                ->count();
-            $pendingIzinCount = \App\Modules\Presensi\Models\Izin::whereIn('penempatan_pkl_id', $placementIds)
-                ->where('status', 'pending')
-                ->count();
-        } else {
-            // Admin
-            $pendingJournalsCount = \App\Modules\Jurnal\Models\Jurnal::where('status', 'pending')->count();
-            $pendingIzinCount = \App\Modules\Presensi\Models\Izin::where('status', 'pending')->count();
-        }
-
         return [
             'counts' => $this->repo->getCounts(),
             'attendance' => $this->repo->getAttendanceStatsToday(),
@@ -114,10 +83,6 @@ class DashboardService
             'placements' => $placements,
             'dudiList' => $dudiList,
             'todayPresensi' => $todayPresensi,
-            'muridTodayPresensi' => $muridTodayPresensi,
-            'recentJournals' => $recentJournals,
-            'pendingJournalsCount' => $pendingJournalsCount,
-            'pendingIzinCount' => $pendingIzinCount,
         ];
     }
 }
