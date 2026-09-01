@@ -71,6 +71,14 @@ class JurnalController extends Controller
             $request->file('foto')
         );
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Jurnal harian berhasil dikirim.',
+                'redirect' => route('jurnal.index')
+            ]);
+        }
+
         return redirect()->route('jurnal.index')->with('success', 'Jurnal harian berhasil dikirim.');
     }
 

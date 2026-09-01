@@ -217,20 +217,39 @@
                         @endif
 
                         <!-- Leaflet map -->
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small class="text-muted fw-bold font-heading" style="font-size: 11px;">PETA RADAR LOKASI REALTIME</small>
+                            <button type="button" class="btn btn-xs btn-outline-primary d-flex align-items-center gap-1 font-heading" @click="refreshGps()" style="font-size: 11px; padding: 2px 8px; border-radius: 6px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                </svg>
+                                <span>Kalibrasi / Refresh GPS</span>
+                            </button>
+                        </div>
                         <div id="map"></div>
 
                         <!-- Camera Section -->
                         <div class="text-center mb-3">
-                            <video id="camera-preview" autoplay playsinline></video>
-                            <canvas id="selfie-canvas" width="640" height="480"></canvas>
+                            <div class="d-inline-block position-relative">
+                                <video id="camera-preview" autoplay playsinline muted></video>
+                                <canvas id="selfie-canvas" width="640" height="480"></canvas>
+                            </div>
                             
-                            <div class="mt-2" x-show="cameraActive">
-                                <span class="badge bg-success-light text-success fw-semibold" style="font-size: 12px;">
+                            <div class="mt-2 d-flex justify-content-center align-items-center gap-2">
+                                <span class="badge" :class="cameraActive ? 'bg-success-light text-success' : 'bg-danger-light text-danger'" style="font-size: 12px;">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="align-middle me-1">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
                                     </svg>
-                                    Kamera Aktif
+                                    <span x-text="cameraActive ? 'Kamera Aktif' : 'Kamera Mati / Belum Diizinkan'"></span>
                                 </span>
+
+                                <button type="button" class="btn btn-xs btn-outline-secondary font-heading" @click="initCamera()" style="font-size: 11px; padding: 2px 8px; border-radius: 6px;" title="Muat Ulang Kamera">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                    </svg>
+                                    <span>Muat Ulang Kamera</span>
+                                </button>
                             </div>
                         </div>
 
@@ -482,52 +501,124 @@
                     .openPopup();
             },
 
+            gpsAccuracy: null,
+
             trackLocation() {
                 if (navigator.geolocation) {
-                    navigator.geolocation.watchPosition(
-                        (position) => {
-                            this.userLat = position.coords.latitude;
-                            this.userLng = position.coords.longitude;
-                            
-                            // Calculate Distance
-                            this.distance = this.calculateDistance(this.userLat, this.userLng, this.dudiLat, this.dudiLng);
-                            if (this.isWfa) {
-                                this.distanceString = 'GPS Terkunci (Mode WFA - Bebas Radius)';
-                                this.inRadius = true;
-                            } else {
-                                this.distanceString = Math.round(this.distance) + ' Meter';
-                                this.inRadius = this.distance <= this.allowedRadius;
-                            }
+                    const handlePosition = (position) => {
+                        this.userLat = position.coords.latitude;
+                        this.userLng = position.coords.longitude;
+                        this.gpsAccuracy = Math.round(position.coords.accuracy || 0);
+                        
+                        // Calculate Distance
+                        this.distance = this.calculateDistance(this.userLat, this.userLng, this.dudiLat, this.dudiLng);
+                        if (this.isWfa) {
+                            this.distanceString = `GPS Terkunci (Mode WFA - Bebas Radius) ±${this.gpsAccuracy}m`;
+                            this.inRadius = true;
+                        } else {
+                            this.distanceString = `${Math.round(this.distance)} Meter (Akurasi: ±${this.gpsAccuracy}m)`;
+                            this.inRadius = this.distance <= this.allowedRadius;
+                        }
 
-                            // Update Map Marker for user
-                            if (this.userMarker) {
-                                this.userMarker.setLatLng([this.userLat, this.userLng]);
-                            } else {
-                                const userIcon = L.icon({
-                                    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-                                    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-                                    iconSize: [25, 41],
-                                    iconAnchor: [12, 41]
-                                });
-                                this.userMarker = L.marker([this.userLat, this.userLng], { icon: userIcon }).addTo(this.map)
-                                    .bindPopup('Lokasi Anda Sekarang')
-                                    .openPopup();
-                            }
-                            
-                            // Adjust map bounds to show both
-                            const group = new L.featureGroup([L.marker([this.dudiLat, this.dudiLng]), this.userMarker]);
-                            this.map.fitBounds(group.getBounds().pad(0.2));
-                        },
-                        (error) => {
-                            this.distanceString = 'GPS Error (Buka izin lokasi)';
-                            this.inRadius = false;
-                        },
-                        { enableHighAccuracy: true, timeout: 10000 }
-                    );
+                        // Update Map Marker for user
+                        if (this.userMarker) {
+                            this.userMarker.setLatLng([this.userLat, this.userLng]);
+                        } else {
+                            const userIcon = L.icon({
+                                iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                                shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                                iconSize: [25, 41],
+                                iconAnchor: [12, 41]
+                            });
+                            this.userMarker = L.marker([this.userLat, this.userLng], { icon: userIcon }).addTo(this.map)
+                                .bindPopup(`Lokasi Anda Sekarang (±${this.gpsAccuracy}m)`)
+                                .openPopup();
+                        }
+                        
+                        // Adjust map bounds to show both
+                        const group = new L.featureGroup([L.marker([this.dudiLat, this.dudiLng]), this.userMarker]);
+                        this.map.fitBounds(group.getBounds().pad(0.2));
+                    };
+
+                    const handleError = (error) => {
+                        console.warn('GPS error:', error);
+                        if (error.code === 1) {
+                            this.distanceString = 'Izin lokasi ditolak (Buka pengaturan browser)';
+                        } else if (error.code === 2) {
+                            this.distanceString = 'Sinyal GPS lemah / tidak tersedia';
+                        } else {
+                            this.distanceString = 'GPS timeout (Klik tombol Kalibrasi GPS)';
+                        }
+                        this.inRadius = false;
+                    };
+
+                    const options = {
+                        enableHighAccuracy: true,
+                        timeout: 15000,
+                        maximumAge: 0 // Pastikan koordinat diambil langsung dari satelit/sensor GPS realtime, bukan cache
+                    };
+
+                    // Initial single fetch
+                    navigator.geolocation.getCurrentPosition(handlePosition, handleError, options);
+
+                    // Continuous watch
+                    navigator.geolocation.watchPosition(handlePosition, handleError, options);
                 } else {
                     this.distanceString = 'GPS tidak didukung browser';
                     this.inRadius = false;
                 }
+            },
+
+            refreshGps() {
+                this.distanceString = 'Mencari sinyal GPS realtime...';
+                if (!navigator.geolocation) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'GPS Tidak Didukung',
+                        text: 'Browser Anda tidak mendukung fitur Geolocation GPS.',
+                        confirmButtonColor: 'var(--accent-primary)'
+                    });
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        this.userLat = pos.coords.latitude;
+                        this.userLng = pos.coords.longitude;
+                        this.gpsAccuracy = Math.round(pos.coords.accuracy || 0);
+                        this.distance = this.calculateDistance(this.userLat, this.userLng, this.dudiLat, this.dudiLng);
+                        if (this.isWfa) {
+                            this.distanceString = `GPS Terkunci (Mode WFA - Bebas Radius) ±${this.gpsAccuracy}m`;
+                            this.inRadius = true;
+                        } else {
+                            this.distanceString = `${Math.round(this.distance)} Meter (Akurasi: ±${this.gpsAccuracy}m)`;
+                            this.inRadius = this.distance <= this.allowedRadius;
+                        }
+
+                        if (this.userMarker) {
+                            this.userMarker.setLatLng([this.userLat, this.userLng]);
+                            const group = new L.featureGroup([L.marker([this.dudiLat, this.dudiLng]), this.userMarker]);
+                            this.map.fitBounds(group.getBounds().pad(0.2));
+                        }
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'GPS Berhasil Dikalibrasi',
+                            text: `Akurasi sensor: ±${this.gpsAccuracy}m. Jarak ke DUDI: ${Math.round(this.distance)} meter.`,
+                            timer: 2200,
+                            showConfirmButton: false
+                        });
+                    },
+                    (err) => {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Gagal Membaca GPS',
+                            text: 'Pastikan fitur Lokasi / GPS di HP sudah dinyalakan dalam mode Akurasi Tinggi dan izin lokasi diaktifkan di browser Chrome.',
+                            confirmButtonColor: 'var(--accent-primary)'
+                        });
+                    },
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+                );
             },
 
             calculateDistance(lat1, lon1, lat2, lon2) {
@@ -547,20 +638,62 @@
 
             initCamera() {
                 const video = document.getElementById('camera-preview');
-                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
-                    .then((stream) => {
-                        this.stream = stream;
-                        video.srcObject = stream;
-                        this.cameraActive = true;
-                    })
-                    .catch((err) => {
+                if (!video) return;
+
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    this.cameraActive = false;
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Kamera Tidak Didukung',
+                        text: 'Browser Anda tidak mendukung API kamera atau situs diakses tanpa protokol aman (HTTPS).',
+                        confirmButtonColor: 'var(--accent-primary)'
+                    });
+                    return;
+                }
+
+                // Stop existing stream if any
+                if (this.stream) {
+                    this.stream.getTracks().forEach(track => track.stop());
+                    this.stream = null;
+                }
+
+                const constraintsList = [
+                    { video: { facingMode: { ideal: 'user' }, width: { ideal: 640 }, height: { ideal: 480 } }, audio: false },
+                    { video: { facingMode: 'user' }, audio: false },
+                    { video: true, audio: false }
+                ];
+
+                const tryStartStream = (index) => {
+                    if (index >= constraintsList.length) {
+                        this.cameraActive = false;
                         Swal.fire({
                             icon: 'error',
-                            title: 'Akses Kamera Gagal',
-                            text: 'Kamera diblokir atau tidak ditemukan. Izin kamera wajib untuk selfie.',
+                            title: 'Kamera Tidak Dapat Dimulai',
+                            text: 'Pastikan izin kamera telah diaktifkan pada pengaturan browser dan tidak sedang dipakai oleh aplikasi lain.',
                             confirmButtonColor: 'var(--accent-primary)'
                         });
-                    });
+                        return;
+                    }
+
+                    navigator.mediaDevices.getUserMedia(constraintsList[index])
+                        .then((stream) => {
+                            this.stream = stream;
+                            video.srcObject = stream;
+                            video.setAttribute('playsinline', '');
+                            video.setAttribute('muted', '');
+                            video.muted = true;
+                            video.onloadedmetadata = () => {
+                                video.play().catch(e => console.warn('Video play catch:', e));
+                            };
+                            this.cameraActive = true;
+                        })
+                        .catch((err) => {
+                            console.warn('Camera constraint retry', index, err);
+                            tryStartStream(index + 1);
+                        });
+                };
+
+                tryStartStream(0);
             },
 
             submitAttendance(type) {
