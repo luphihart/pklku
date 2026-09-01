@@ -4,6 +4,7 @@ namespace App\Modules\Jurnal\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Jurnal\Services\JournalService;
+use App\Modules\MasterData\Models\Kelas;
 use Illuminate\Http\Request;
 
 class JurnalController extends Controller
@@ -33,11 +34,18 @@ class JurnalController extends Controller
         }
 
         // Guru / Admin: List bimbingan journals
-        $status = $request->get('status');
-        $guruId = auth()->user()->role === 'guru' ? (auth()->user()->guru?->id ?: -1) : null;
-        $journals = $this->service->getTeacherReviews($guruId, $status);
+        $filters = $request->only(['status', 'kelas_id', 'search', 'nama', 'tanggal_mulai', 'tanggal_selesai', 'tanggal']);
+        if (!empty($filters['nama']) && empty($filters['search'])) {
+            $filters['search'] = $filters['nama'];
+        }
 
-        return view('jurnal::index', compact('journals'));
+        $guruId = auth()->user()->role === 'guru' ? (auth()->user()->guru?->id ?: -1) : null;
+        $journals = $this->service->getTeacherReviews($guruId, $filters);
+        $journals->withQueryString();
+
+        $kelasList = Kelas::orderBy('nama')->get();
+
+        return view('jurnal::index', compact('journals', 'filters', 'kelasList'));
     }
 
     /**

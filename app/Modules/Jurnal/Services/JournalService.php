@@ -14,7 +14,7 @@ class JournalService
     }
 
     public function getStudentHistory(int $placementId) { return $this->repo->getStudentJournals($placementId); }
-    public function getTeacherReviews(?int $guruId, ?string $status = null) { return $this->repo->getTeacherJournals($guruId, $status); }
+    public function getTeacherReviews(?int $guruId, $statusOrFilters = null, int $perPage = 15) { return $this->repo->getTeacherJournals($guruId, $statusOrFilters, $perPage); }
     public function getDetail(int $id) { return $this->repo->findById($id); }
 
     /**

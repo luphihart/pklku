@@ -17,27 +17,89 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
-    <!-- Filter Status Quick Pills & Bar -->
+
+    <!-- Filter & Search Card -->
     <div class="card-premium mb-4">
+        <!-- Quick Status Pills -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
-            <div class="d-flex flex-wrap gap-2">
-                <a href="{{ route('jurnal.index') }}" class="btn btn-xs font-heading {{ !request('status') ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <span class="small fw-bold text-muted font-heading me-1">Status:</span>
+                <a href="{{ route('jurnal.index', request()->except('status')) }}" class="btn btn-xs font-heading {{ !request('status') ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
                     Semua
                 </a>
-                <a href="{{ route('jurnal.index', ['status' => 'pending']) }}" class="btn btn-xs font-heading {{ request('status') === 'pending' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
+                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'pending'])) }}" class="btn btn-xs font-heading {{ request('status') === 'pending' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
                     Menunggu Verifikasi
                 </a>
-                <a href="{{ route('jurnal.index', ['status' => 'disetujui']) }}" class="btn btn-xs font-heading {{ request('status') === 'disetujui' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
+                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'disetujui'])) }}" class="btn btn-xs font-heading {{ request('status') === 'disetujui' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
                     Disetujui
                 </a>
-                <a href="{{ route('jurnal.index', ['status' => 'revisi']) }}" class="btn btn-xs font-heading {{ request('status') === 'revisi' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
+                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'revisi'])) }}" class="btn btn-xs font-heading {{ request('status') === 'revisi' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
                     Butuh Revisi
                 </a>
-                <a href="{{ route('jurnal.index', ['status' => 'ditolak']) }}" class="btn btn-xs font-heading {{ request('status') === 'ditolak' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
+                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'ditolak'])) }}" class="btn btn-xs font-heading {{ request('status') === 'ditolak' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
                     Ditolak
                 </a>
             </div>
+            <span class="badge bg-primary-light text-primary font-heading px-2.5 py-1" style="font-size: 11px;">
+                Total: {{ $journals->total() }} Jurnal
+            </span>
         </div>
+
+        <!-- Filter Form -->
+        <form action="{{ route('jurnal.index') }}" method="GET" class="row g-2">
+            @if(request('status'))
+                <input type="hidden" name="status" value="{{ request('status') }}">
+            @endif
+
+            <div class="col-md-4">
+                <label class="form-label small fw-semibold">Cari Nama Siswa / NIS / DUDI / Isi Laporan</label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-light border-end-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </span>
+                    <input type="text" name="search" class="form-control form-control-sm border-start-0 ps-0" placeholder="Ketik nama siswa, NIS, atau aktivitas..." value="{{ request('search') ?? request('nama') }}">
+                </div>
+            </div>
+
+            <div class="col-md-3 col-6">
+                <label class="form-label small fw-semibold">Pilih Kelas</label>
+                <select name="kelas_id" class="form-select form-select-sm">
+                    <option value="">-- Semua Kelas --</option>
+                    @foreach($kelasList as $kelas)
+                        <option value="{{ $kelas->id }}" {{ (string)request('kelas_id') === (string)$kelas->id ? 'selected' : '' }}>
+                            {{ $kelas->nama }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-md-2 col-6">
+                <label class="form-label small fw-semibold">Tanggal Mulai</label>
+                <input type="date" name="tanggal_mulai" class="form-control form-control-sm" value="{{ request('tanggal_mulai') }}">
+            </div>
+
+            <div class="col-md-2 col-6">
+                <label class="form-label small fw-semibold">Tanggal Selesai</label>
+                <input type="date" name="tanggal_selesai" class="form-control form-control-sm" value="{{ request('tanggal_selesai') }}">
+            </div>
+
+            <div class="col-md-1 col-6 d-flex align-items-end gap-1">
+                <button type="submit" class="btn btn-sm btn-primary w-100 font-heading" title="Terapkan Filter">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                    </svg>
+                </button>
+                @if(request()->hasAny(['search', 'nama', 'kelas_id', 'tanggal_mulai', 'tanggal_selesai', 'status']) && (request('search') || request('nama') || request('kelas_id') || request('tanggal_mulai') || request('tanggal_selesai') || request('status')))
+                    <a href="{{ route('jurnal.index') }}" class="btn btn-sm btn-outline-secondary" title="Reset Semua Filter">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                    </a>
+                @endif
+            </div>
+        </form>
     </div>
 
     <!-- Table Card -->
@@ -46,8 +108,8 @@
             <table class="table table-hover align-middle mb-0" style="color: var(--text-primary); font-size: 13px;">
                 <thead class="table-light">
                     <tr class="font-heading" style="font-size: 13px; font-weight: 600;">
-                        <th class="ps-4" style="width: 100px;">Tanggal</th>
-                        <th>Siswa (Kelas)</th>
+                        <th class="ps-4" style="width: 110px;">Tanggal</th>
+                        <th>Siswa & Kelas</th>
                         <th>DUDI Tempat PKL</th>
                         <th>Isi Laporan Aktivitas</th>
                         <th class="text-center">Foto Bukti</th>
@@ -58,14 +120,22 @@
                 <tbody>
                     @forelse($journals as $j)
                         <tr>
-                            <td class="ps-4 fw-semibold">{{ \Carbon\Carbon::parse($j->tanggal)->format('d/m/Y') }}</td>
-                            <td>
-                                <div class="fw-semibold">{{ $j->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus' }}</div>
-                                <small class="text-muted">{{ $j->penempatanPkl?->murid?->kelas?->nama ?? '-' }}</small>
+                            <td class="ps-4 fw-semibold">
+                                {{ $j->tanggal ? \Carbon\Carbon::parse($j->tanggal)->format('d/m/Y') : '-' }}
                             </td>
-                            <td>{{ $j->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</td>
                             <td>
-                                <div>{{ Str::limit($j->deskripsi_aktivitas, 100) }}</div>
+                                <div class="fw-bold text-dark dark-text-light">{{ $j->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus' }}</div>
+                                <div class="d-flex align-items-center gap-1.5 mt-0.5">
+                                    <span class="badge bg-light text-dark border font-monospace" style="font-size: 10px;">NIS: {{ $j->penempatanPkl?->murid?->nis ?? '-' }}</span>
+                                    <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 10px;">{{ $j->penempatanPkl?->murid?->kelas?->nama ?? '-' }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-dark dark-text-light">{{ $j->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</div>
+                                <small class="text-muted" style="font-size: 11px;">{{ $j->penempatanPkl?->dudi?->alamat ? Str::limit($j->penempatanPkl->dudi->alamat, 35) : '-' }}</small>
+                            </td>
+                            <td>
+                                <div class="text-break" style="max-width: 320px;">{{ Str::limit($j->deskripsi_aktivitas, 110) }}</div>
                                 @if($j->catatan_verifikasi)
                                     <small class="text-danger d-block mt-1"><strong>Komentar:</strong> {{ $j->catatan_verifikasi }}</small>
                                 @endif
@@ -194,8 +264,9 @@
         </div>
 
         @if($journals->hasPages())
-        <div class="px-4 py-3 border-top d-flex justify-content-end" style="border-top-color: var(--border-color) !important;">
-            {{ $journals->links() }}
+        <div class="px-4 py-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2" style="border-top-color: var(--border-color) !important;">
+            <small class="text-muted">Menampilkan {{ $journals->firstItem() }} - {{ $journals->lastItem() }} dari {{ $journals->total() }} jurnal</small>
+            {{ $journals->links('pagination::bootstrap-5') }}
         </div>
         @endif
     </div>
