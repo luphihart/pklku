@@ -7,6 +7,7 @@
 @php
 if (!function_exists('formatAktivitas')) {
     function formatAktivitas($text) {
+        if (empty($text)) return '-';
         // Clean IDs and technical text
         $text = preg_replace('/dengan ID: \d+/', '', $text);
         $text = preg_replace('/ID: \d+/', '', $text);
@@ -59,6 +60,9 @@ if (!function_exists('formatAktivitas')) {
 
 if (!function_exists('getActivityBadge')) {
     function getActivityBadge($text) {
+        if (empty($text)) {
+            return '<span class="badge bg-light text-dark px-2 py-1 fw-semibold border" style="font-size: 10px; border-radius: 6px;"><i class="bi bi-info-circle me-1"></i>Sistem</span>';
+        }
         // Critical / Danger actions
         if (stripos($text, 'hapus') !== false || stripos($text, 'membatalkan') !== false || stripos($text, 'wipe') !== false || stripos($text, 'kosongkan') !== false) {
             return '<span class="badge bg-danger-light text-danger px-2 py-1 fw-semibold" style="font-size: 10px; border-radius: 6px;"><i class="bi bi-exclamation-triangle me-1"></i>Hapus / Kritis</span>';
@@ -290,10 +294,26 @@ if (!function_exists('parseUserAgent')) {
                         </thead>
                         <tbody>
                             @forelse($logs as $log)
+                                @php
+                                    $logPayloadData = [
+                                        'id' => $log->id,
+                                        'waktu' => $log->created_at ? $log->created_at->format('d M Y H:i:s') . ' WIB' : '-',
+                                        'user_nama' => $log->user ? $log->user->name : 'Sistem Otomatis',
+                                        'user_email' => $log->user ? $log->user->email : '-',
+                                        'user_role' => $log->user ? ucfirst($log->user->role) : 'System',
+                                        'aktivitas_asli' => $log->aktivitas ?? '-',
+                                        'aktivitas_format' => formatAktivitas($log->aktivitas ?? ''),
+                                        'ip_address' => $log->ip_address ?? '-',
+                                        'user_agent' => $log->user_agent ?? '-',
+                                        'device' => parseUserAgent($log->user_agent ?? ''),
+                                        'payload' => $log->payload
+                                    ];
+                                    $encodedPayload = base64_encode(json_encode($logPayloadData));
+                                @endphp
                                 <tr>
                                     <td class="ps-4">
-                                        <div class="fw-semibold text-dark dark-text-light">{{ $log->created_at->format('d M Y') }}</div>
-                                        <small class="text-muted" style="font-size: 11px;">{{ $log->created_at->format('H:i:s') }} WIB</small>
+                                        <div class="fw-semibold text-dark dark-text-light">{{ $log->created_at ? $log->created_at->format('d M Y') : '-' }}</div>
+                                        <small class="text-muted" style="font-size: 11px;">{{ $log->created_at ? $log->created_at->format('H:i:s') : '-' }} WIB</small>
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
@@ -336,19 +356,7 @@ if (!function_exists('parseUserAgent')) {
                                         </div>
                                     </td>
                                     <td class="pe-4 text-center">
-                                        <button type="button" class="btn btn-sm btn-outline-primary p-1 px-2" title="Lihat Detail Log" onclick='showLogDetail(@json([
-                                            "id" => $log->id,
-                                            "waktu" => $log->created_at->format("d M Y H:i:s") . " WIB",
-                                            "user_nama" => $log->user ? $log->user->name : "Sistem Otomatis",
-                                            "user_email" => $log->user ? $log->user->email : "-",
-                                            "user_role" => $log->user ? ucfirst($log->user->role) : "System",
-                                            "aktivitas_asli" => $log->aktivitas,
-                                            "aktivitas_format" => formatAktivitas($log->aktivitas),
-                                            "ip_address" => $log->ip_address,
-                                            "user_agent" => $log->user_agent,
-                                            "device" => parseUserAgent($log->user_agent),
-                                            "payload" => $log->payload
-                                        ]))'>
+                                        <button type="button" class="btn btn-sm btn-outline-primary p-1 px-2 btn-show-detail" title="Lihat Detail Log" data-log="{{ $encodedPayload }}">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -528,5 +536,20 @@ if (!function_exists('parseUserAgent')) {
         const modal = new bootstrap.Modal(document.getElementById('modalDetailLog'));
         modal.show();
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn-show-detail');
+            if (!btn) return;
+            try {
+                const encodedData = btn.getAttribute('data-log');
+                const rawJson = decodeURIComponent(escape(atob(encodedData)));
+                const data = JSON.parse(rawJson);
+                showLogDetail(data);
+            } catch(err) {
+                console.error("Failed to parse log data", err);
+            }
+        });
+    });
 </script>
 @endsection
