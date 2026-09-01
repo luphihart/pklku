@@ -146,9 +146,9 @@
                                 <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 11px;">Kaidah 5W + 1H</span>
                             </div>
                             
-                            <div class="p-2 mb-2 rounded border" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important; font-size: 11.5px; line-height: 1.5;">
-                                <span class="fw-bold text-dark d-block mb-1">💡 Panduan Penulisan Jurnal (5W + 1H):</span>
-                                <ul class="mb-0 ps-3 text-secondary">
+                            <details class="mb-2 p-2 rounded border" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important; font-size: 11.5px; line-height: 1.5;">
+                                <summary class="fw-semibold text-primary font-heading" style="cursor: pointer;">💡 Panduan Penulisan Jurnal (5W + 1H)</summary>
+                                <ul class="mt-2 mb-0 ps-3 text-secondary">
                                     <li><strong>What (Apa):</strong> Tugas / materi / modul yang dikerjakan.</li>
                                     <li><strong>Why (Mengapa):</strong> Tujuan atau manfaat pekerjaan tersebut.</li>
                                     <li><strong>Where (Di mana):</strong> Divisi / lokasi kerja atau tools/software yang dipakai.</li>
@@ -156,9 +156,9 @@
                                     <li><strong>Who (Siapa):</strong> Pembimbing industri / rekan yang terlibat.</li>
                                     <li><strong>How (Bagaimana):</strong> Langkah pengerjaan, hasil, kendala & cara mengatasinya.</li>
                                 </ul>
-                            </div>
+                            </details>
 
-                            <textarea name="deskripsi_aktivitas" id="deskripsi_aktivitas" class="form-control form-control-sm" rows="6" placeholder="Tulis aktivitas harian Anda dengan kaidah 5W + 1H:&#10;Contoh: Hari ini saya mengerjakan [What] untuk keperluan [Why] di ruang/tools [Where] pada pukul [When] bersama arahan Bapak/Ibu [Who]. Langkah pengerjaannya meliputi [How]..." required></textarea>
+                            <textarea name="deskripsi_aktivitas" id="deskripsi_aktivitas" class="form-control form-control-sm" rows="5" placeholder="Tulis aktivitas harian Anda dengan kaidah 5W + 1H:&#10;Contoh: Hari ini saya mengerjakan [What] untuk keperluan [Why] di ruang/tools [Where] pada pukul [When] bersama arahan Bapak/Ibu [Who]. Langkah pengerjaannya meliputi [How]..." required></textarea>
                         </div>
 
                         <div class="mb-3">

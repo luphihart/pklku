@@ -13,9 +13,9 @@
 <body x-data="{ 
     sidebarOpen: window.innerWidth > 768,
     masterOpen: true,
-    aktivitasOpen: true,
-    tambahanOpen: true
-}" class="g-sidenav-show">
+    operasionalOpen: true,
+    sistemOpen: true
+}" class="g-sidenav-show has-bottom-nav">
     
     <!-- Accessibility: Skip to Content Link -->
     <a href="#main-content-area" class="visually-hidden-focusable p-2 bg-primary text-white position-absolute rounded shadow" style="top: 10px; left: 10px; z-index: 9999; text-decoration: none;">Lewati ke konten utama</a>
@@ -55,6 +55,7 @@
             </div>
 
             <ul class="sidebar-menu">
+                <!-- Dashboard Item (All Roles) -->
                 <li class="{{ Route::is('dashboard') ? 'active' : '' }}">
                     <a href="{{ route('dashboard') }}">
                         <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -64,203 +65,310 @@
                     </a>
                 </li>
 
-                @if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
-                <!-- Master Data Collapsible Section -->
-                <li class="sidebar-header-text d-flex justify-content-between align-items-center px-4 pt-3 pb-1 text-uppercase font-heading" style="font-size: 11px; font-weight: 700; color: var(--text-secondary); cursor: pointer; user-select: none;" @click="masterOpen = !masterOpen">
-                    <span>Master Data</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" :style="masterOpen ? 'transform: rotate(0deg); transition: transform 0.2s;' : 'transform: rotate(-90deg); transition: transform 0.2s;'" style="margin-right: 1.5rem;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </li>
-                
+                {{-- ==================== ROLE: MURID ==================== --}}
+                @if(auth()->user()->role === 'murid')
+                    <li class="sidebar-header-text px-4 pt-3 pb-1 text-uppercase font-heading" style="font-size: 11px; font-weight: 700; color: var(--text-secondary);">
+                        <span>Aktivitas Siswa</span>
+                    </li>
+                    <li class="{{ Request::is('presensi') ? 'active' : '' }}">
+                        <a href="{{ route('presensi.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Presensi Harian
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('presensi/izin*') ? 'active' : '' }}">
+                        <a href="{{ route('izin.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Pengajuan Izin / Sakit
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('jurnal*') ? 'active' : '' }}">
+                        <a href="{{ route('jurnal.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                            Jurnal Kegiatan
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('penilaian*') ? 'active' : '' }}">
+                        <a href="{{ route('penilaian.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Nilai & Rapor PKL
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('pengumuman*') ? 'active' : '' }}">
+                        <a href="{{ route('pengumuman.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                            </svg>
+                            Pengumuman
+                        </a>
+                    </li>
+                @endif
+
+                {{-- ==================== ROLE: GURU ==================== --}}
+                @if(auth()->user()->role === 'guru')
+                    <li class="sidebar-header-text px-4 pt-3 pb-1 text-uppercase font-heading" style="font-size: 11px; font-weight: 700; color: var(--text-secondary);">
+                        <span>Bimbingan Siswa</span>
+                    </li>
+                    <li class="{{ Request::is('monitoring*') ? 'active' : '' }}">
+                        <a href="{{ route('monitoring.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Siswa Bimbingan
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('presensi') ? 'active' : '' }}">
+                        <a href="{{ route('presensi.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Monitoring Presensi
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('presensi/izin*') ? 'active' : '' }}">
+                        <a href="{{ route('izin.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Verifikasi Izin / Sakit
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('jurnal*') ? 'active' : '' }}">
+                        <a href="{{ route('jurnal.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                            Verifikasi Jurnal
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('kunjungan*') ? 'active' : '' }}">
+                        <a href="{{ route('kunjungan.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                            </svg>
+                            Kunjungan ke DUDI
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('penilaian*') ? 'active' : '' }}">
+                        <a href="{{ route('penilaian.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Penilaian Siswa
+                        </a>
+                    </li>
+                    <li class="sidebar-header-text px-4 pt-3 pb-1 text-uppercase font-heading" style="font-size: 11px; font-weight: 700; color: var(--text-secondary);">
+                        <span>Laporan & Informasi</span>
+                    </li>
+                    <li class="{{ Request::is('laporan*') ? 'active' : '' }}">
+                        <a href="{{ route('laporan.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Laporan Rekap
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('pengumuman*') ? 'active' : '' }}">
+                        <a href="{{ route('pengumuman.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                            </svg>
+                            Pengumuman
+                        </a>
+                    </li>
+                @endif
+
+                {{-- ==================== ROLE: ADMIN ==================== --}}
                 @if(auth()->user()->role === 'admin')
-                <li x-show="masterOpen" class="{{ Request::is('master/tahun-ajaran*') ? 'active' : '' }}">
-                    <a href="{{ route('tahun-ajaran.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    <!-- Master Data Collapsible Section -->
+                    <li class="sidebar-header-text d-flex justify-content-between align-items-center px-4 pt-3 pb-1 text-uppercase font-heading" style="font-size: 11px; font-weight: 700; color: var(--text-secondary); cursor: pointer; user-select: none;" @click="masterOpen = !masterOpen">
+                        <span>Master Data</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" :style="masterOpen ? 'transform: rotate(0deg); transition: transform 0.2s;' : 'transform: rotate(-90deg); transition: transform 0.2s;'" style="margin-right: 1.5rem;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/>
                         </svg>
-                        Tahun Ajaran
-                    </a>
-                </li>
-                <li x-show="masterOpen" class="{{ Request::is('master/jurusan*') ? 'active' : '' }}">
-                    <a href="{{ route('jurusan.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                        </svg>
-                        Jurusan
-                    </a>
-                </li>
-                <li x-show="masterOpen" class="{{ Request::is('master/kelas*') ? 'active' : '' }}">
-                    <a href="{{ route('kelas.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                        </svg>
-                        Kelas
-                    </a>
-                </li>
-                <li x-show="masterOpen" class="{{ Request::is('master/murid*') ? 'active' : '' }}">
-                    <a href="{{ route('murid.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
-                        Murid
-                    </a>
-                </li>
-                <li x-show="masterOpen" class="{{ Request::is('master/guru*') ? 'active' : '' }}">
-                    <a href="{{ route('guru.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6m-6 4h6"/>
-                        </svg>
-                        Guru
-                    </a>
-                </li>
-                <li x-show="masterOpen" class="{{ Request::is('master/dudi*') ? 'active' : '' }}">
-                    <a href="{{ route('dudi.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                        </svg>
-                        Mitra DUDI
-                    </a>
-                </li>
-                <li x-show="masterOpen" class="{{ Request::is('penempatan*') ? 'active' : '' }}">
-                    <a href="{{ route('penempatan.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
-                        </svg>
-                        Plotting Penempatan
-                    </a>
-                </li>
-                @endif
+                    </li>
+                    
+                    <li x-show="masterOpen" class="{{ Request::is('master/tahun-ajaran*') ? 'active' : '' }}">
+                        <a href="{{ route('tahun-ajaran.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            Tahun Ajaran
+                        </a>
+                    </li>
+                    <li x-show="masterOpen" class="{{ Request::is('master/jurusan*') ? 'active' : '' }}">
+                        <a href="{{ route('jurusan.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            </svg>
+                            Jurusan
+                        </a>
+                    </li>
+                    <li x-show="masterOpen" class="{{ Request::is('master/kelas*') ? 'active' : '' }}">
+                        <a href="{{ route('kelas.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                            Kelas
+                        </a>
+                    </li>
+                    <li x-show="masterOpen" class="{{ Request::is('master/murid*') ? 'active' : '' }}">
+                        <a href="{{ route('murid.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Murid
+                        </a>
+                    </li>
+                    <li x-show="masterOpen" class="{{ Request::is('master/guru*') ? 'active' : '' }}">
+                        <a href="{{ route('guru.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6m-6 4h6"/>
+                            </svg>
+                            Guru
+                        </a>
+                    </li>
+                    <li x-show="masterOpen" class="{{ Request::is('master/dudi*') ? 'active' : '' }}">
+                        <a href="{{ route('dudi.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                            Mitra DUDI
+                        </a>
+                    </li>
+                    <li x-show="masterOpen" class="{{ Request::is('penempatan*') ? 'active' : '' }}">
+                        <a href="{{ route('penempatan.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                            </svg>
+                            Plotting Penempatan
+                        </a>
+                    </li>
+                    <li x-show="masterOpen" class="{{ Request::is('master/tujuan-pembelajaran*') ? 'active' : '' }}">
+                        <a href="{{ route('tujuan-pembelajaran.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                            Tujuan Pembelajaran
+                        </a>
+                    </li>
+                    <li x-show="masterOpen" class="{{ Request::is('master/indikator*') ? 'active' : '' }}">
+                        <a href="{{ route('indikator.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 00-2 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                            </svg>
+                            Indikator Penilaian
+                        </a>
+                    </li>
 
-                <li x-show="masterOpen" class="{{ Request::is('master/tujuan-pembelajaran*') ? 'active' : '' }}">
-                    <a href="{{ route('tujuan-pembelajaran.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    <!-- Operasional PKL Collapsible Section -->
+                    <li class="sidebar-header-text d-flex justify-content-between align-items-center px-4 pt-3 pb-1 text-uppercase font-heading" style="font-size: 11px; font-weight: 700; color: var(--text-secondary); cursor: pointer; user-select: none;" @click="operasionalOpen = !operasionalOpen">
+                        <span>Operasional PKL</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" :style="operasionalOpen ? 'transform: rotate(0deg); transition: transform 0.2s;' : 'transform: rotate(-90deg); transition: transform 0.2s;'" style="margin-right: 1.5rem;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/>
                         </svg>
-                        Tujuan Pembelajaran
-                    </a>
-                </li>
-                <li x-show="masterOpen" class="{{ Request::is('master/indikator*') ? 'active' : '' }}">
-                    <a href="{{ route('indikator.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 00-2 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-                        </svg>
-                        Indikator Penilaian
-                    </a>
-                </li>
-                @endif
+                    </li>
 
-                <!-- Aktivitas PKL Collapsible Section -->
-                <li class="sidebar-header-text d-flex justify-content-between align-items-center px-4 pt-3 pb-1 text-uppercase font-heading" style="font-size: 11px; font-weight: 700; color: var(--text-secondary); cursor: pointer; user-select: none;" @click="aktivitasOpen = !aktivitasOpen">
-                    <span>Aktivitas PKL</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" :style="aktivitasOpen ? 'transform: rotate(0deg); transition: transform 0.2s;' : 'transform: rotate(-90deg); transition: transform 0.2s;'" style="margin-right: 1.5rem;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </li>
+                    <li x-show="operasionalOpen" class="{{ Request::is('presensi') ? 'active' : '' }}">
+                        <a href="{{ route('presensi.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Monitoring Presensi
+                        </a>
+                    </li>
+                    <li x-show="operasionalOpen" class="{{ Request::is('presensi/izin*') ? 'active' : '' }}">
+                        <a href="{{ route('izin.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Verifikasi Izin / Sakit
+                        </a>
+                    </li>
+                    <li x-show="operasionalOpen" class="{{ Request::is('jurnal*') ? 'active' : '' }}">
+                        <a href="{{ route('jurnal.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                            Verifikasi Jurnal
+                        </a>
+                    </li>
+                    <li x-show="operasionalOpen" class="{{ Request::is('kunjungan*') ? 'active' : '' }}">
+                        <a href="{{ route('kunjungan.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                            </svg>
+                            Kunjungan DUDI
+                        </a>
+                    </li>
+                    <li x-show="operasionalOpen" class="{{ Request::is('penilaian*') ? 'active' : '' }}">
+                        <a href="{{ route('penilaian.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Penilaian PKL
+                        </a>
+                    </li>
 
-                <li x-show="aktivitasOpen" class="{{ Request::is('presensi') ? 'active' : '' }}">
-                    <a href="{{ route('presensi.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <!-- Sistem & Laporan Collapsible Section -->
+                    <li class="sidebar-header-text d-flex justify-content-between align-items-center px-4 pt-3 pb-1 text-uppercase font-heading" style="font-size: 11px; font-weight: 700; color: var(--text-secondary); cursor: pointer; user-select: none;" @click="sistemOpen = !sistemOpen">
+                        <span>Laporan & Sistem</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" :style="sistemOpen ? 'transform: rotate(0deg); transition: transform 0.2s;' : 'transform: rotate(-90deg); transition: transform 0.2s;'" style="margin-right: 1.5rem;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/>
                         </svg>
-                        {{ auth()->user()->role === 'murid' ? 'Presensi Harian' : 'Monitoring Presensi' }}
-                    </a>
-                </li>
+                    </li>
 
-                <li x-show="aktivitasOpen" class="{{ Request::is('presensi/izin*') ? 'active' : '' }}">
-                    <a href="{{ route('izin.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        {{ auth()->user()->role === 'murid' ? 'Pengajuan Izin/Sakit' : 'Verifikasi Izin/Sakit' }}
-                    </a>
-                </li>
-
-                <li x-show="aktivitasOpen" class="{{ Request::is('jurnal*') ? 'active' : '' }}">
-                    <a href="{{ route('jurnal.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                        </svg>
-                        Jurnal Kegiatan
-                    </a>
-                </li>
-
-                @if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
-                <li x-show="aktivitasOpen" class="{{ Request::is('kunjungan*') ? 'active' : '' }}">
-                    <a href="{{ route('kunjungan.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
-                        </svg>
-                        Kunjungan ke DUDI
-                    </a>
-                </li>
-                @endif
-
-                <li x-show="aktivitasOpen" class="{{ Request::is('penilaian*') ? 'active' : '' }}">
-                    <a href="{{ route('penilaian.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        {{ auth()->user()->role === 'murid' ? 'Nilai & Rapor PKL' : 'Penilaian PKL' }}
-                    </a>
-                </li>
-
-                <!-- Tambahan Collapsible Section -->
-                <li class="sidebar-header-text d-flex justify-content-between align-items-center px-4 pt-3 pb-1 text-uppercase font-heading" style="font-size: 11px; font-weight: 700; color: var(--text-secondary); cursor: pointer; user-select: none;" @click="tambahanOpen = !tambahanOpen">
-                    <span>Tambahan</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" :style="tambahanOpen ? 'transform: rotate(0deg); transition: transform 0.2s;' : 'transform: rotate(-90deg); transition: transform 0.2s;'" style="margin-right: 1.5rem;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </li>
-
-                @if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
-                <li x-show="tambahanOpen" class="{{ Request::is('laporan*') ? 'active' : '' }}">
-                    <a href="{{ route('laporan.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        Laporan Rekap
-                    </a>
-                </li>
-                @endif
-
-                <li x-show="tambahanOpen" class="{{ Request::is('pengumuman*') ? 'active' : '' }}">
-                    <a href="{{ route('pengumuman.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                        </svg>
-                        Pengumuman
-                    </a>
-                </li>
-
-                @if(auth()->user()->role === 'admin')
-                <li x-show="tambahanOpen" class="{{ Request::is('master/hari-libur*') ? 'active' : '' }}">
-                    <a href="{{ route('hari-libur.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
-                        Hari Libur Nasional
-                    </a>
-                </li>
-
-                <li x-show="tambahanOpen" class="{{ Request::is('setting*') ? 'active' : '' }}">
-                    <a href="{{ route('setting.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-                        </svg>
-                        Setting Sekolah
-                    </a>
-                </li>
-                
-                <li x-show="tambahanOpen" class="{{ Request::is('system*') ? 'active' : '' }}">
-                    <a href="{{ route('system.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        Audit Log & Backup
-                    </a>
-                </li>
+                    <li x-show="sistemOpen" class="{{ Request::is('laporan*') ? 'active' : '' }}">
+                        <a href="{{ route('laporan.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Laporan Rekap
+                        </a>
+                    </li>
+                    <li x-show="sistemOpen" class="{{ Request::is('pengumuman*') ? 'active' : '' }}">
+                        <a href="{{ route('pengumuman.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                            </svg>
+                            Pengumuman
+                        </a>
+                    </li>
+                    <li x-show="sistemOpen" class="{{ Request::is('master/hari-libur*') ? 'active' : '' }}">
+                        <a href="{{ route('hari-libur.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            Hari Libur Nasional
+                        </a>
+                    </li>
+                    <li x-show="sistemOpen" class="{{ Request::is('setting*') ? 'active' : '' }}">
+                        <a href="{{ route('setting.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                            </svg>
+                            Setting Sekolah
+                        </a>
+                    </li>
+                    <li x-show="sistemOpen" class="{{ Request::is('system*') ? 'active' : '' }}">
+                        <a href="{{ route('system.index') }}">
+                            <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Audit Log & Backup
+                        </a>
+                    </li>
                 @endif
             </ul>
         </nav>
@@ -495,6 +603,110 @@
             });
         });
     </script>
+
+    <!-- Mobile Bottom Navigation Bar (< 768px) -->
+    <nav class="mobile-bottom-nav" aria-label="Navigasi Cepat Mobile">
+        {{-- Murid Mobile Nav --}}
+        @if(auth()->user()->role === 'murid')
+            <a href="{{ route('dashboard') }}" class="mobile-nav-link {{ Route::is('dashboard') ? 'active' : '' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                <span>Beranda</span>
+            </a>
+            <a href="{{ route('presensi.index') }}" class="mobile-nav-link {{ Request::is('presensi') ? 'active' : '' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span>Presensi</span>
+            </a>
+            <a href="{{ route('jurnal.index') }}" class="mobile-nav-link {{ Request::is('jurnal*') ? 'active' : '' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+                <span>Jurnal</span>
+            </a>
+            <a href="{{ route('penilaian.index') }}" class="mobile-nav-link {{ Request::is('penilaian*') ? 'active' : '' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span>Nilai</span>
+            </a>
+            <a href="{{ route('profile') }}" class="mobile-nav-link {{ Request::is('profile*') ? 'active' : '' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                <span>Profil</span>
+            </a>
+        {{-- Guru Mobile Nav --}}
+        @elseif(auth()->user()->role === 'guru')
+            <a href="{{ route('dashboard') }}" class="mobile-nav-link {{ Route::is('dashboard') ? 'active' : '' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                <span>Beranda</span>
+            </a>
+            <a href="{{ route('monitoring.index') }}" class="mobile-nav-link {{ Request::is('monitoring*') ? 'active' : '' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span>Siswa</span>
+            </a>
+            <a href="{{ route('presensi.index') }}" class="mobile-nav-link {{ Request::is('presensi') ? 'active' : '' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span>Presensi</span>
+            </a>
+            <a href="{{ route('jurnal.index') }}" class="mobile-nav-link {{ Request::is('jurnal*') ? 'active' : '' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+                <span>Jurnal</span>
+            </a>
+            <a href="{{ route('profile') }}" class="mobile-nav-link {{ Request::is('profile*') ? 'active' : '' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                <span>Profil</span>
+            </a>
+        {{-- Admin Mobile Nav --}}
+        @else
+            <a href="{{ route('dashboard') }}" class="mobile-nav-link {{ Route::is('dashboard') ? 'active' : '' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                <span>Beranda</span>
+            </a>
+            <a href="{{ route('murid.index') }}" class="mobile-nav-link {{ Request::is('master/murid*') ? 'active' : '' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span>Murid</span>
+            </a>
+            <a href="{{ route('presensi.index') }}" class="mobile-nav-link {{ Request::is('presensi') ? 'active' : '' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span>Presensi</span>
+            </a>
+            <a href="{{ route('jurnal.index') }}" class="mobile-nav-link {{ Request::is('jurnal*') ? 'active' : '' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+                <span>Jurnal</span>
+            </a>
+            <a href="{{ route('profile') }}" class="mobile-nav-link {{ Request::is('profile*') ? 'active' : '' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                <span>Profil</span>
+            </a>
+        @endif
+    </nav>
 
     @yield('scripts')
 </body>
