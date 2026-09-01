@@ -64,14 +64,33 @@ class PresensiController extends Controller
             $query->where('tanggal', now()->toDateString());
         }
 
+        if ($request->filled('kelas_id')) {
+            $kelasId = $request->kelas_id;
+            $query->whereHas('penempatanPkl.murid', function($q) use ($kelasId) {
+                $q->where('kelas_id', $kelasId);
+            });
+        }
+
+        if ($request->filled('nama')) {
+            $nama = trim($request->nama);
+            $query->whereHas('penempatanPkl.murid', function($q) use ($nama) {
+                $q->where(function($sub) use ($nama) {
+                    $sub->where('nama', 'like', "%{$nama}%")
+                        ->orWhere('nis', 'like', "%{$nama}%");
+                });
+            });
+        }
+
+        $kelasList = Kelas::orderBy('nama')->get();
+
         $placementQuery = PenempatanPkl::with(['murid.kelas', 'dudi'])->where('status', 'aktif');
         if ($role === 'guru') {
             $placementQuery->where('guru_id', $guruId);
         }
         $activePlacements = $placementQuery->get();
 
-        $presensis = $query->paginate(15);
-        return view('presensi::index', compact('presensis', 'activePlacements'));
+        $presensis = $query->latest('id')->paginate(15)->withQueryString();
+        return view('presensi::index', compact('presensis', 'activePlacements', 'kelasList'));
     }
 
     /**

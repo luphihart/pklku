@@ -19,13 +19,49 @@
 
     <!-- Search / Filter Card -->
     <div class="card-premium mb-4">
-        <form action="{{ route('presensi.index') }}" method="GET" class="row g-3">
-            <div class="col-md-8">
-                <label class="form-label small fw-semibold">Pilih Tanggal Absensi</label>
+        <form action="{{ route('presensi.index') }}" method="GET" class="row g-3 align-items-end">
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label small fw-semibold">Tanggal Presensi</label>
                 <input type="date" name="tanggal" class="form-control form-control-sm" value="{{ request('tanggal', now()->toDateString()) }}">
             </div>
-            <div class="col-md-4 d-grid align-items-end">
-                <button type="submit" class="btn btn-sm btn-primary">Filter Tanggal</button>
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label small fw-semibold">Filter Kelas</label>
+                <select name="kelas_id" class="form-select form-select-sm">
+                    <option value="">-- Semua Kelas --</option>
+                    @if(isset($kelasList))
+                        @foreach($kelasList as $kelas)
+                            <option value="{{ $kelas->id }}" {{ request('kelas_id') == $kelas->id ? 'selected' : '' }}>
+                                {{ $kelas->nama }}
+                            </option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
+            <div class="col-lg-4 col-md-8">
+                <label class="form-label small fw-semibold">Cari Nama / NIS Murid</label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-light border-end-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </span>
+                    <input type="text" name="nama" class="form-control form-control-sm border-start-0 ps-0" placeholder="Ketik nama atau NIS murid..." value="{{ request('nama') }}">
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 d-flex gap-2">
+                <button type="submit" class="btn btn-sm btn-primary flex-fill font-heading">
+                    <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: inline-block; vertical-align: middle;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                    </svg>
+                    Filter
+                </button>
+                @if(request()->hasAny(['kelas_id', 'nama', 'tanggal']) && (request('kelas_id') || request('nama') || request('tanggal') != now()->toDateString()))
+                    <a href="{{ route('presensi.index') }}" class="btn btn-sm btn-outline-secondary" title="Reset Filter">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                    </a>
+                @endif
             </div>
         </form>
     </div>
