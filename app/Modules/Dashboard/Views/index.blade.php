@@ -100,8 +100,8 @@
         @else
             @php
                 $todayPres = $muridTodayPresensi;
-                $todayHoliday = $todayHoliday ?? null;
-                $isPlacementHoliday = $penempatan ? $penempatan->isPlacementHoliday() : false;
+                $todayHoliday = \App\Modules\MasterData\Models\HariLibur::getHoliday(now()->toDateString());
+                $isPlacementHoliday = $penempatan->isPlacementHoliday();
                 $isLiburShift = $todayPres && $todayPres->status_masuk === 'libur_shift';
             @endphp
 
@@ -235,8 +235,8 @@
                                         </div>
                                         <p class="text-muted small m-0 text-truncate" style="font-size: 11px; max-width: 260px;">{{ $jurnal->deskripsi_aktivitas }}</p>
                                     </div>
-                                    <span class="badge {{ $jurnal->status_verifikasi === 'disetujui' ? 'bg-success-light text-success' : ($jurnal->status_verifikasi === 'revisi' ? 'bg-warning-light text-warning' : ($jurnal->status_verifikasi === 'ditolak' ? 'bg-danger-light text-danger' : 'bg-primary-light text-primary')) }} font-heading px-2 py-1 flex-shrink-0" style="font-size: 10px;">
-                                        {{ ucfirst($jurnal->status_verifikasi ?? 'pending') }}
+                                    <span class="badge {{ $jurnal->status === 'disetujui' ? 'bg-success-light text-success' : ($jurnal->status === 'revisi' ? 'bg-warning-light text-warning' : ($jurnal->status === 'ditolak' ? 'bg-danger-light text-danger' : 'bg-primary-light text-primary')) }} font-heading px-2 py-1 flex-shrink-0" style="font-size: 10px;">
+                                        {{ ucfirst($jurnal->status) }}
                                     </span>
                                 </div>
                             @empty
