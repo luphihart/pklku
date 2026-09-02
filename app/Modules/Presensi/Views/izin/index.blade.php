@@ -38,7 +38,7 @@
                                 <small class="text-muted">s/d {{ \Carbon\Carbon::parse($p->tanggal_selesai)->format('d/m/y') }}</small>
                             </td>
                             <td>
-                                <div>{{ Str::limit($p->alasan, 50) }}</div>
+                                <div style="min-width: 200px; max-width: 360px; word-break: break-word; white-space: normal; line-height: 1.4;">{{ $p->alasan }}</div>
                                 @if($p->catatan_guru)
                                     <small class="text-danger d-block mt-1"><strong>Tanggapan Guru:</strong> {{ $p->catatan_guru }}</small>
                                 @endif
@@ -92,7 +92,32 @@
                                                     <form action="{{ route('izin.review', $p->id) }}" method="POST">
                                                         @csrf
                                                         <div class="modal-body">
-                                                            <p class="small text-muted mb-3">Tinjau izin untuk <strong>{{ $p->penempatanPkl?->murid?->nama }}</strong>.</p>
+                                                            <div class="p-3 mb-3 rounded bg-light border">
+                                                                <div class="d-flex justify-content-between mb-1">
+                                                                    <span class="small text-muted">Siswa:</span>
+                                                                    <span class="small fw-bold text-dark">{{ $p->penempatanPkl?->murid?->nama }} ({{ $p->penempatanPkl?->murid?->kelas?->nama ?? '-' }})</span>
+                                                                </div>
+                                                                <div class="d-flex justify-content-between mb-1">
+                                                                    <span class="small text-muted">Kategori:</span>
+                                                                    <span class="badge {{ $p->tipe === 'sakit' ? 'bg-danger-light text-danger' : 'bg-primary-light text-primary' }} text-capitalize">{{ $p->tipe }}</span>
+                                                                </div>
+                                                                <div class="d-flex justify-content-between mb-1">
+                                                                    <span class="small text-muted">Periode:</span>
+                                                                    <span class="small fw-semibold">{{ \Carbon\Carbon::parse($p->tanggal_mulai)->format('d/m/Y') }} s/d {{ \Carbon\Carbon::parse($p->tanggal_selesai)->format('d/m/Y') }}</span>
+                                                                </div>
+                                                                <div class="mt-2 pt-2 border-top">
+                                                                    <span class="small text-muted d-block mb-1">Alasan Pengajuan:</span>
+                                                                    <div class="small text-dark p-2 rounded bg-white border" style="white-space: pre-line; word-break: break-word;">{{ $p->alasan }}</div>
+                                                                </div>
+                                                                @if($p->surat_pendukung)
+                                                                    <div class="mt-2 pt-2 border-top d-flex justify-content-between align-items-center">
+                                                                        <span class="small text-muted">Lampiran:</span>
+                                                                        <a href="{{ asset('storage/izin/' . $p->surat_pendukung) }}" target="_blank" class="btn btn-xs btn-outline-primary font-heading">
+                                                                            Buka Lampiran Surat ↗
+                                                                        </a>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
                                                             
                                                             <div class="mb-3">
                                                                 <label for="statusSelect_{{ $p->id }}" class="form-label small fw-semibold">Pilih Keputusan</label>
@@ -155,8 +180,8 @@
         </div>
 
         @if($permissions->hasPages())
-        <div class="px-4 py-3 border-top d-flex justify-content-end" style="border-top-color: var(--border-color) !important;">
-            {{ $permissions->links() }}
+        <div class="border-top" style="border-top-color: var(--border-color) !important;">
+            {{ $permissions->withQueryString()->links() }}
         </div>
         @endif
     </div>

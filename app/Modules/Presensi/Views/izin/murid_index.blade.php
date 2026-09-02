@@ -119,7 +119,7 @@
                                              </span>
                                          </td>
                                          <td>
-                                             <div>{{ Str::limit($h->alasan, 40) }}</div>
+                                             <div style="min-width: 150px; max-width: 280px; word-break: break-word; white-space: normal; line-height: 1.4;">{{ $h->alasan }}</div>
                                              @if($h->catatan_guru)
                                                  <small class="text-danger d-block mt-1"><strong>Tanggapan Guru:</strong> {{ $h->catatan_guru }}</small>
                                              @endif
