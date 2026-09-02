@@ -253,10 +253,10 @@
                 <h6 class="fw-bold font-heading m-0 text-dark" style="font-size: 16px;">Daftar Dokumen Siswa PKL</h6>
                 <span class="text-secondary small">Unduh bundel dokumen resmi per individu siswa (Presensi, Buku Jurnal, & Rapor Nilai).</span>
             </div>
-            <form action="{{ route('laporan.index') }}" method="GET" class="d-flex gap-2">
-                <div class="input-group input-group-sm" style="width: 250px;">
+            <form action="{{ route('laporan.index') }}" method="GET" class="d-flex gap-2 w-100 w-md-auto">
+                <div class="input-group input-group-sm w-100" style="max-width: 320px;">
                     <input type="text" name="search" class="form-control form-control-sm" placeholder="Cari siswa / DUDI..." value="{{ request('search') }}">
-                    <button class="btn btn-outline-secondary" type="submit">
+                    <button class="btn btn-outline-secondary" type="submit" aria-label="Cari">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
@@ -272,8 +272,9 @@
             </form>
         </div>
 
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0" style="font-size: 13px;">
+        <!-- Desktop Table View (md and up) -->
+        <div class="table-responsive d-none d-md-block">
+            <table class="table table-hover align-middle mb-0" style="font-size: 13px; min-width: 780px;">
                 <thead class="table-light">
                     <tr>
                         <th style="width: 4%;" class="text-center">No</th>
@@ -346,8 +347,74 @@
             </table>
         </div>
 
+        <!-- Mobile Card List View (Visible on smartphone < md) -->
+        <div class="d-md-none pt-2">
+            @forelse($placements as $index => $p)
+                <div class="card p-3 mb-3 border rounded shadow-xs" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                    <!-- Student info -->
+                    <div class="d-flex justify-content-between align-items-start mb-2 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                        <div>
+                            <div class="fw-bold font-heading text-dark" style="font-size: 13.5px;">{{ $p->murid?->nama ?? 'Siswa Terhapus' }}</div>
+                            <div class="text-muted" style="font-size: 11.5px;">NIS: {{ $p->murid?->nis ?? '-' }} &bull; {{ $p->murid?->kelas?->nama ?? '-' }}</div>
+                        </div>
+                        <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 10.5px;">#{{ $placements->firstItem() + $index }}</span>
+                    </div>
+
+                    <!-- DUDI & Guru -->
+                    <div class="mb-3" style="font-size: 12px;">
+                        <div class="text-truncate mb-1">
+                            <span class="text-muted">Mitra:</span>
+                            <strong class="text-secondary">{{ $p->dudi?->nama ?? '-' }}</strong>
+                        </div>
+                        <div class="text-truncate">
+                            <span class="text-muted">Pembimbing:</span>
+                            <span class="text-secondary">{{ $p->guru?->nama ?? 'Belum ditentukan' }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Download Buttons (Mobile 3-column grid) -->
+                    <div class="row g-1.5 pt-2 border-top" style="border-top-color: var(--border-color) !important;">
+                        <div class="col-4">
+                            <a href="{{ route('laporan.murid_presensi_pdf', ['placement_id' => $p->id]) }}" class="btn btn-sm btn-outline-primary w-100 font-heading d-flex align-items-center justify-content-center gap-1 py-1 px-1" style="font-size: 11.5px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>Presensi</span>
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            <a href="{{ route('laporan.murid_jurnal_pdf', ['placement_id' => $p->id]) }}" class="btn btn-sm btn-outline-info w-100 font-heading d-flex align-items-center justify-content-center gap-1 py-1 px-1" style="font-size: 11.5px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                </svg>
+                                <span>Jurnal</span>
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            @if($p->penilaianPkl)
+                                <a href="{{ route('laporan.nilai_pdf', $p->id) }}" class="btn btn-sm btn-outline-success w-100 font-heading d-flex align-items-center justify-content-center gap-1 py-1 px-1" style="font-size: 11.5px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                                    </svg>
+                                    <span>Rapor</span>
+                                </a>
+                            @else
+                                <button type="button" class="btn btn-sm btn-outline-secondary w-100 font-heading py-1 px-1 disabled" style="font-size: 11.5px; opacity: 0.5;" title="Belum Dinilai">
+                                    <span>Rapor</span>
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="text-center py-4 text-muted small">
+                    Tidak ada data penempatan siswa yang sesuai dengan filter pencarian.
+                </div>
+            @endforelse
+        </div>
+
         @if($placements->hasPages())
-            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 mt-3 pt-3 border-top">
                 <small class="text-muted">Menampilkan {{ $placements->firstItem() }} - {{ $placements->lastItem() }} dari {{ $placements->total() }} data</small>
                 {{ $placements->links('pagination::bootstrap-5') }}
             </div>

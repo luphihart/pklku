@@ -61,34 +61,34 @@ if (!function_exists('formatAktivitas')) {
 if (!function_exists('getActivityBadge')) {
     function getActivityBadge($text) {
         if (empty($text)) {
-            return '<span class="badge bg-secondary-light text-secondary px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">⚙️ Sistem</span>';
+            return '<span class="badge bg-secondary-light text-secondary px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Sistem</span>';
         }
         // Critical / Danger actions
         if (stripos($text, 'hapus') !== false || stripos($text, 'membatalkan') !== false || stripos($text, 'wipe') !== false || stripos($text, 'kosongkan') !== false) {
-            return '<span class="badge bg-danger-light text-danger px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">⚠️ Hapus / Kritis</span>';
+            return '<span class="badge bg-danger-light text-danger px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Hapus / Kritis</span>';
         }
         if (stripos($text, 'masuk') !== false || stripos($text, 'Login') !== false) {
-            return '<span class="badge bg-success-light text-success px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">🛡️ Login</span>';
+            return '<span class="badge bg-success-light text-success px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Login</span>';
         }
         if (stripos($text, 'keluar') !== false || stripos($text, 'Logout') !== false) {
-            return '<span class="badge bg-secondary-light text-secondary px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">🚪 Logout</span>';
+            return '<span class="badge bg-secondary-light text-secondary px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Logout</span>';
         }
         if (stripos($text, 'password') !== false) {
-            return '<span class="badge bg-warning-light text-warning px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">🔑 Sandi</span>';
+            return '<span class="badge bg-warning-light text-warning px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Sandi</span>';
         }
         if (stripos($text, 'pengaturan') !== false || stripos($text, 'konfigurasi') !== false || stripos($text, 'branding') !== false) {
-            return '<span class="badge bg-indigo-light text-indigo px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">⚙️ Pengaturan</span>';
+            return '<span class="badge bg-indigo-light text-indigo px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Pengaturan</span>';
         }
         if (stripos($text, 'jurnal') !== false) {
-            return '<span class="badge bg-blue-light text-blue px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">📝 Jurnal</span>';
+            return '<span class="badge bg-primary-light text-primary px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Jurnal</span>';
         }
         if (stripos($text, 'penilaian') !== false || stripos($text, 'nilai') !== false) {
-            return '<span class="badge bg-amber-light text-amber px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">🏆 Penilaian</span>';
+            return '<span class="badge bg-amber-light text-amber px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Penilaian</span>';
         }
         if (stripos($text, 'murid') !== false || stripos($text, 'siswa') !== false || stripos($text, 'guru') !== false || stripos($text, 'dudi') !== false || stripos($text, 'industri') !== false || stripos($text, 'penempatan') !== false) {
-            return '<span class="badge bg-purple-light text-purple px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">📁 Master</span>';
+            return '<span class="badge bg-purple-light text-purple px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Master</span>';
         }
-        return '<span class="badge bg-secondary-light text-secondary px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">⚙️ Sistem</span>';
+        return '<span class="badge bg-secondary-light text-secondary px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Sistem</span>';
     }
 }
 
@@ -211,7 +211,7 @@ if (!function_exists('parseUserAgent')) {
                 </div>
 
                 <form action="{{ route('system.index') }}" method="GET" class="row g-2">
-                    <div class="col-md-5">
+                    <div class="col-12 col-md-5">
                         <label class="form-label small fw-semibold">Kata Kunci (Nama / Email / Aktivitas / IP)</label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-text bg-transparent border-end-0 text-muted">
@@ -222,7 +222,7 @@ if (!function_exists('parseUserAgent')) {
                             <input type="text" name="search" class="form-control form-control-sm border-start-0 ps-0" placeholder="Ketik kata kunci pencarian..." value="{{ request('search') }}">
                         </div>
                     </div>
-                    <div class="col-md-3 col-6">
+                    <div class="col-6 col-md-3">
                         <label class="form-label small fw-semibold">Role Pengguna</label>
                         <select name="role" class="form-select form-select-sm">
                             <option value="">-- Semua Role --</option>
@@ -232,34 +232,34 @@ if (!function_exists('parseUserAgent')) {
                             <option value="system" {{ request('role') === 'system' ? 'selected' : '' }}>Sistem Otomatis</option>
                         </select>
                     </div>
-                    <div class="col-md-4 col-6">
+                    <div class="col-6 col-md-4">
                         <label class="form-label small fw-semibold">Kategori Aktivitas</label>
                         <select name="kategori" class="form-select form-select-sm">
                             <option value="">-- Semua Kategori --</option>
-                            <option value="keamanan" {{ request('kategori') === 'keamanan' ? 'selected' : '' }}>🛡️ Keamanan & Akun (Login/Sandi)</option>
-                            <option value="jurnal" {{ request('kategori') === 'jurnal' ? 'selected' : '' }}>📝 Jurnal Kegiatan Siswa</option>
-                            <option value="penilaian" {{ request('kategori') === 'penilaian' ? 'selected' : '' }}>🏆 Penilaian & Rapor PKL</option>
-                            <option value="master" {{ request('kategori') === 'master' ? 'selected' : '' }}>📁 Master Data & Penempatan</option>
-                            <option value="setting" {{ request('kategori') === 'setting' ? 'selected' : '' }}>⚙️ Pengaturan Sistem & Branding</option>
+                            <option value="keamanan" {{ request('kategori') === 'keamanan' ? 'selected' : '' }}>Keamanan & Akun (Login/Sandi)</option>
+                            <option value="jurnal" {{ request('kategori') === 'jurnal' ? 'selected' : '' }}>Jurnal Kegiatan Siswa</option>
+                            <option value="penilaian" {{ request('kategori') === 'penilaian' ? 'selected' : '' }}>Penilaian & Rapor PKL</option>
+                            <option value="master" {{ request('kategori') === 'master' ? 'selected' : '' }}>Master Data & Penempatan</option>
+                            <option value="setting" {{ request('kategori') === 'setting' ? 'selected' : '' }}>Pengaturan Sistem & Branding</option>
                         </select>
                     </div>
-                    <div class="col-md-4 col-6">
+                    <div class="col-6 col-md-4">
                         <label class="form-label small fw-semibold">Tanggal Mulai</label>
                         <input type="date" name="tanggal_mulai" class="form-control form-control-sm" value="{{ request('tanggal_mulai') }}">
                     </div>
-                    <div class="col-md-4 col-6">
+                    <div class="col-6 col-md-4">
                         <label class="form-label small fw-semibold">Tanggal Selesai</label>
                         <input type="date" name="tanggal_selesai" class="form-control form-control-sm" value="{{ request('tanggal_selesai') }}">
                     </div>
-                    <div class="col-md-4 d-flex align-items-end gap-2">
-                        <button type="submit" class="btn btn-sm btn-primary flex-fill font-heading d-flex align-items-center justify-content-center gap-1">
+                    <div class="col-12 col-md-4 d-flex align-items-end gap-2 mt-2 mt-md-0">
+                        <button type="submit" class="btn btn-sm btn-primary flex-fill font-heading d-flex align-items-center justify-content-center gap-1 py-1.5">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
                             </svg>
                             <span>Filter</span>
                         </button>
                         @if(request()->hasAny(['search', 'role', 'kategori', 'tanggal_mulai', 'tanggal_selesai']) && (request('search') || request('role') || request('kategori') || request('tanggal_mulai') || request('tanggal_selesai')))
-                            <a href="{{ route('system.index') }}" class="btn btn-sm btn-outline-secondary font-heading d-flex align-items-center justify-content-center px-2.5" title="Reset Semua Filter">
+                            <a href="{{ route('system.index') }}" class="btn btn-sm btn-outline-secondary font-heading d-flex align-items-center justify-content-center px-2.5 py-1.5" title="Reset Semua Filter">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                                 </svg>
@@ -282,8 +282,9 @@ if (!function_exists('parseUserAgent')) {
                     </span>
                 </div>
 
-                <div class="table-responsive" style="max-height: 560px; overflow-y: auto;">
-                    <table class="table table-hover align-middle mb-0" style="color: var(--text-primary); font-size: 12.5px;">
+                <!-- Desktop Table View (md and up) -->
+                <div class="table-responsive d-none d-md-block" style="max-height: 560px; overflow-y: auto;">
+                    <table class="table table-hover align-middle mb-0" style="color: var(--text-primary); font-size: 12.5px; min-width: 780px;">
                         <thead class="table-light sticky-top" style="z-index: 2;">
                             <tr class="text-muted font-heading" style="background-color: var(--bg-canvas);">
                                 <th class="ps-4 py-3" style="width: 140px;">Waktu</th>
@@ -309,7 +310,7 @@ if (!function_exists('parseUserAgent')) {
                                         'device' => parseUserAgent($log->user_agent ?? ''),
                                         'payload' => $log->payload
                                     ];
-                                    $encodedPayload = base64_encode(json_encode($logPayloadData));
+                                    $encodedPayload = base64_encode(json_encode($logPayloadData, JSON_UNESCAPED_UNICODE));
                                 @endphp
                                 <tr>
                                     <td class="ps-4">
@@ -357,7 +358,7 @@ if (!function_exists('parseUserAgent')) {
                                         </div>
                                     </td>
                                     <td class="pe-4 text-center">
-                                        <button type="button" class="btn btn-sm btn-outline-primary p-1 px-2 btn-show-detail" title="Lihat Detail Log" data-log="{{ $encodedPayload }}">
+                                        <button type="button" class="btn btn-sm btn-outline-primary p-1 px-2 btn-show-detail" data-bs-toggle="modal" data-bs-target="#modalDetailLog" title="Lihat Detail Log" data-log="{{ $encodedPayload }}">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -379,8 +380,84 @@ if (!function_exists('parseUserAgent')) {
                     </table>
                 </div>
 
+                <!-- Mobile Card List View (Visible on smartphone < md) -->
+                <div class="d-md-none p-3">
+                    @forelse($logs as $log)
+                        @php
+                            $logPayloadData = [
+                                'id' => $log->id,
+                                'waktu' => $log->created_at ? $log->created_at->format('d M Y H:i:s') . ' WIB' : '-',
+                                'user_nama' => $log->user ? $log->user->name : 'Sistem Otomatis',
+                                'user_email' => $log->user ? $log->user->email : '-',
+                                'user_role' => $log->user ? ucfirst($log->user->role) : 'System',
+                                'aktivitas_asli' => $log->aktivitas ?? '-',
+                                'aktivitas_format' => formatAktivitas($log->aktivitas ?? ''),
+                                'ip_address' => $log->ip_address ?? '-',
+                                'user_agent' => $log->user_agent ?? '-',
+                                'device' => parseUserAgent($log->user_agent ?? ''),
+                                'payload' => $log->payload
+                            ];
+                            $encodedPayload = base64_encode(json_encode($logPayloadData, JSON_UNESCAPED_UNICODE));
+                        @endphp
+                        <div class="card p-3 mb-3 border rounded shadow-xs" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                            <!-- Top: Waktu & Role -->
+                            <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                                <div class="text-muted small" style="font-size: 11px;">
+                                    <span class="fw-semibold text-dark">{{ $log->created_at ? $log->created_at->format('d M Y, H:i') : '-' }} WIB</span>
+                                </div>
+                                <div>
+                                    @if($log->user)
+                                        @if($log->user->role === 'admin')
+                                            <span class="badge bg-danger-light text-danger fw-semibold" style="font-size: 10px;">Admin</span>
+                                        @elseif($log->user->role === 'guru')
+                                            <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 10px;">Guru</span>
+                                        @elseif($log->user->role === 'industri')
+                                            <span class="badge bg-warning-light text-warning fw-semibold" style="font-size: 10px;">Industri</span>
+                                        @else
+                                            <span class="badge bg-success-light text-success fw-semibold" style="font-size: 10px;">Siswa</span>
+                                        @endif
+                                    @else
+                                        <span class="badge bg-secondary-light text-secondary fw-semibold" style="font-size: 10px;">System</span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Pelaku -->
+                            <div class="mb-2">
+                                <div class="fw-bold text-dark font-heading" style="font-size: 13px;">{{ $log->user ? $log->user->name : 'Sistem Otomatis' }}</div>
+                                <div class="text-muted" style="font-size: 11px;">{{ $log->user ? $log->user->email : 'Proses Otomatis Backend' }}</div>
+                            </div>
+
+                            <!-- Aktivitas -->
+                            <div class="p-2.5 rounded bg-light border mb-2" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important; font-size: 12px; line-height: 1.4;">
+                                <div class="mb-1">{!! getActivityBadge($log->aktivitas) !!}</div>
+                                <div class="text-dark fw-medium">{{ formatAktivitas($log->aktivitas) }}</div>
+                            </div>
+
+                            <!-- Footer: IP & Tombol Detail -->
+                            <div class="pt-2 border-top d-flex align-items-center justify-content-between gap-2" style="border-top-color: var(--border-color) !important;">
+                                <div class="text-muted text-truncate" style="font-size: 11px; max-width: 60%;">
+                                    <span class="font-monospace text-dark">{{ $log->ip_address }}</span>
+                                    <div class="text-truncate" title="{{ parseUserAgent($log->user_agent) }}">{{ parseUserAgent($log->user_agent) }}</div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-primary font-heading d-flex align-items-center gap-1 py-1 px-2.5 btn-show-detail" data-bs-toggle="modal" data-bs-target="#modalDetailLog" data-log="{{ $encodedPayload }}" style="font-size: 12px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    <span>Detail</span>
+                                </button>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="empty-state py-4 text-center">
+                            <div class="small fw-semibold text-muted">Tidak ditemukan catatan log aktivitas sesuai filter.</div>
+                        </div>
+                    @endforelse
+                </div>
+
                 @if($logs->hasPages())
-                <div class="border-top" style="border-top-color: var(--border-color) !important;">
+                <div class="border-top px-3 py-2" style="border-top-color: var(--border-color) !important;">
                     {{ $logs->withQueryString()->links() }}
                 </div>
                 @endif
@@ -514,41 +591,64 @@ if (!function_exists('parseUserAgent')) {
 
 @section('scripts')
 <script>
-    function showLogDetail(data) {
-        document.getElementById('detail_waktu').innerText = data.waktu;
-        document.getElementById('detail_user_nama').innerText = data.user_nama;
-        document.getElementById('detail_user_email').innerText = data.user_email;
-        document.getElementById('detail_user_role').innerText = data.user_role;
+    function parseSafeJsonLog(encodedData) {
+        if (!encodedData) return {};
+        try {
+            const binString = atob(encodedData);
+            const bytes = Uint8Array.from(binString, function(m) { return m.codePointAt(0); });
+            const decoded = new TextDecoder().decode(bytes);
+            return JSON.parse(decoded);
+        } catch(e) {
+            try {
+                return JSON.parse(atob(encodedData));
+            } catch(err2) {
+                console.error("Failed to parse log payload:", err2);
+                return {};
+            }
+        }
+    }
+
+    function populateLogDetail(data) {
+        if (!data || Object.keys(data).length === 0) return;
+        
+        document.getElementById('detail_waktu').innerText = data.waktu || '-';
+        document.getElementById('detail_user_nama').innerText = data.user_nama || 'Sistem Otomatis';
+        document.getElementById('detail_user_email').innerText = data.user_email || '-';
+        document.getElementById('detail_user_role').innerText = data.user_role || 'System';
         document.getElementById('detail_ip').innerText = data.ip_address || '-';
         document.getElementById('detail_device').innerText = data.device || '-';
-        document.getElementById('detail_aktivitas').innerText = data.aktivitas_format || data.aktivitas_asli;
+        document.getElementById('detail_aktivitas').innerText = data.aktivitas_format || data.aktivitas_asli || '-';
         document.getElementById('detail_user_agent').innerText = data.user_agent || '-';
 
         const payloadEl = document.getElementById('detail_payload_json');
-        if (data.payload && Object.keys(data.payload).length > 0) {
-            payloadEl.innerText = JSON.stringify(data.payload, null, 2);
+        if (data.payload && (typeof data.payload === 'object' ? Object.keys(data.payload).length > 0 : String(data.payload).trim() !== '')) {
+            payloadEl.innerText = typeof data.payload === 'object' ? JSON.stringify(data.payload, null, 2) : String(data.payload);
             payloadEl.classList.remove('text-muted');
         } else {
             payloadEl.innerText = 'Tidak ada rekaman payload data spesifik untuk aktivitas ini.';
             payloadEl.classList.add('text-muted');
         }
-
-        const modal = new bootstrap.Modal(document.getElementById('modalDetailLog'));
-        modal.show();
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        const modalEl = document.getElementById('modalDetailLog');
+        if (modalEl) {
+            modalEl.addEventListener('show.bs.modal', function(event) {
+                const triggerBtn = event.relatedTarget || document.activeElement;
+                if (triggerBtn && triggerBtn.hasAttribute('data-log')) {
+                    const encodedData = triggerBtn.getAttribute('data-log');
+                    const data = parseSafeJsonLog(encodedData);
+                    populateLogDetail(data);
+                }
+            });
+        }
+
         document.addEventListener('click', function(e) {
             const btn = e.target.closest('.btn-show-detail');
             if (!btn) return;
-            try {
-                const encodedData = btn.getAttribute('data-log');
-                const rawJson = decodeURIComponent(escape(atob(encodedData)));
-                const data = JSON.parse(rawJson);
-                showLogDetail(data);
-            } catch(err) {
-                console.error("Failed to parse log data", err);
-            }
+            const encodedData = btn.getAttribute('data-log');
+            const data = parseSafeJsonLog(encodedData);
+            populateLogDetail(data);
         });
     });
 </script>
