@@ -3,6 +3,19 @@
 @section('title', 'Riwayat Presensi - PKLku')
 @section('page_title', 'Pemantauan Kehadiran Murid')
 
+@section('styles')
+<style>
+    .searchable-option-item:hover {
+        background-color: var(--bg-canvas, #f1f5f9) !important;
+    }
+    .searchable-option-item.active-selected {
+        background-color: rgba(79, 70, 229, 0.12) !important;
+        color: var(--accent-primary, #4f46e5) !important;
+        font-weight: 600;
+    }
+</style>
+@endsection
+
 @section('content')
 <div class="container-fluid p-0">
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
@@ -225,15 +238,46 @@
                 @csrf
                 <div class="modal-body text-start">
                     <div class="mb-3">
-                        <label for="penempatan_pkl_id" class="form-label small fw-semibold">Pilih Murid & DUDI</label>
-                        <select name="penempatan_pkl_id" id="penempatan_pkl_id" class="form-select form-select-sm" required>
-                            <option value="">-- Pilih Murid --</option>
-                            @foreach($activePlacements as $item)
-                                <option value="{{ $item->id }}">
-                                    {{ $item->murid->nama }} ({{ $item->murid->kelas->nama }}) - {{ $item->dudi->nama }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <label class="form-label small fw-semibold">Pilih Murid & DUDI</label>
+                        <div class="searchable-select-wrapper position-relative" id="muridSearchWrapper">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-transparent border-end-0 text-muted">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    </svg>
+                                </span>
+                                <input type="text" id="muridSearchInput" class="form-control form-control-sm border-start-0 ps-0" placeholder="Ketik nama murid, NIS, kelas, atau DUDI..." autocomplete="off">
+                                <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" id="muridDropdownToggle" tabindex="-1"></button>
+                            </div>
+                            
+                            <input type="hidden" name="penempatan_pkl_id" id="penempatan_pkl_id" required>
+
+                            <div class="searchable-options-list shadow border rounded mt-1 position-absolute w-100" id="muridOptionsList" style="display: none; max-height: 220px; overflow-y: auto; z-index: 1060; background-color: var(--bg-card, #ffffff); border-color: var(--border-color, #e2e8f0);">
+                                @foreach($activePlacements as $item)
+                                    <div class="searchable-option-item px-3 py-2 border-bottom small" 
+                                         data-value="{{ $item->id }}" 
+                                         data-label="{{ $item->murid?->nama ?? 'Siswa' }}" 
+                                         data-nis="{{ $item->murid?->nis ?? '' }}"
+                                         data-kelas="{{ $item->murid?->kelas?->nama ?? '' }}"
+                                         data-dudi="{{ $item->dudi?->nama ?? '' }}"
+                                         style="cursor: pointer;">
+                                        <div class="d-flex justify-content-between align-items-center mb-0.5">
+                                            <span class="fw-semibold text-dark">{{ $item->murid?->nama ?? 'Siswa' }}</span>
+                                            @if($item->murid?->kelas)
+                                                <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 10.5px;">{{ $item->murid->kelas->nama }}</span>
+                                            @endif
+                                        </div>
+                                        <div class="text-muted small d-flex justify-content-between" style="font-size: 11px;">
+                                            <span>NIS: {{ $item->murid?->nis ?? '-' }}</span>
+                                            <span class="text-secondary fw-medium">🏢 {{ $item->dudi?->nama ?? '-' }}</span>
+                                        </div>
+                                    </div>
+                                @endforeach
+                                <div class="no-options-found px-3 py-3 text-muted small text-center" style="display: none;">
+                                    Data murid atau DUDI tidak ditemukan
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="tanggal" class="form-label small fw-semibold">Tanggal</label>
@@ -361,6 +405,95 @@
         document.getElementById('edit_jam_pulang').value = p.jam_pulang ? p.jam_pulang.substring(0, 5) : '';
         document.getElementById('edit_status_pulang').value = p.status_pulang || '';
     }
+
+    // Searchable select for Murid & DUDI in Tambah Presensi Manual
+    document.addEventListener('DOMContentLoaded', function() {
+        const input = document.getElementById('muridSearchInput');
+        const toggle = document.getElementById('muridDropdownToggle');
+        const hidden = document.getElementById('penempatan_pkl_id');
+        const list = document.getElementById('muridOptionsList');
+        const wrapper = document.getElementById('muridSearchWrapper');
+        if (!input || !list || !hidden) return;
+
+        const items = list.querySelectorAll('.searchable-option-item');
+        const noResult = list.querySelector('.no-options-found');
+
+        function filterItems(query) {
+            const q = query.toLowerCase().trim();
+            let visible = 0;
+            items.forEach(item => {
+                const name = (item.dataset.label || '').toLowerCase();
+                const nis = (item.dataset.nis || '').toLowerCase();
+                const kelas = (item.dataset.kelas || '').toLowerCase();
+                const dudi = (item.dataset.dudi || '').toLowerCase();
+                if (!q || name.includes(q) || nis.includes(q) || kelas.includes(q) || dudi.includes(q)) {
+                    item.style.display = '';
+                    visible++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            if (noResult) noResult.style.display = visible === 0 ? '' : 'none';
+        }
+
+        input.addEventListener('input', function() {
+            list.style.display = 'block';
+            hidden.value = ''; // clear selection if user modifies text
+            filterItems(this.value);
+        });
+
+        input.addEventListener('focus', function() {
+            list.style.display = 'block';
+            filterItems(this.value);
+        });
+
+        if (toggle) {
+            toggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                list.style.display = list.style.display === 'block' ? 'none' : 'block';
+                if (list.style.display === 'block') {
+                    filterItems(input.value);
+                    input.focus();
+                }
+            });
+        }
+
+        items.forEach(item => {
+            item.addEventListener('click', function() {
+                const val = this.dataset.value;
+                const label = this.dataset.label;
+                const kelas = this.dataset.kelas;
+                const dudi = this.dataset.dudi;
+                hidden.value = val;
+                input.value = `${label} (${kelas}) - ${dudi}`;
+                list.style.display = 'none';
+
+                items.forEach(i => i.classList.remove('active-selected'));
+                this.classList.add('active-selected');
+            });
+        });
+
+        document.addEventListener('click', function(e) {
+            if (wrapper && !wrapper.contains(e.target)) {
+                list.style.display = 'none';
+            }
+        });
+
+        // Reset when modal closes/opens
+        const modalEl = document.getElementById('modalTambahManual');
+        if (modalEl) {
+            modalEl.addEventListener('hidden.bs.modal', function() {
+                input.value = '';
+                hidden.value = '';
+                list.style.display = 'none';
+                items.forEach(i => {
+                    i.style.display = '';
+                    i.classList.remove('active-selected');
+                });
+                if (noResult) noResult.style.display = 'none';
+            });
+        }
+    });
 </script>
 @endif
 @endsection
