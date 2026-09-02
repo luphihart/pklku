@@ -230,17 +230,9 @@
         <!-- Kehadiran Hari Ini -->
         <div class="col-md-8 mb-4">
             <div class="card-premium h-100">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                        <h5 class="fw-bold font-heading m-0 text-dark dark-text-light">Kehadiran Hari Ini</h5>
-                        <small class="text-muted" style="font-size: 11.5px;">{{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }} &bull; Total {{ $attendance['total_pkl'] ?? 0 }} Siswa Aktif</small>
-                    </div>
-                    <a href="{{ route('presensi.index') }}" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 font-heading" style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px;" aria-label="Lihat Pemantauan Presensi Lengkap">
-                        <span>Monitoring Detail</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                        </svg>
-                    </a>
+                <div class="mb-3">
+                    <h5 class="fw-bold font-heading m-0 text-dark dark-text-light">Kehadiran Hari Ini</h5>
+                    <small class="text-muted" style="font-size: 11.5px;">{{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }} &bull; Total {{ $attendance['total_pkl'] ?? 0 }} Siswa Aktif</small>
                 </div>
 
                 <div class="row g-2 mt-1">
@@ -718,9 +710,13 @@
             markers.push(marker);
         });
 
-        // Draw student presensi markers (only for Guru)
-        if (isGuru && todayPresensi && todayPresensi.length > 0) {
-            todayPresensi.forEach(presensi => {
+        // Draw student presensi markers (for Guru and Admin)
+        const presensiList = Array.isArray(todayPresensi) 
+            ? todayPresensi 
+            : Object.values(todayPresensi || {});
+
+        if (presensiList && presensiList.length > 0) {
+            presensiList.forEach(presensi => {
                 const placement = placements.find(pl => String(pl.id) === String(presensi.penempatan_pkl_id));
                 if (placement) {
                     const studentName = placement.murid ? placement.murid.nama : 'Siswa';
@@ -732,10 +728,11 @@
                         const checkinLng = parseFloat(presensi.lng_masuk);
                         
                         if (!isNaN(checkinLat) && !isNaN(checkinLng) && checkinLat !== 0) {
+                            let statusText = presensi.status_masuk === 'terlambat' ? 'Terlambat' : (presensi.status_masuk === 'libur_shift' ? 'Libur Shift' : (presensi.status_masuk === 'alpha' ? 'Alpha' : 'Tepat Waktu'));
                             let checkinTooltip = `<div class="p-1">` +
-                                                 `<strong>${studentName}</strong> <small class="text-muted">(${kelasName})</small><br>` +
-                                                 `<span class="badge bg-success-soft mt-1 mb-1">Presensi Masuk</span><br>` +
-                                                 `<small class="text-muted">Jam: <strong>${presensi.jam_masuk || '-'}</strong> | Status: <strong>${presensi.status_masuk ? presensi.status_masuk.replace('_', ' ') : '-'}</strong></small>` +
+                                                 `<strong style="color: var(--accent-primary); font-size: 12px;">${studentName}</strong> <small class="text-muted">(${kelasName})</small><br>` +
+                                                 `<span class="badge bg-success-light text-success mt-1 mb-1" style="font-size: 10px;">Presensi Masuk</span><br>` +
+                                                 `<small class="text-muted">Jam: <strong>${presensi.jam_masuk ? presensi.jam_masuk.substring(0,5) : '-'}</strong> | Status: <strong>${statusText}</strong></small>` +
                                                  `</div>`;
                             
                             const checkinMarker = L.marker([checkinLat, checkinLng], { icon: studentIcon }).addTo(map)
@@ -752,9 +749,9 @@
                         
                         if (!isNaN(checkoutLat) && !isNaN(checkoutLng) && checkoutLat !== 0) {
                             let checkoutTooltip = `<div class="p-1">` +
-                                                  `<strong>${studentName}</strong> <small class="text-muted">(${kelasName})</small><br>` +
-                                                  `<span class="badge bg-danger-soft mt-1 mb-1">Presensi Pulang</span><br>` +
-                                                  `<small class="text-muted">Jam: <strong>${presensi.jam_pulang || '-'}</strong> | Status: <strong>${presensi.status_pulang ? presensi.status_pulang.replace('_', ' ') : '-'}</strong></small>` +
+                                                  `<strong style="color: var(--accent-primary); font-size: 12px;">${studentName}</strong> <small class="text-muted">(${kelasName})</small><br>` +
+                                                  `<span class="badge bg-warning-light text-warning mt-1 mb-1" style="font-size: 10px;">Presensi Pulang</span><br>` +
+                                                  `<small class="text-muted">Jam: <strong>${presensi.jam_pulang ? presensi.jam_pulang.substring(0,5) : '-'}</strong></small>` +
                                                   `</div>`;
                             
                             const checkoutMarker = L.marker([checkoutLat, checkoutLng], { icon: studentIcon }).addTo(map)
