@@ -21,19 +21,52 @@
                 <div class="mb-3">
                     <label for="deskripsi_aktivitas" class="form-label small fw-semibold mb-1">Rincian Aktivitas Harian</label>
 
-                    <!-- Panduan Penulisan 5W + 1H -->
-                    <div class="p-2.5 px-3 mb-2 rounded border" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;">
-                        <div class="fw-bold text-dark mb-1.5 d-flex align-items-center gap-1" style="font-size: 13px;">
-                            <span>💡</span>
-                            <span>Panduan Penulisan (5W + 1H):</span>
+                    <!-- Panduan Penulisan 5W + 1H (Symmetrical 2-Column Grid) -->
+                    <div class="p-2.5 px-3 mb-2 rounded-3 border" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div class="fw-bold text-dark font-heading d-flex align-items-center gap-1" style="font-size: 12.5px;">
+                                <span>💡</span>
+                                <span>Panduan Penulisan (5W + 1H):</span>
+                            </div>
+                            <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 10px;">6 Unsur Pokok</span>
                         </div>
-                        <div class="d-flex flex-wrap gap-1.5" style="font-size: 12.5px;">
-                            <span class="badge bg-white text-dark border px-2 py-1.5 shadow-xs"><strong class="text-primary">What:</strong> Tugas/Materi</span>
-                            <span class="badge bg-white text-dark border px-2 py-1.5 shadow-xs"><strong class="text-primary">Why:</strong> Tujuan</span>
-                            <span class="badge bg-white text-dark border px-2 py-1.5 shadow-xs"><strong class="text-primary">Where:</strong> Lokasi/Tools</span>
-                            <span class="badge bg-white text-dark border px-2 py-1.5 shadow-xs"><strong class="text-primary">When:</strong> Waktu</span>
-                            <span class="badge bg-white text-dark border px-2 py-1.5 shadow-xs"><strong class="text-primary">Who:</strong> Pembimbing</span>
-                            <span class="badge bg-white text-dark border px-2 py-1.5 shadow-xs"><strong class="text-primary">How:</strong> Langkah & Hasil</span>
+                        <div class="row g-1.5" style="font-size: 11.5px;">
+                            <div class="col-6">
+                                <div class="p-1.5 px-2 rounded border d-flex align-items-center gap-1 shadow-xs" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                                    <strong class="text-primary">What:</strong>
+                                    <span class="text-secondary text-truncate">Tugas / Materi</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-1.5 px-2 rounded border d-flex align-items-center gap-1 shadow-xs" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                                    <strong class="text-primary">Why:</strong>
+                                    <span class="text-secondary text-truncate">Tujuan / Manfaat</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-1.5 px-2 rounded border d-flex align-items-center gap-1 shadow-xs" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                                    <strong class="text-primary">Where:</strong>
+                                    <span class="text-secondary text-truncate">Lokasi / Tools</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-1.5 px-2 rounded border d-flex align-items-center gap-1 shadow-xs" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                                    <strong class="text-primary">When:</strong>
+                                    <span class="text-secondary text-truncate">Waktu / Jam</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-1.5 px-2 rounded border d-flex align-items-center gap-1 shadow-xs" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                                    <strong class="text-primary">Who:</strong>
+                                    <span class="text-secondary text-truncate">Pembimbing</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-1.5 px-2 rounded border d-flex align-items-center gap-1 shadow-xs" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                                    <strong class="text-primary">How:</strong>
+                                    <span class="text-secondary text-truncate">Langkah & Hasil</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

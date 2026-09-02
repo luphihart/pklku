@@ -12,39 +12,39 @@
 
     <!-- Filter & Search Card -->
     <div class="card-premium mb-4">
-        <!-- Quick Status Pills -->
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
-            <div class="d-flex flex-wrap gap-2 align-items-center">
-                <span class="small fw-bold text-muted font-heading me-1">Status:</span>
-                <a href="{{ route('jurnal.index', request()->except('status')) }}" class="btn btn-xs font-heading {{ !request('status') ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
+        <!-- Quick Status Pills (Horizontally scrollable on mobile) -->
+        <div class="d-flex align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom flex-wrap" style="border-bottom-color: var(--border-color) !important;">
+            <div class="d-flex align-items-center gap-1.5 overflow-x-auto no-scrollbar py-1" style="white-space: nowrap; -webkit-overflow-scrolling: touch; max-width: 100%;">
+                <span class="small fw-bold text-muted font-heading me-1 flex-shrink-0">Status:</span>
+                <a href="{{ route('jurnal.index', request()->except('status')) }}" class="btn btn-xs font-heading flex-shrink-0 {{ !request('status') ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
                     Semua
                 </a>
-                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'pending'])) }}" class="btn btn-xs font-heading {{ request('status') === 'pending' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
+                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'pending'])) }}" class="btn btn-xs font-heading flex-shrink-0 {{ request('status') === 'pending' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
                     Menunggu Verifikasi
                 </a>
-                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'disetujui'])) }}" class="btn btn-xs font-heading {{ request('status') === 'disetujui' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
+                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'disetujui'])) }}" class="btn btn-xs font-heading flex-shrink-0 {{ request('status') === 'disetujui' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
                     Disetujui
                 </a>
-                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'revisi'])) }}" class="btn btn-xs font-heading {{ request('status') === 'revisi' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
+                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'revisi'])) }}" class="btn btn-xs font-heading flex-shrink-0 {{ request('status') === 'revisi' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
                     Butuh Revisi
                 </a>
-                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'ditolak'])) }}" class="btn btn-xs font-heading {{ request('status') === 'ditolak' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
+                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'ditolak'])) }}" class="btn btn-xs font-heading flex-shrink-0 {{ request('status') === 'ditolak' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
                     Ditolak
                 </a>
             </div>
-            <span class="badge bg-primary-light text-primary font-heading px-2.5 py-1" style="font-size: 11px;">
+            <span class="badge bg-primary-light text-primary font-heading px-2.5 py-1 flex-shrink-0 ms-auto" style="font-size: 11px;">
                 Total: {{ $journals->total() }} Jurnal
             </span>
         </div>
 
-        <!-- Filter Form -->
-        <form action="{{ route('jurnal.index') }}" method="GET" class="row g-2 align-items-end">
+        <!-- Filter Form (Organized grid) -->
+        <form action="{{ route('jurnal.index') }}" method="GET" class="row g-2">
             @if(request('status'))
                 <input type="hidden" name="status" value="{{ request('status') }}">
             @endif
 
-            <div class="col-md-4">
-                <label class="form-label small fw-semibold">Cari Nama Siswa / NIS / DUDI / Isi Laporan</label>
+            <div class="col-12 col-md-5">
+                <label class="form-label small fw-semibold mb-1">Cari Nama Siswa / NIS / DUDI / Laporan</label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-transparent border-end-0 text-muted">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -55,10 +55,10 @@
                 </div>
             </div>
 
-            <div class="col-md-3 col-6">
-                <label class="form-label small fw-semibold">Pilih Kelas</label>
+            <div class="col-6 col-md-2">
+                <label class="form-label small fw-semibold mb-1">Pilih Kelas</label>
                 <select name="kelas_id" class="form-select form-select-sm">
-                    <option value="">-- Semua Kelas --</option>
+                    <option value="">-- Semua --</option>
                     @foreach($kelasList as $kelas)
                         <option value="{{ $kelas->id }}" {{ (string)request('kelas_id') === (string)$kelas->id ? 'selected' : '' }}>
                             {{ $kelas->nama }}
@@ -67,24 +67,24 @@
                 </select>
             </div>
 
-            <div class="col-md-2 col-6">
-                <label class="form-label small fw-semibold">Tanggal Mulai</label>
+            <div class="col-6 col-md-2">
+                <label class="form-label small fw-semibold mb-1">Tanggal Mulai</label>
                 <input type="date" name="tanggal_mulai" class="form-control form-control-sm" value="{{ request('tanggal_mulai') }}">
             </div>
 
-            <div class="col-md-2 col-6">
-                <label class="form-label small fw-semibold">Tanggal Selesai</label>
+            <div class="col-6 col-md-2">
+                <label class="form-label small fw-semibold mb-1">Tanggal Selesai</label>
                 <input type="date" name="tanggal_selesai" class="form-control form-control-sm" value="{{ request('tanggal_selesai') }}">
             </div>
 
-            <div class="col-md-1 col-6 d-flex gap-1">
-                <button type="submit" class="btn btn-sm btn-primary font-heading d-flex align-items-center justify-content-center flex-fill" title="Filter Jurnal" style="min-height: 31px;">
+            <div class="col-6 col-md-1 d-flex align-items-end gap-1">
+                <button type="submit" class="btn btn-sm btn-primary font-heading d-flex align-items-center justify-content-center flex-fill" title="Filter Jurnal" style="height: 31px;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
                     </svg>
                 </button>
                 @if(request()->hasAny(['search', 'nama', 'kelas_id', 'tanggal_mulai', 'tanggal_selesai', 'status']) && (request('search') || request('nama') || request('kelas_id') || request('tanggal_mulai') || request('tanggal_selesai') || request('status')))
-                    <a href="{{ route('jurnal.index') }}" class="btn btn-sm btn-outline-secondary font-heading d-flex align-items-center justify-content-center" title="Reset Semua Filter" style="min-height: 31px; width: 34px;">
+                    <a href="{{ route('jurnal.index') }}" class="btn btn-sm btn-outline-secondary font-heading d-flex align-items-center justify-content-center" title="Reset Semua Filter" style="height: 31px; width: 34px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                         </svg>
@@ -298,63 +298,64 @@
                 @endif
 
                 <!-- Footer: Bukti & Tombol Aksi -->
-                <div class="d-flex justify-content-between align-items-center pt-2 border-top flex-wrap gap-2" style="border-top-color: var(--border-color) !important;">
-                    <!-- Foto Bukti -->
-                    <div>
+                <div class="pt-2.5 border-top d-flex flex-column gap-2" style="border-top-color: var(--border-color) !important;">
+                    <!-- Row 1: Bukti Kegiatan Info / Link -->
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="text-muted small" style="font-size: 11.5px;">Bukti Lampiran:</span>
                         @if($j->foto_kegiatan)
                             @php
                                 $isPdf = Str::endsWith(strtolower($j->foto_kegiatan), '.pdf');
                             @endphp
-                            <a href="{{ asset('storage/jurnal/' . $j->foto_kegiatan) }}" target="_blank" class="btn btn-xs btn-outline-secondary font-heading d-flex align-items-center gap-1.5 py-1 px-2.5">
+                            <a href="{{ asset('storage/jurnal/' . $j->foto_kegiatan) }}" target="_blank" class="badge bg-light text-dark border d-flex align-items-center gap-1.5 text-decoration-none py-1.5 px-2.5" style="border-color: var(--border-color) !important;">
                                 @if($isPdf)
-                                    <span class="badge bg-danger text-white" style="font-size: 9.5px;">PDF</span>
-                                    <span style="font-size: 11.5px;">Lihat Dokumen</span>
+                                    <span class="badge bg-danger text-white p-0.5" style="font-size: 9px;">PDF</span>
+                                    <span class="fw-semibold" style="font-size: 11px;">Buka Dokumen PDF ↗</span>
                                 @else
-                                    <img src="{{ asset('storage/jurnal/' . $j->foto_kegiatan) }}" class="rounded border" width="22" height="22" style="object-fit: cover;" alt="Bukti Foto">
-                                    <span style="font-size: 11.5px;">Lihat Bukti Foto ↗</span>
+                                    <img src="{{ asset('storage/jurnal/' . $j->foto_kegiatan) }}" class="rounded border" width="18" height="18" style="object-fit: cover;" alt="Bukti Foto">
+                                    <span class="fw-semibold" style="font-size: 11px;">Buka Foto Bukti ↗</span>
                                 @endif
                             </a>
                         @else
-                            <small class="text-muted" style="font-size: 11px;">Tanpa lampiran</small>
+                            <span class="text-muted small" style="font-size: 11px;">(Tidak ada lampiran)</span>
                         @endif
                     </div>
 
-                    <!-- Tombol Aksi Mobile -->
-                    <div class="d-flex gap-1.5 align-items-center ms-auto">
+                    <!-- Row 2: Tombol Aksi Guru -->
+                    <div class="d-flex gap-1.5 align-items-center w-100 pt-1.5 border-top" style="border-top-style: dashed !important; border-top-color: var(--border-color) !important;">
                         @if(auth()->user()->role === 'guru' || auth()->user()->role === 'admin')
                             @if($j->status_verifikasi === 'pending')
-                                <button class="btn btn-sm btn-primary font-heading d-flex align-items-center gap-1 px-3 py-1.5" data-bs-toggle="modal" data-bs-target="#reviewModal_{{ $j->id }}" style="font-size: 12.5px;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <button class="btn btn-sm btn-primary font-heading flex-grow-1 d-flex align-items-center justify-content-center gap-1.5 py-1.5" data-bs-toggle="modal" data-bs-target="#reviewModal_{{ $j->id }}" style="font-size: 13px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    <span>Tinjau / Verifikasi</span>
+                                    <span>Tinjau & Verifikasi</span>
                                 </button>
                             @else
                                 <!-- Batalkan Verifikasi -->
-                                <form action="{{ route('jurnal.cancel_verify', $j->id) }}" method="POST" id="cancelVerifyFormMob_{{ $j->id }}" style="display: inline-block;">
+                                <form action="{{ route('jurnal.cancel_verify', $j->id) }}" method="POST" id="cancelVerifyFormMob_{{ $j->id }}" class="flex-grow-1">
                                     @csrf
-                                    <button type="button" class="btn btn-sm btn-outline-warning d-flex align-items-center gap-1 px-2 py-1" title="Batalkan Verifikasi" onclick="confirmCancelVerify({{ $j->id }}, '{{ addslashes($j->penempatanPkl?->murid?->nama ?? 'siswa') }}', 'cancelVerifyFormMob_')">
+                                    <button type="button" class="btn btn-sm btn-outline-warning w-100 d-flex align-items-center justify-content-center gap-1 py-1.5" title="Batalkan Verifikasi" onclick="confirmCancelVerify({{ $j->id }}, '{{ addslashes($j->penempatanPkl?->murid?->nama ?? 'siswa') }}', 'cancelVerifyFormMob_')">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
                                         </svg>
-                                        <span style="font-size: 11.5px;">Batal</span>
+                                        <span style="font-size: 12px;">Batal Verif</span>
                                     </button>
                                 </form>
 
                                 <!-- Ubah Keputusan -->
-                                <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 px-2 py-1" data-bs-toggle="modal" data-bs-target="#reviewModal_{{ $j->id }}" title="Ubah Keputusan">
+                                <button class="btn btn-sm btn-outline-secondary flex-grow-1 d-flex align-items-center justify-content-center gap-1 py-1.5" data-bs-toggle="modal" data-bs-target="#reviewModal_{{ $j->id }}" title="Ubah Keputusan">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                     </svg>
-                                    <span style="font-size: 11.5px;">Ubah</span>
+                                    <span style="font-size: 12px;">Ubah</span>
                                 </button>
                             @endif
 
-                            <form action="{{ route('jurnal.destroy', $j->id) }}" method="POST" id="deleteJurnalFormMob_{{ $j->id }}" style="display: inline-block;">
+                            <form action="{{ route('jurnal.destroy', $j->id) }}" method="POST" id="deleteJurnalFormMob_{{ $j->id }}">
                                 @csrf
                                 @method('DELETE')
-                                <button type="button" class="btn btn-sm btn-outline-danger p-1 px-2" title="Hapus Jurnal" onclick="window.confirmDelete('deleteJurnalFormMob_{{ $j->id }}', 'jurnal kegiatan {{ addslashes($j->penempatanPkl?->murid?->nama ?? 'siswa') }}')">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <button type="button" class="btn btn-sm btn-outline-danger py-1.5 px-2.5" title="Hapus Jurnal" onclick="window.confirmDelete('deleteJurnalFormMob_{{ $j->id }}', 'jurnal kegiatan {{ addslashes($j->penempatanPkl?->murid?->nama ?? 'siswa') }}')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                     </svg>
                                 </button>

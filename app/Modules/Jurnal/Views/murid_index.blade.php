@@ -34,19 +34,52 @@
                         <div class="mb-3">
                             <label for="deskripsi_aktivitas" class="form-label font-heading fw-semibold text-secondary mb-1" style="font-size: 13px;">Rincian Aktivitas Harian</label>
                             
-                            <!-- Panduan Penulisan 5W + 1H -->
-                            <div class="p-2.5 px-3 mb-2 rounded border" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;">
-                                <div class="fw-bold text-dark mb-1.5 d-flex align-items-center gap-1" style="font-size: 13px;">
-                                    <span>💡</span>
-                                    <span>Panduan Penulisan (5W + 1H):</span>
+                            <!-- Panduan Penulisan 5W + 1H (Symmetrical 2-Column Grid) -->
+                            <div class="p-2.5 px-3 mb-2 rounded-3 border" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <div class="fw-bold text-dark font-heading d-flex align-items-center gap-1" style="font-size: 12.5px;">
+                                        <span>💡</span>
+                                        <span>Panduan Penulisan (5W + 1H):</span>
+                                    </div>
+                                    <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 10px;">6 Unsur Pokok</span>
                                 </div>
-                                <div class="d-flex flex-wrap gap-1.5" style="font-size: 12.5px;">
-                                    <span class="badge bg-white text-dark border px-2 py-1.5 shadow-xs"><strong class="text-primary">What:</strong> Tugas/Materi</span>
-                                    <span class="badge bg-white text-dark border px-2 py-1.5 shadow-xs"><strong class="text-primary">Why:</strong> Tujuan</span>
-                                    <span class="badge bg-white text-dark border px-2 py-1.5 shadow-xs"><strong class="text-primary">Where:</strong> Lokasi/Tools</span>
-                                    <span class="badge bg-white text-dark border px-2 py-1.5 shadow-xs"><strong class="text-primary">When:</strong> Waktu</span>
-                                    <span class="badge bg-white text-dark border px-2 py-1.5 shadow-xs"><strong class="text-primary">Who:</strong> Pembimbing</span>
-                                    <span class="badge bg-white text-dark border px-2 py-1.5 shadow-xs"><strong class="text-primary">How:</strong> Langkah & Hasil</span>
+                                <div class="row g-1.5" style="font-size: 11.5px;">
+                                    <div class="col-6">
+                                        <div class="p-1.5 px-2 rounded border d-flex align-items-center gap-1 shadow-xs" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                                            <strong class="text-primary">What:</strong>
+                                            <span class="text-secondary text-truncate">Tugas / Materi</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-1.5 px-2 rounded border d-flex align-items-center gap-1 shadow-xs" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                                            <strong class="text-primary">Why:</strong>
+                                            <span class="text-secondary text-truncate">Tujuan / Manfaat</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-1.5 px-2 rounded border d-flex align-items-center gap-1 shadow-xs" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                                            <strong class="text-primary">Where:</strong>
+                                            <span class="text-secondary text-truncate">Lokasi / Tools</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-1.5 px-2 rounded border d-flex align-items-center gap-1 shadow-xs" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                                            <strong class="text-primary">When:</strong>
+                                            <span class="text-secondary text-truncate">Waktu / Jam</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-1.5 px-2 rounded border d-flex align-items-center gap-1 shadow-xs" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                                            <strong class="text-primary">Who:</strong>
+                                            <span class="text-secondary text-truncate">Pembimbing</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-1.5 px-2 rounded border d-flex align-items-center gap-1 shadow-xs" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                                            <strong class="text-primary">How:</strong>
+                                            <span class="text-secondary text-truncate">Langkah & Hasil</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -235,28 +268,28 @@
                                 @endif
 
                                 <!-- Footer Bukti & Edit -->
-                                <div class="d-flex justify-content-between align-items-center pt-2 border-top flex-wrap gap-2" style="border-top-color: var(--border-color) !important;">
+                                <div class="pt-2 border-top d-flex align-items-center justify-content-between gap-2" style="border-top-color: var(--border-color) !important;">
                                     <div>
                                         @if($j->foto_kegiatan)
                                             @php
                                                 $isPdf = Str::endsWith(strtolower($j->foto_kegiatan), '.pdf');
                                             @endphp
-                                            <a href="{{ asset('storage/jurnal/' . $j->foto_kegiatan) }}" target="_blank" class="btn btn-xs btn-outline-secondary font-heading d-flex align-items-center gap-1.5 py-1 px-2.5">
+                                            <a href="{{ asset('storage/jurnal/' . $j->foto_kegiatan) }}" target="_blank" class="badge bg-light text-dark border d-flex align-items-center gap-1.5 text-decoration-none py-1.5 px-2.5" style="border-color: var(--border-color) !important;">
                                                 @if($isPdf)
-                                                    <span class="badge bg-danger text-white" style="font-size: 9.5px;">PDF</span>
-                                                    <span style="font-size: 11.5px;">Lihat Dokumen</span>
+                                                    <span class="badge bg-danger text-white p-0.5" style="font-size: 9px;">PDF</span>
+                                                    <span class="fw-semibold" style="font-size: 11px;">Buka Dokumen PDF ↗</span>
                                                 @else
-                                                    <img src="{{ asset('storage/jurnal/' . $j->foto_kegiatan) }}" class="rounded border" width="22" height="22" style="object-fit: cover;" alt="Bukti Kegiatan">
-                                                    <span style="font-size: 11.5px;">Lihat Foto ↗</span>
+                                                    <img src="{{ asset('storage/jurnal/' . $j->foto_kegiatan) }}" class="rounded border" width="18" height="18" style="object-fit: cover;" alt="Bukti Kegiatan">
+                                                    <span class="fw-semibold" style="font-size: 11px;">Buka Foto Bukti ↗</span>
                                                 @endif
                                             </a>
                                         @else
-                                            <small class="text-muted" style="font-size: 11px;">Tanpa lampiran</small>
+                                            <span class="text-muted small" style="font-size: 11px;">Tanpa lampiran</span>
                                         @endif
                                     </div>
 
                                     @if(in_array($j->status_verifikasi, ['pending', 'revisi']))
-                                        <a href="{{ route('jurnal.edit', $j->id) }}" class="btn btn-sm btn-outline-warning font-heading d-flex align-items-center gap-1 px-2.5 py-1" style="font-size: 12px;">
+                                        <a href="{{ route('jurnal.edit', $j->id) }}" class="btn btn-sm btn-outline-warning font-heading d-flex align-items-center gap-1 px-3 py-1" style="font-size: 12px;">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                             </svg>
