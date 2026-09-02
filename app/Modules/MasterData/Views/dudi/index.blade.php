@@ -48,8 +48,8 @@
             </div>
             <div class="col-md-4 col-lg-3">
                 <select name="sort" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="asc" {{ request('sort', 'asc') == 'asc' ? 'selected' : '' }}>Urutan Nama: A ➔ Z (Abjad)</option>
-                    <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Urutan Nama: Z ➔ A (Terbalik)</option>
+                    <option value="asc" {{ request('sort', 'asc') == 'asc' ? 'selected' : '' }}>Nama: A - Z (Abjad)</option>
+                    <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Nama: Z - A (Terbalik)</option>
                 </select>
             </div>
             <div class="col-md-2 col-lg-4 d-flex gap-2">

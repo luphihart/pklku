@@ -142,7 +142,7 @@
         <form action="{{ route('penempatan.destroy_bulk') }}" method="POST" id="bulkDeleteForm">
             @csrf
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0" style="color: var(--text-primary);">
+                <table class="table table-hover align-middle mb-0" style="min-width: 850px; color: var(--text-primary);">
                     <thead class="table-light" style="background-color: var(--bg-canvas);">
                         <tr class="font-heading" style="font-size: 13px; font-weight: 600;">
                             <th class="ps-4" style="width: 40px;"><input type="checkbox" id="selectAll"></th>

@@ -61,10 +61,10 @@
                     document.getElementById('murid_order').value = val[1];
                     this.form.submit();
                 ">
-                    <option value="nama:asc" {{ (request('sort_by', 'nama') == 'nama' && request('order', 'asc') == 'asc') ? 'selected' : '' }}>Nama (A ➔ Z)</option>
-                    <option value="nama:desc" {{ (request('sort_by') == 'nama' && request('order') == 'desc') ? 'selected' : '' }}>Nama (Z ➔ A)</option>
-                    <option value="nis:asc" {{ (request('sort_by') == 'nis' && request('order', 'asc') == 'asc') ? 'selected' : '' }}>NIS (Terkecil ➔ Terbesar)</option>
-                    <option value="nis:desc" {{ (request('sort_by') == 'nis' && request('order') == 'desc') ? 'selected' : '' }}>NIS (Terbesar ➔ Terkecil)</option>
+                    <option value="nama:asc" {{ (request('sort_by', 'nama') == 'nama' && request('order', 'asc') == 'asc') ? 'selected' : '' }}>Nama: A - Z</option>
+                    <option value="nama:desc" {{ (request('sort_by') == 'nama' && request('order') == 'desc') ? 'selected' : '' }}>Nama: Z - A</option>
+                    <option value="nis:asc" {{ (request('sort_by') == 'nis' && request('order', 'asc') == 'asc') ? 'selected' : '' }}>NIS: Terkecil - Terbesar</option>
+                    <option value="nis:desc" {{ (request('sort_by') == 'nis' && request('order') == 'desc') ? 'selected' : '' }}>NIS: Terbesar - Terkecil</option>
                 </select>
                 <input type="hidden" name="sort_by" id="murid_sort_by" value="{{ request('sort_by', 'nama') }}">
                 <input type="hidden" name="order" id="murid_order" value="{{ request('order', 'asc') }}">

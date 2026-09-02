@@ -80,28 +80,30 @@
         </form>
     </div>
 
-    <!-- Attendance Table -->
-    <div class="card-premium p-0 overflow-hidden">
+    <!-- Attendance Table & Mobile View -->
+    <div class="card-premium p-0 overflow-hidden mb-4">
         <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="border-bottom-color: var(--border-color) !important;">
             <h6 class="fw-bold m-0 text-dark">Data Presensi Harian</h6>
             <span class="badge bg-primary-light text-primary font-heading px-2.5 py-1" style="font-size: 11px;">
                 Total: {{ $presensis->total() }} Data
             </span>
         </div>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0" style="color: var(--text-primary);">
+
+        <!-- Desktop Table View (md and up) -->
+        <div class="table-responsive d-none d-md-block">
+            <table class="table table-hover align-middle mb-0" style="min-width: 820px; color: var(--text-primary); font-size: 13px;">
                 <thead class="table-light">
                     <tr class="font-heading text-nowrap" style="font-size: 13px; font-weight: 600;">
-                        <th class="ps-4">Murid (Kelas)</th>
+                        <th class="ps-4" style="width: 220px;">Murid (Kelas)</th>
                         <th>DUDI Tempat PKL</th>
-                        <th class="text-center">Jam Check In</th>
-                        <th class="text-center">Foto Check In</th>
-                        <th class="text-center">Jam Check Out</th>
-                        <th class="text-center">Foto Check Out</th>
-                        <th class="text-center pe-4" style="width: 150px;">Status @if(auth()->user()->role === 'admin') / Aksi @endif</th>
+                        <th class="text-center" style="width: 100px;">Check In</th>
+                        <th class="text-center" style="width: 70px;">Foto In</th>
+                        <th class="text-center" style="width: 100px;">Check Out</th>
+                        <th class="text-center" style="width: 70px;">Foto Out</th>
+                        <th class="text-center pe-4" style="width: 160px;">Status @if(auth()->user()->role === 'admin') / Aksi @endif</th>
                     </tr>
                 </thead>
-                <tbody style="font-size: 13px;">
+                <tbody>
                     @forelse($presensis as $p)
                         <tr>
                             <td class="ps-4">
@@ -112,17 +114,17 @@
                                 <div class="fw-semibold">{{ $p->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</div>
                                 <div class="d-flex align-items-center gap-1 flex-wrap mt-1">
                                     @if($p->is_wfa)
-                                        <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 11px;">🏠 WFA</span>
+                                        <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 10.5px;">WFA</span>
                                     @else
-                                        <span class="badge bg-secondary-light text-secondary fw-semibold" style="font-size: 11px;">🏢 WFO</span>
+                                        <span class="badge bg-secondary-light text-secondary fw-semibold" style="font-size: 10.5px;">WFO</span>
                                     @endif
 
                                     @if($p->shift_harian === 'pagi')
-                                        <span class="badge bg-success-light text-success fw-semibold" style="font-size: 11px;">🌅 Shift Pagi</span>
+                                        <span class="badge bg-success-light text-success fw-semibold" style="font-size: 10.5px;">Shift Pagi</span>
                                     @elseif($p->shift_harian === 'siang')
-                                        <span class="badge bg-warning-light text-warning fw-semibold" style="font-size: 11px;">🌆 Shift Siang</span>
+                                        <span class="badge bg-warning-light text-warning fw-semibold" style="font-size: 10.5px;">Shift Siang</span>
                                     @elseif($p->shift_harian === 'sore')
-                                        <span class="badge bg-orange-light text-orange fw-semibold" style="font-size: 11px;">🌇 Shift Sore</span>
+                                        <span class="badge bg-orange-light text-orange fw-semibold" style="font-size: 10.5px;">Shift Sore</span>
                                     @endif
                                 </div>
                             </td>
@@ -131,8 +133,8 @@
                             </td>
                             <td class="text-center">
                                 @if($p->foto_masuk)
-                                    <a href="{{ asset('storage/attendance/' . $p->foto_masuk) }}" target="_blank">
-                                        <img src="{{ asset('storage/attendance/' . $p->foto_masuk) }}" class="rounded border" width="40" height="40" style="object-fit: cover;">
+                                    <a href="{{ asset('storage/attendance/' . $p->foto_masuk) }}" target="_blank" aria-label="Foto Check In">
+                                        <img src="{{ asset('storage/attendance/' . $p->foto_masuk) }}" class="rounded border" width="36" height="36" style="object-fit: cover;" alt="Foto Masuk">
                                     </a>
                                 @else
                                     <span class="text-muted small">-</span>
@@ -143,8 +145,8 @@
                             </td>
                             <td class="text-center">
                                 @if($p->foto_pulang)
-                                    <a href="{{ asset('storage/attendance/' . $p->foto_pulang) }}" target="_blank">
-                                        <img src="{{ asset('storage/attendance/' . $p->foto_pulang) }}" class="rounded border" width="40" height="40" style="object-fit: cover;">
+                                    <a href="{{ asset('storage/attendance/' . $p->foto_pulang) }}" target="_blank" aria-label="Foto Check Out">
+                                        <img src="{{ asset('storage/attendance/' . $p->foto_pulang) }}" class="rounded border" width="36" height="36" style="object-fit: cover;" alt="Foto Pulang">
                                     </a>
                                 @else
                                     <span class="text-muted small">-</span>
@@ -153,9 +155,9 @@
                             <td class="text-center pe-4">
                                 <div class="mb-1">
                                     @if($p->status_masuk === 'libur_shift')
-                                        <span class="badge bg-info-light text-info fw-semibold">🌴 Libur Shift</span>
+                                        <span class="badge bg-info-light text-info fw-semibold">Libur Shift</span>
                                     @elseif($p->status_masuk === 'alpha')
-                                        <span class="badge bg-danger-light text-danger fw-semibold">❌ Alpha</span>
+                                        <span class="badge bg-danger-light text-danger fw-semibold">Alpha</span>
                                     @elseif($p->status_masuk === 'tepat_waktu')
                                         <span class="badge bg-success-light text-success fw-semibold">Tepat Waktu</span>
                                     @elseif($p->status_masuk === 'terlambat')
@@ -174,7 +176,7 @@
                                     </div>
                                 @endif
                                 @if(auth()->user()->role === 'admin')
-                                    <div class="mt-2 d-flex justify-content-center gap-1">
+                                    <div class="mt-1 d-flex justify-content-center gap-1">
                                         <button type="button" class="btn btn-sm btn-outline-warning btn-action" title="Koreksi Presensi" data-bs-toggle="modal" data-bs-target="#modalEditManual" onclick="editPresensi({{ json_encode([
                                             'id' => $p->id,
                                             'tanggal' => $p->tanggal,
@@ -186,7 +188,7 @@
                                                 'murid' => ['nama' => $p->penempatanPkl->murid->nama]
                                             ]
                                         ]) }})">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                             </svg>
                                         </button>
@@ -194,7 +196,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger btn-action" title="Hapus Presensi">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                 </svg>
                                             </button>
@@ -217,8 +219,129 @@
             </table>
         </div>
 
+        <!-- Mobile Card List View (Visible on smartphone < md) -->
+        <div class="d-md-none p-3">
+            @forelse($presensis as $p)
+                <div class="card p-3 mb-3 border rounded shadow-xs" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                    <!-- Top: Student Name & Class + Status Badge -->
+                    <div class="d-flex justify-content-between align-items-start mb-2 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                        <div>
+                            <div class="fw-bold text-dark font-heading" style="font-size: 13.5px;">{{ $p->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus' }}</div>
+                            <div class="text-muted" style="font-size: 11.5px;">{{ $p->penempatanPkl?->murid?->kelas?->nama ?? '-' }} &bull; <span class="fw-semibold text-secondary">{{ $p->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</span></div>
+                        </div>
+                        <div class="text-end">
+                            @if($p->status_masuk === 'libur_shift')
+                                <span class="badge bg-info-light text-info fw-semibold" style="font-size: 10.5px;">Libur Shift</span>
+                            @elseif($p->status_masuk === 'alpha')
+                                <span class="badge bg-danger-light text-danger fw-semibold" style="font-size: 10.5px;">Alpha</span>
+                            @elseif($p->status_masuk === 'tepat_waktu')
+                                <span class="badge bg-success-light text-success fw-semibold" style="font-size: 10.5px;">Tepat Waktu</span>
+                            @elseif($p->status_masuk === 'terlambat')
+                                <span class="badge bg-danger-light text-danger fw-semibold" style="font-size: 10.5px;">Terlambat</span>
+                            @else
+                                <span class="badge bg-secondary-light text-secondary" style="font-size: 10.5px;">-</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Work Mode & Shift -->
+                    <div class="d-flex align-items-center gap-1.5 mb-2 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                        @if($p->is_wfa)
+                            <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 10.5px;">WFA</span>
+                        @else
+                            <span class="badge bg-secondary-light text-secondary fw-semibold" style="font-size: 10.5px;">WFO</span>
+                        @endif
+
+                        @if($p->shift_harian === 'pagi')
+                            <span class="badge bg-success-light text-success fw-semibold" style="font-size: 10.5px;">Shift Pagi</span>
+                        @elseif($p->shift_harian === 'siang')
+                            <span class="badge bg-warning-light text-warning fw-semibold" style="font-size: 10.5px;">Shift Siang</span>
+                        @elseif($p->shift_harian === 'sore')
+                            <span class="badge bg-orange-light text-orange fw-semibold" style="font-size: 10.5px;">Shift Sore</span>
+                        @endif
+
+                        @if($p->status_pulang === 'pulang_cepat')
+                            <span class="badge bg-warning-light text-warning fw-semibold ms-auto" style="font-size: 10.5px;">Pulang Cepat</span>
+                        @elseif($p->status_pulang === 'tepat_waktu')
+                            <span class="badge bg-success-light text-success fw-semibold ms-auto" style="font-size: 10.5px;">Pulang Tepat</span>
+                        @endif
+                    </div>
+
+                    <!-- Attendance Details (In & Out Grid) -->
+                    <div class="row g-2 mb-2" style="font-size: 12px;">
+                        <!-- Check In Column -->
+                        <div class="col-6">
+                            <div class="p-2 rounded bg-light border" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
+                                <div class="text-muted small fw-semibold">Check In</div>
+                                <div class="d-flex align-items-center justify-content-between mt-1">
+                                    <span class="fw-bold text-success" style="font-size: 13px;">{{ $p->jam_masuk ? substr($p->jam_masuk, 0, 5) : '-' }}</span>
+                                    @if($p->foto_masuk)
+                                        <a href="{{ asset('storage/attendance/' . $p->foto_masuk) }}" target="_blank">
+                                            <img src="{{ asset('storage/attendance/' . $p->foto_masuk) }}" class="rounded border" width="28" height="28" style="object-fit: cover;" alt="Foto Masuk">
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Check Out Column -->
+                        <div class="col-6">
+                            <div class="p-2 rounded bg-light border" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
+                                <div class="text-muted small fw-semibold">Check Out</div>
+                                <div class="d-flex align-items-center justify-content-between mt-1">
+                                    <span class="fw-bold text-warning" style="font-size: 13px;">{{ $p->jam_pulang ? substr($p->jam_pulang, 0, 5) : '-' }}</span>
+                                    @if($p->foto_pulang)
+                                        <a href="{{ asset('storage/attendance/' . $p->foto_pulang) }}" target="_blank">
+                                            <img src="{{ asset('storage/attendance/' . $p->foto_pulang) }}" class="rounded border" width="28" height="28" style="object-fit: cover;" alt="Foto Pulang">
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Admin Action Buttons (Mobile) -->
+                    @if(auth()->user()->role === 'admin')
+                        <div class="d-flex gap-2 pt-2 border-top" style="border-top-color: var(--border-color) !important;">
+                            <button type="button" class="btn btn-sm btn-outline-warning font-heading flex-grow-1 d-flex align-items-center justify-content-center gap-1 py-1.5" data-bs-toggle="modal" data-bs-target="#modalEditManual" onclick="editPresensi({{ json_encode([
+                                'id' => $p->id,
+                                'tanggal' => $p->tanggal,
+                                'jam_masuk' => $p->jam_masuk,
+                                'status_masuk' => $p->status_masuk,
+                                'jam_pulang' => $p->jam_pulang,
+                                'status_pulang' => $p->status_pulang,
+                                'penempatan_pkl' => [
+                                    'murid' => ['nama' => $p->penempatanPkl->murid->nama]
+                                ]
+                            ]) }})">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                                <span>Koreksi</span>
+                            </button>
+                            <form action="{{ route('presensi.destroy', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data presensi ini?');" class="flex-shrink-0">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-outline-danger font-heading d-flex align-items-center justify-content-center gap-1 px-3 py-1.5" title="Hapus Presensi">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                    <span>Hapus</span>
+                                </button>
+                            </form>
+                        </div>
+                    @endif
+                </div>
+            @empty
+                <div class="empty-state py-4 text-center">
+                    <h6 class="empty-state-title">Tidak ada data presensi</h6>
+                    <p class="empty-state-text">Belum ada murid yang melakukan presensi pada tanggal ini.</p>
+                </div>
+            @endforelse
+        </div>
+
         @if($presensis->hasPages())
-            <div class="border-top" style="border-top-color: var(--border-color) !important;">
+            <div class="border-top px-3 py-2" style="border-top-color: var(--border-color) !important;">
                 {{ $presensis->withQueryString()->links() }}
             </div>
         @endif

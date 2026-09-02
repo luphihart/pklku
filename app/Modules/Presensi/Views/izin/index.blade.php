@@ -10,8 +10,9 @@
             <h6 class="fw-bold m-0 text-dark dark-text-light">Daftar Pengajuan Cuti / Izin Murid</h6>
         </div>
 
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0" style="color: var(--text-primary); font-size: 13px;">
+        <!-- Desktop Table View (md and up) -->
+        <div class="table-responsive d-none d-md-block">
+            <table class="table table-hover align-middle mb-0" style="color: var(--text-primary); font-size: 13px; min-width: 780px;">
                 <thead class="table-light">
                     <tr class="font-heading" style="font-size: 13px; font-weight: 600;">
                         <th class="ps-4">Siswa (Kelas)</th>
@@ -21,7 +22,7 @@
                         <th>Alasan Pengajuan</th>
                         <th class="text-center">Lampiran</th>
                         <th class="text-center">Status</th>
-                        <th class="text-center pe-4" style="width: 150px;">Aksi</th>
+                        <th class="text-center pe-4" style="width: 140px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,13 +33,15 @@
                                 <small class="text-muted">{{ $p->penempatanPkl?->murid?->kelas?->nama ?? '-' }}</small>
                             </td>
                             <td>{{ $p->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</td>
-                            <td class="text-capitalize">{{ $p->tipe }}</td>
+                            <td class="text-capitalize">
+                                <span class="badge {{ $p->tipe === 'sakit' ? 'bg-danger-light text-danger' : 'bg-primary-light text-primary' }}">{{ $p->tipe }}</span>
+                            </td>
                             <td>
                                 <div>{{ \Carbon\Carbon::parse($p->tanggal_mulai)->format('d/m/y') }}</div>
                                 <small class="text-muted">s/d {{ \Carbon\Carbon::parse($p->tanggal_selesai)->format('d/m/y') }}</small>
                             </td>
                             <td>
-                                <div style="min-width: 200px; max-width: 360px; word-break: break-word; white-space: normal; line-height: 1.4;">{{ $p->alasan }}</div>
+                                <div style="min-width: 180px; max-width: 320px; word-break: break-word; white-space: normal; line-height: 1.4;">{{ $p->alasan }}</div>
                                 @if($p->catatan_guru)
                                     <small class="text-danger d-block mt-1"><strong>Tanggapan Guru:</strong> {{ $p->catatan_guru }}</small>
                                 @endif
@@ -46,7 +49,7 @@
                             <td class="text-center">
                                 @if($p->surat_pendukung)
                                     <a href="{{ asset('storage/izin/' . $p->surat_pendukung) }}" target="_blank" class="btn btn-sm btn-outline-secondary btn-action" title="Lihat Lampiran" aria-label="Lihat Lampiran Surat">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                         </svg>
                                     </a>
@@ -76,70 +79,10 @@
                                 <div class="d-flex gap-1 justify-content-center align-items-center">
                                     @if($p->status_approval === 'pending' && (auth()->user()->role === 'guru' || auth()->user()->role === 'admin'))
                                         <button class="btn btn-sm btn-outline-primary btn-action" data-bs-toggle="modal" data-bs-target="#verifyModal_{{ $p->id }}" title="Tinjau & Verifikasi" aria-label="Tinjau Izin {{ $p->penempatanPkl?->murid?->nama }}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
                                         </button>
-                                        
-                                        <!-- Modal Verifikasi -->
-                                        <div class="modal fade text-start" id="verifyModal_{{ $p->id }}" tabindex="-1" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color);">
-                                                    <div class="modal-header border-bottom" style="border-bottom-color: var(--border-color) !important;">
-                                                        <h5 class="modal-title font-heading fw-bold" style="font-size: 15px;">Verifikasi Izin Murid</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <form action="{{ route('izin.review', $p->id) }}" method="POST">
-                                                        @csrf
-                                                        <div class="modal-body">
-                                                            <div class="p-3 mb-3 rounded bg-light border">
-                                                                <div class="d-flex justify-content-between mb-1">
-                                                                    <span class="small text-muted">Siswa:</span>
-                                                                    <span class="small fw-bold text-dark">{{ $p->penempatanPkl?->murid?->nama }} ({{ $p->penempatanPkl?->murid?->kelas?->nama ?? '-' }})</span>
-                                                                </div>
-                                                                <div class="d-flex justify-content-between mb-1">
-                                                                    <span class="small text-muted">Kategori:</span>
-                                                                    <span class="badge {{ $p->tipe === 'sakit' ? 'bg-danger-light text-danger' : 'bg-primary-light text-primary' }} text-capitalize">{{ $p->tipe }}</span>
-                                                                </div>
-                                                                <div class="d-flex justify-content-between mb-1">
-                                                                    <span class="small text-muted">Periode:</span>
-                                                                    <span class="small fw-semibold">{{ \Carbon\Carbon::parse($p->tanggal_mulai)->format('d/m/Y') }} s/d {{ \Carbon\Carbon::parse($p->tanggal_selesai)->format('d/m/Y') }}</span>
-                                                                </div>
-                                                                <div class="mt-2 pt-2 border-top">
-                                                                    <span class="small text-muted d-block mb-1">Alasan Pengajuan:</span>
-                                                                    <div class="small text-dark p-2 rounded bg-white border" style="white-space: pre-line; word-break: break-word;">{{ $p->alasan }}</div>
-                                                                </div>
-                                                                @if($p->surat_pendukung)
-                                                                    <div class="mt-2 pt-2 border-top d-flex justify-content-between align-items-center">
-                                                                        <span class="small text-muted">Lampiran:</span>
-                                                                        <a href="{{ asset('storage/izin/' . $p->surat_pendukung) }}" target="_blank" class="btn btn-xs btn-outline-primary font-heading">
-                                                                            Buka Lampiran Surat ↗
-                                                                        </a>
-                                                                    </div>
-                                                                @endif
-                                                            </div>
-                                                            
-                                                            <div class="mb-3">
-                                                                <label for="statusSelect_{{ $p->id }}" class="form-label small fw-semibold">Pilih Keputusan</label>
-                                                                <select name="status" id="statusSelect_{{ $p->id }}" class="form-select form-select-sm" required>
-                                                                    <option value="disetujui">Setujui Pengajuan</option>
-                                                                    <option value="ditolak">Tolak Pengajuan</option>
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="mb-3">
-                                                                <label for="catatan_{{ $p->id }}" class="form-label small fw-semibold">Catatan Tanggapan (Opsional)</label>
-                                                                <textarea name="catatan_guru" id="catatan_{{ $p->id }}" class="form-control form-control-sm" rows="3" placeholder="Tulis catatan persetujuan atau alasan penolakan..."></textarea>
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer border-top" style="border-top-color: var(--border-color) !important;">
-                                                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                                            <button type="submit" class="btn btn-sm btn-primary" data-loading-text="Menyimpan...">Simpan Keputusan</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
                                     @endif
 
                                     @if(auth()->user()->role === 'admin')
@@ -147,7 +90,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="button" class="btn btn-sm btn-outline-danger btn-action" title="Hapus Pengajuan" aria-label="Hapus Pengajuan Izin {{ $p->penempatanPkl?->murid?->nama }}" onclick="window.confirmDelete('deleteIzinForm_{{ $p->id }}', 'pengajuan izin {{ addslashes($p->penempatanPkl?->murid?->nama ?? 'siswa') }}')">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                 </svg>
                                             </button>
@@ -179,10 +122,173 @@
             </table>
         </div>
 
-        @if($permissions->hasPages())
-        <div class="border-top" style="border-top-color: var(--border-color) !important;">
-            {{ $permissions->withQueryString()->links() }}
+        <!-- Mobile Card List View (Visible on smartphone < md) -->
+        <div class="d-md-none p-3">
+            @forelse($permissions as $p)
+                <div class="card p-3 mb-3 border rounded shadow-xs" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                    <!-- Top: Siswa Name & Status Badge -->
+                    <div class="d-flex justify-content-between align-items-start mb-2 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                        <div>
+                            <div class="fw-bold text-dark font-heading" style="font-size: 13.5px;">{{ $p->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus' }}</div>
+                            <div class="text-muted" style="font-size: 11.5px;">{{ $p->penempatanPkl?->murid?->kelas?->nama ?? '-' }} &bull; <span class="fw-semibold text-secondary">{{ $p->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</span></div>
+                        </div>
+                        <div>
+                            @if($p->status_approval === 'disetujui')
+                                <span class="status-badge bg-success-light text-success" style="font-size: 10.5px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                    Disetujui
+                                </span>
+                            @elseif($p->status_approval === 'ditolak')
+                                <span class="status-badge bg-danger-light text-danger" style="font-size: 10.5px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    Ditolak
+                                </span>
+                            @else
+                                <span class="status-badge bg-warning-light text-warning" style="font-size: 10.5px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    Pending
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Kategori & Periode -->
+                    <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important; font-size: 12px;">
+                        <span class="badge {{ $p->tipe === 'sakit' ? 'bg-danger-light text-danger' : 'bg-primary-light text-primary' }} text-capitalize px-2 py-1">
+                            {{ $p->tipe }}
+                        </span>
+                        <div class="text-secondary fw-semibold">
+                            {{ \Carbon\Carbon::parse($p->tanggal_mulai)->format('d/m/Y') }} s/d {{ \Carbon\Carbon::parse($p->tanggal_selesai)->format('d/m/Y') }}
+                        </div>
+                    </div>
+
+                    <!-- Alasan -->
+                    <div class="p-2.5 rounded bg-light border mb-2" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important; font-size: 12.5px; line-height: 1.5; color: var(--text-primary); white-space: pre-line; word-break: break-word;">
+                        {{ $p->alasan }}
+                    </div>
+
+                    @if($p->catatan_guru)
+                        <div class="p-2 rounded mb-2 border" style="background-color: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.2) !important; font-size: 12px; line-height: 1.4;">
+                            <strong class="text-danger">Tanggapan Guru:</strong>
+                            <div class="text-dark mt-0.5" style="white-space: pre-line;">{{ $p->catatan_guru }}</div>
+                        </div>
+                    @endif
+
+                    <!-- Lampiran & Action Buttons -->
+                    <div class="pt-2 border-top d-flex align-items-center justify-content-between gap-2 flex-wrap" style="border-top-color: var(--border-color) !important;">
+                        <div>
+                            @if($p->surat_pendukung)
+                                <a href="{{ asset('storage/izin/' . $p->surat_pendukung) }}" target="_blank" class="badge bg-light text-dark border d-flex align-items-center gap-1.5 text-decoration-none py-1.5 px-2.5" style="border-color: var(--border-color) !important;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                    <span class="fw-semibold" style="font-size: 11px;">Buka Lampiran</span>
+                                </a>
+                            @else
+                                <small class="text-muted" style="font-size: 11px;">Tanpa lampiran</small>
+                            @endif
+                        </div>
+
+                        <div class="d-flex gap-1.5 align-items-center ms-auto">
+                            @if($p->status_approval === 'pending' && (auth()->user()->role === 'guru' || auth()->user()->role === 'admin'))
+                                <button class="btn btn-sm btn-primary font-heading d-flex align-items-center gap-1 px-3 py-1.5" data-bs-toggle="modal" data-bs-target="#verifyModal_{{ $p->id }}" style="font-size: 12.5px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span>Tinjau</span>
+                                </button>
+                            @endif
+
+                            @if(auth()->user()->role === 'admin')
+                                <form action="{{ route('izin.destroy', $p->id) }}" method="POST" id="deleteIzinFormMob_{{ $p->id }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" class="btn btn-sm btn-outline-danger py-1.5 px-2.5" title="Hapus Pengajuan" onclick="window.confirmDelete('deleteIzinFormMob_{{ $p->id }}', 'pengajuan izin {{ addslashes($p->penempatanPkl?->murid?->nama ?? 'siswa') }}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="empty-state py-4 text-center">
+                    <h6 class="empty-state-title">Tidak Ada Pengajuan Izin</h6>
+                    <p class="empty-state-text">Saat ini belum ada data pengajuan cuti/izin murid yang perlu ditinjau.</p>
+                </div>
+            @endforelse
         </div>
+
+        <!-- Modals for Verifikasi -->
+        @foreach($permissions as $p)
+            @if(auth()->user()->role === 'guru' || auth()->user()->role === 'admin')
+                <div class="modal fade text-start" id="verifyModal_{{ $p->id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color);">
+                            <div class="modal-header border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                                <h5 class="modal-title font-heading fw-bold" style="font-size: 15px;">Verifikasi Izin Murid</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form action="{{ route('izin.review', $p->id) }}" method="POST">
+                                @csrf
+                                <div class="modal-body">
+                                    <div class="p-3 mb-3 rounded bg-light border" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
+                                        <div class="d-flex justify-content-between mb-1.5">
+                                            <span class="small text-muted">Siswa:</span>
+                                            <span class="small fw-bold text-dark">{{ $p->penempatanPkl?->murid?->nama }} ({{ $p->penempatanPkl?->murid?->kelas?->nama ?? '-' }})</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1.5">
+                                            <span class="small text-muted">Kategori:</span>
+                                            <span class="badge {{ $p->tipe === 'sakit' ? 'bg-danger-light text-danger' : 'bg-primary-light text-primary' }} text-capitalize">{{ $p->tipe }}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1.5">
+                                            <span class="small text-muted">Periode:</span>
+                                            <span class="small fw-semibold">{{ \Carbon\Carbon::parse($p->tanggal_mulai)->format('d/m/Y') }} s/d {{ \Carbon\Carbon::parse($p->tanggal_selesai)->format('d/m/Y') }}</span>
+                                        </div>
+                                        <div class="mt-2 pt-2 border-top" style="border-top-color: var(--border-color) !important;">
+                                            <span class="small text-muted d-block mb-1">Alasan Pengajuan:</span>
+                                            <div class="small text-dark p-2 rounded bg-white border" style="white-space: pre-line; word-break: break-word;">{{ $p->alasan }}</div>
+                                        </div>
+                                        @if($p->surat_pendukung)
+                                            <div class="mt-2 pt-2 border-top d-flex justify-content-between align-items-center" style="border-top-color: var(--border-color) !important;">
+                                                <span class="small text-muted">Lampiran:</span>
+                                                <a href="{{ asset('storage/izin/' . $p->surat_pendukung) }}" target="_blank" class="btn btn-xs btn-outline-primary font-heading">
+                                                    Buka Lampiran Surat
+                                                </a>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="statusSelect_{{ $p->id }}" class="form-label small fw-semibold">Pilih Keputusan</label>
+                                        <select name="status" id="statusSelect_{{ $p->id }}" class="form-select form-select-sm" required>
+                                            <option value="disetujui">Setujui Pengajuan</option>
+                                            <option value="ditolak">Tolak Pengajuan</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="catatan_{{ $p->id }}" class="form-label small fw-semibold">Catatan Tanggapan (Opsional)</label>
+                                        <textarea name="catatan_guru" id="catatan_{{ $p->id }}" class="form-control form-control-sm" rows="3" placeholder="Tulis catatan persetujuan atau alasan penolakan..."></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer border-top" style="border-top-color: var(--border-color) !important;">
+                                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-sm btn-primary" data-loading-text="Menyimpan...">Simpan Keputusan</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        @endforeach
+
+        @if($permissions->hasPages())
+            <div class="border-top px-3 py-2" style="border-top-color: var(--border-color) !important;">
+                {{ $permissions->withQueryString()->links() }}
+            </div>
         @endif
     </div>
 </div>

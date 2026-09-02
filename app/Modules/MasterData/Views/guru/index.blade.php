@@ -53,10 +53,10 @@
                     document.getElementById('guru_order').value = val[1];
                     this.form.submit();
                 ">
-                    <option value="nama:asc" {{ (request('sort_by', 'nama') == 'nama' && request('order', 'asc') == 'asc') ? 'selected' : '' }}>Urutan Nama: A ➔ Z (Abjad)</option>
-                    <option value="nama:desc" {{ (request('sort_by') == 'nama' && request('order') == 'desc') ? 'selected' : '' }}>Urutan Nama: Z ➔ A (Terbalik)</option>
-                    <option value="nip:asc" {{ (request('sort_by') == 'nip' && request('order', 'asc') == 'asc') ? 'selected' : '' }}>Urutan NIP: Terkecil ➔ Terbesar</option>
-                    <option value="nip:desc" {{ (request('sort_by') == 'nip' && request('order') == 'desc') ? 'selected' : '' }}>Urutan NIP: Terbesar ➔ Terkecil</option>
+                    <option value="nama:asc" {{ (request('sort_by', 'nama') == 'nama' && request('order', 'asc') == 'asc') ? 'selected' : '' }}>Nama: A - Z (Abjad)</option>
+                    <option value="nama:desc" {{ (request('sort_by') == 'nama' && request('order') == 'desc') ? 'selected' : '' }}>Nama: Z - A (Terbalik)</option>
+                    <option value="nip:asc" {{ (request('sort_by') == 'nip' && request('order', 'asc') == 'asc') ? 'selected' : '' }}>NIP: Terkecil - Terbesar</option>
+                    <option value="nip:desc" {{ (request('sort_by') == 'nip' && request('order') == 'desc') ? 'selected' : '' }}>NIP: Terbesar - Terkecil</option>
                 </select>
                 <input type="hidden" name="sort_by" id="guru_sort_by" value="{{ request('sort_by', 'nama') }}">
                 <input type="hidden" name="order" id="guru_order" value="{{ request('order', 'asc') }}">

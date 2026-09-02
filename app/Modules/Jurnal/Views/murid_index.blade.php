@@ -188,9 +188,14 @@
                             <div class="card p-3 mb-3 border rounded shadow-xs" style="background-color: var(--bg-card); border-left: 4px solid {{ $j->status_verifikasi === 'disetujui' ? '#10b981' : ($j->status_verifikasi === 'revisi' ? '#f59e0b' : ($j->status_verifikasi === 'ditolak' ? '#ef4444' : '#64748b')) }} !important;">
                                 <!-- Header: Tanggal & Status -->
                                 <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
-                                    <span class="fw-bold font-heading text-dark" style="font-size: 13px;">
-                                        📅 {{ \Carbon\Carbon::parse($j->tanggal)->translatedFormat('l, d M Y') }}
-                                    </span>
+                                    <div class="d-flex align-items-center gap-1.5">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-muted">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                        <span class="fw-bold font-heading text-dark" style="font-size: 13px;">
+                                            {{ \Carbon\Carbon::parse($j->tanggal)->translatedFormat('l, d M Y') }}
+                                        </span>
+                                    </div>
                                     <div>
                                         @if($j->status_verifikasi === 'disetujui')
                                             <span class="status-badge bg-success-light text-success" style="font-size: 11px;">
@@ -224,7 +229,7 @@
                                 <!-- Catatan Guru -->
                                 @if($j->catatan_verifikasi)
                                     <div class="p-2 rounded mb-2 border" style="background-color: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.2) !important; font-size: 12px; line-height: 1.4;">
-                                        <strong class="text-danger">💬 Catatan Guru:</strong>
+                                        <strong class="text-danger">Catatan Guru:</strong>
                                         <div class="text-dark mt-0.5" style="white-space: pre-line;">{{ $j->catatan_verifikasi }}</div>
                                     </div>
                                 @endif

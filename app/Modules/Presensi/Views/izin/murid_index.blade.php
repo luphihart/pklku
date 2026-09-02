@@ -94,15 +94,16 @@
                 <div class="card-premium">
                     <h5 class="fw-bold font-heading mb-4 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">Riwayat Pengajuan</h5>
                     
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0" style="color: var(--text-primary); font-size: 13px;">
+                    <!-- Desktop Table View (md and up) -->
+                    <div class="table-responsive d-none d-md-block">
+                        <table class="table table-hover align-middle mb-0" style="color: var(--text-primary); font-size: 13px; min-width: 520px;">
                              <thead>
                                  <tr class="text-muted">
-                                     <th>Periode Tanggal</th>
-                                     <th>Tipe</th>
+                                     <th style="width: 100px;">Periode</th>
+                                     <th style="width: 80px;">Tipe</th>
                                      <th>Alasan</th>
-                                     <th class="text-center">Lampiran</th>
-                                     <th class="text-center">Status</th>
+                                     <th class="text-center" style="width: 70px;">Lampiran</th>
+                                     <th class="text-center" style="width: 100px;">Status</th>
                                      <th class="text-center" style="width: 60px;">Aksi</th>
                                  </tr>
                              </thead>
@@ -119,7 +120,7 @@
                                              </span>
                                          </td>
                                          <td>
-                                             <div style="min-width: 150px; max-width: 280px; word-break: break-word; white-space: normal; line-height: 1.4;">{{ $h->alasan }}</div>
+                                             <div style="line-height: 1.4; word-break: break-word; white-space: normal;">{{ $h->alasan }}</div>
                                              @if($h->catatan_guru)
                                                  <small class="text-danger d-block mt-1"><strong>Tanggapan Guru:</strong> {{ $h->catatan_guru }}</small>
                                              @endif
@@ -156,7 +157,7 @@
                                          <td class="text-center">
                                              @if($h->status_approval === 'ditolak')
                                                  <a href="{{ route('izin.edit', $h->id) }}" class="btn btn-sm btn-outline-warning btn-action" title="Revisi Pengajuan" aria-label="Revisi Pengajuan Izin">
-                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                                      </svg>
                                                  </a>
@@ -180,8 +181,87 @@
                                          </td>
                                      </tr>
                                  @endforelse
-                            </tbody>
+                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Mobile Card List View (Visible on smartphone < md) -->
+                    <div class="d-md-none">
+                        @forelse($history as $h)
+                            <div class="card p-3 mb-3 border rounded shadow-xs" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                                <!-- Header: Kategori & Status -->
+                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                                    <span class="badge {{ $h->tipe === 'sakit' ? 'bg-danger-light text-danger' : 'bg-primary-light text-primary' }} text-capitalize px-2 py-1" style="font-size: 11px;">
+                                        {{ $h->tipe }}
+                                    </span>
+                                    <div>
+                                        @if($h->status_approval === 'disetujui')
+                                            <span class="status-badge bg-success-light text-success" style="font-size: 10.5px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                Disetujui
+                                            </span>
+                                        @elseif($h->status_approval === 'ditolak')
+                                            <span class="status-badge bg-danger-light text-danger" style="font-size: 10.5px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                Ditolak
+                                            </span>
+                                        @else
+                                            <span class="status-badge bg-warning-light text-warning" style="font-size: 10.5px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                Pending
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <!-- Periode Tanggal -->
+                                <div class="text-secondary fw-semibold mb-2" style="font-size: 12px;">
+                                    Periode: {{ \Carbon\Carbon::parse($h->tanggal_mulai)->format('d/m/Y') }} s/d {{ \Carbon\Carbon::parse($h->tanggal_selesai)->format('d/m/Y') }}
+                                </div>
+
+                                <!-- Alasan -->
+                                <div class="p-2.5 rounded bg-light border mb-2" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important; font-size: 12.5px; line-height: 1.5; color: var(--text-primary); white-space: pre-line; word-break: break-word;">
+                                    {{ $h->alasan }}
+                                </div>
+
+                                @if($h->catatan_guru)
+                                    <div class="p-2 rounded mb-2 border" style="background-color: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.2) !important; font-size: 12px; line-height: 1.4;">
+                                        <strong class="text-danger">Tanggapan Guru:</strong>
+                                        <div class="text-dark mt-0.5" style="white-space: pre-line;">{{ $h->catatan_guru }}</div>
+                                    </div>
+                                @endif
+
+                                <!-- Footer Lampiran & Aksi -->
+                                <div class="pt-2 border-top d-flex align-items-center justify-content-between gap-2" style="border-top-color: var(--border-color) !important;">
+                                    <div>
+                                        @if($h->surat_pendukung)
+                                            <a href="{{ asset('storage/izin/' . $h->surat_pendukung) }}" target="_blank" class="badge bg-light text-dark border d-flex align-items-center gap-1.5 text-decoration-none py-1.5 px-2.5" style="border-color: var(--border-color) !important;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                </svg>
+                                                <span class="fw-semibold" style="font-size: 11px;">Buka Lampiran</span>
+                                            </a>
+                                        @else
+                                            <span class="text-muted small" style="font-size: 11px;">Tanpa lampiran</span>
+                                        @endif
+                                    </div>
+
+                                    @if($h->status_approval === 'ditolak')
+                                        <a href="{{ route('izin.edit', $h->id) }}" class="btn btn-sm btn-outline-warning font-heading d-flex align-items-center gap-1 px-3 py-1" style="font-size: 12px;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                            </svg>
+                                            <span>Revisi</span>
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        @empty
+                            <div class="empty-state py-4 text-center">
+                                <h6 class="empty-state-title">Belum Ada Pengajuan Izin</h6>
+                                <p class="empty-state-text">Gunakan form di atas jika Anda berhalangan hadir pada kegiatan PKL.</p>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
             </div>

@@ -274,13 +274,17 @@
 
                 <!-- Info Tanggal & DUDI -->
                 <div class="d-flex flex-wrap justify-content-between align-items-center text-muted mb-2 gap-1" style="font-size: 12px;">
-                    <div>
-                        <span class="me-1">📅</span>
+                    <div class="d-flex align-items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-muted">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
                         <strong class="text-dark">{{ $j->tanggal ? \Carbon\Carbon::parse($j->tanggal)->translatedFormat('l, d M Y') : '-' }}</strong>
                     </div>
-                    <div class="text-truncate" style="max-width: 180px;">
-                        <span class="me-1">🏢</span>
-                        <span class="text-secondary fw-semibold">{{ $j->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</span>
+                    <div class="d-flex align-items-center gap-1 text-truncate" style="max-width: 180px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-muted flex-shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                        <span class="text-secondary fw-semibold text-truncate">{{ $j->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</span>
                     </div>
                 </div>
 
@@ -292,7 +296,7 @@
                 <!-- Catatan / Komentar Guru jika ada -->
                 @if($j->catatan_verifikasi)
                     <div class="p-2 rounded mb-2 border" style="background-color: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.2) !important; font-size: 12px; line-height: 1.4;">
-                        <strong class="text-danger">💬 Catatan Guru:</strong>
+                        <strong class="text-danger">Catatan Guru:</strong>
                         <div class="text-dark mt-0.5" style="white-space: pre-line;">{{ $j->catatan_verifikasi }}</div>
                     </div>
                 @endif

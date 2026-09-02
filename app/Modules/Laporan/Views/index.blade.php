@@ -263,7 +263,11 @@
                     </button>
                 </div>
                 @if(request('search'))
-                    <a href="{{ route('laporan.index') }}" class="btn btn-sm btn-outline-danger" title="Reset Pencarian">✕</a>
+                    <a href="{{ route('laporan.index') }}" class="btn btn-sm btn-outline-secondary font-heading d-flex align-items-center justify-content-center px-2.5" title="Reset Pencarian">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </a>
                 @endif
             </form>
         </div>
