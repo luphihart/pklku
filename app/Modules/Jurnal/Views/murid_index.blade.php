@@ -110,7 +110,7 @@
                                     <tr>
                                         <td class="fw-semibold">{{ \Carbon\Carbon::parse($j->tanggal)->translatedFormat('d/m/y') }}</td>
                                         <td>
-                                            <div style="line-height: 1.4;">{{ Str::limit($j->deskripsi_aktivitas, 60) }}</div>
+                                            <div style="line-height: 1.5; word-break: break-word; white-space: normal;">{{ $j->deskripsi_aktivitas }}</div>
                                             @if($j->catatan_verifikasi)
                                                 <small class="text-danger d-block mt-1"><strong>Catatan Guru:</strong> {{ $j->catatan_verifikasi }}</small>
                                             @endif

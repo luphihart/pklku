@@ -127,7 +127,7 @@
                                 <small class="text-muted" style="font-size: 11px;">{{ $j->penempatanPkl?->dudi?->alamat ? Str::limit($j->penempatanPkl->dudi->alamat, 35) : '-' }}</small>
                             </td>
                             <td>
-                                <div class="text-break" style="max-width: 320px;">{{ Str::limit($j->deskripsi_aktivitas, 110) }}</div>
+                                <div class="text-break" style="max-width: 380px; line-height: 1.5; word-break: break-word; white-space: normal;">{{ $j->deskripsi_aktivitas }}</div>
                                 @if($j->catatan_verifikasi)
                                     <small class="text-danger d-block mt-1"><strong>Komentar:</strong> {{ $j->catatan_verifikasi }}</small>
                                 @endif
