@@ -34,21 +34,23 @@
                         <div class="mb-3">
                             <label for="deskripsi_aktivitas" class="form-label font-heading fw-semibold text-secondary mb-1" style="font-size: 13px;">Rincian Aktivitas Harian</label>
                             
-                            <!-- Compact 5W + 1H Guide Box -->
-                            <div class="p-2 px-3 mb-2 rounded border" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;">
-                                <span class="fw-bold text-dark d-block mb-1" style="font-size: 11.5px;">💡 Panduan Penulisan (5W + 1H):</span>
-                                <div class="d-flex flex-wrap gap-1" style="font-size: 11px;">
-                                    <span class="badge bg-light text-secondary border"><strong>What:</strong> Tugas/Materi</span>
-                                    <span class="badge bg-light text-secondary border"><strong>Why:</strong> Tujuan</span>
-                                    <span class="badge bg-light text-secondary border"><strong>Where:</strong> Lokasi/Tools</span>
-                                    <span class="badge bg-light text-secondary border"><strong>When:</strong> Waktu</span>
-                                    <span class="badge bg-light text-secondary border"><strong>Who:</strong> Pembimbing</span>
-                                    <span class="badge bg-light text-secondary border"><strong>How:</strong> Langkah & Hasil</span>
+                            <!-- Panduan Penulisan 5W + 1H -->
+                            <div class="p-2.5 px-3 mb-2 rounded border" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;">
+                                <div class="fw-bold text-dark mb-1.5 d-flex align-items-center gap-1" style="font-size: 13px;">
+                                    <span>💡</span>
+                                    <span>Panduan Penulisan (5W + 1H):</span>
+                                </div>
+                                <div class="d-flex flex-wrap gap-1.5" style="font-size: 12.5px;">
+                                    <span class="badge bg-white text-dark border px-2 py-1.5 shadow-xs"><strong class="text-primary">What:</strong> Tugas/Materi</span>
+                                    <span class="badge bg-white text-dark border px-2 py-1.5 shadow-xs"><strong class="text-primary">Why:</strong> Tujuan</span>
+                                    <span class="badge bg-white text-dark border px-2 py-1.5 shadow-xs"><strong class="text-primary">Where:</strong> Lokasi/Tools</span>
+                                    <span class="badge bg-white text-dark border px-2 py-1.5 shadow-xs"><strong class="text-primary">When:</strong> Waktu</span>
+                                    <span class="badge bg-white text-dark border px-2 py-1.5 shadow-xs"><strong class="text-primary">Who:</strong> Pembimbing</span>
+                                    <span class="badge bg-white text-dark border px-2 py-1.5 shadow-xs"><strong class="text-primary">How:</strong> Langkah & Hasil</span>
                                 </div>
                             </div>
 
-                            <textarea name="deskripsi_aktivitas" id="deskripsi_aktivitas" class="form-control form-control-sm" rows="5" placeholder="Tuliskan aktivitas, tugas yang dikerjakan, atau materi yang dipelajari hari ini..." required></textarea>
-                            <small class="text-muted d-block mt-1" style="font-size: 11px;">* Tuliskan pekerjaan yang Anda lakukan dan hasil atau pembelajarannya secara ringkas.</small>
+                            <textarea name="deskripsi_aktivitas" id="deskripsi_aktivitas" class="form-control form-control-sm" rows="5" placeholder="Tuliskan aktivitas, tugas yang dikerjakan, atau materi yg dipelajari hari ini sesuai panduan 5W + 1H..." required></textarea>
                         </div>
 
                         <div class="mb-3">
