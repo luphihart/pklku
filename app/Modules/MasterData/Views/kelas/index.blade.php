@@ -119,13 +119,8 @@
                     </div>
 
                     @if(method_exists($kelases, 'hasPages') && $kelases->hasPages())
-                        <div class="p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2" style="border-top-color: var(--border-color) !important;">
-                            <div class="small text-muted font-heading">
-                                Menampilkan <strong>{{ $kelases->firstItem() }}</strong> - <strong>{{ $kelases->lastItem() }}</strong> dari <strong>{{ $kelases->total() }}</strong> kelas
-                            </div>
-                            <div>
-                                {{ $kelases->withQueryString()->links() }}
-                            </div>
+                        <div class="border-top" style="border-top-color: var(--border-color) !important;">
+                            {{ $kelases->withQueryString()->links() }}
                         </div>
                     @endif
                 </form>

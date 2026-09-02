@@ -203,13 +203,8 @@
                 </div>
 
                 @if($announcements->hasPages())
-                <div class="p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2" style="border-top-color: var(--border-color) !important;">
-                    <div class="small text-muted font-heading">
-                        Menampilkan <strong>{{ $announcements->firstItem() }}</strong> - <strong>{{ $announcements->lastItem() }}</strong> dari <strong>{{ $announcements->total() }}</strong> pengumuman
-                    </div>
-                    <div>
-                        {{ $announcements->withQueryString()->links() }}
-                    </div>
+                <div class="border-top" style="border-top-color: var(--border-color) !important;">
+                    {{ $announcements->withQueryString()->links() }}
                 </div>
                 @endif
             </div>

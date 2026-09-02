@@ -227,13 +227,8 @@
         </form>
 
         @if(method_exists($murids, 'hasPages') && $murids->hasPages())
-            <div class="p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2" style="border-top-color: var(--border-color) !important;">
-                <div class="small text-muted font-heading">
-                    Menampilkan <strong>{{ $murids->firstItem() }}</strong> - <strong>{{ $murids->lastItem() }}</strong> dari <strong>{{ $murids->total() }}</strong> murid
-                </div>
-                <div>
-                    {{ $murids->withQueryString()->links() }}
-                </div>
+            <div class="border-top" style="border-top-color: var(--border-color) !important;">
+                {{ $murids->withQueryString()->links() }}
             </div>
         @endif
 

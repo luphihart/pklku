@@ -217,13 +217,8 @@
         </form>
 
         @if(method_exists($gurus, 'hasPages') && $gurus->hasPages())
-            <div class="p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2" style="border-top-color: var(--border-color) !important;">
-                <div class="small text-muted font-heading">
-                    Menampilkan <strong>{{ $gurus->firstItem() }}</strong> - <strong>{{ $gurus->lastItem() }}</strong> dari <strong>{{ $gurus->total() }}</strong> guru
-                </div>
-                <div>
-                    {{ $gurus->withQueryString()->links() }}
-                </div>
+            <div class="border-top" style="border-top-color: var(--border-color) !important;">
+                {{ $gurus->withQueryString()->links() }}
             </div>
         @endif
 

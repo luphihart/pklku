@@ -205,13 +205,8 @@
         </div>
 
         @if($presensis->hasPages())
-            <div class="p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2" style="border-top-color: var(--border-color) !important;">
-                <div class="small text-muted font-heading">
-                    Menampilkan <strong>{{ $presensis->firstItem() }}</strong> - <strong>{{ $presensis->lastItem() }}</strong> dari <strong>{{ $presensis->total() }}</strong> data presensi
-                </div>
-                <div>
-                    {{ $presensis->withQueryString()->links() }}
-                </div>
+            <div class="border-top" style="border-top-color: var(--border-color) !important;">
+                {{ $presensis->withQueryString()->links() }}
             </div>
         @endif
     </div>

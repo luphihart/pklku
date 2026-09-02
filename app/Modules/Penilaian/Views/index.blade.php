@@ -306,13 +306,8 @@
         </div>
 
         @if($placements->hasPages())
-        <div class="p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2" style="border-top-color: var(--border-color) !important;">
-            <div class="small text-muted font-heading">
-                Menampilkan <strong>{{ $placements->firstItem() }}</strong> - <strong>{{ $placements->lastItem() }}</strong> dari <strong>{{ $placements->total() }}</strong> siswa
-            </div>
-            <div>
-                {{ $placements->withQueryString()->links() }}
-            </div>
+        <div class="border-top" style="border-top-color: var(--border-color) !important;">
+            {{ $placements->withQueryString()->links() }}
         </div>
         @endif
     </div>

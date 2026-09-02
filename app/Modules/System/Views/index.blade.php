@@ -380,13 +380,8 @@ if (!function_exists('parseUserAgent')) {
                 </div>
 
                 @if($logs->hasPages())
-                <div class="p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2" style="border-top-color: var(--border-color) !important;">
-                    <div class="small text-muted font-heading">
-                        Menampilkan <strong>{{ $logs->firstItem() }}</strong> - <strong>{{ $logs->lastItem() }}</strong> dari <strong>{{ $logs->total() }}</strong> log
-                    </div>
-                    <div>
-                        {{ $logs->withQueryString()->links() }}
-                    </div>
+                <div class="border-top" style="border-top-color: var(--border-color) !important;">
+                    {{ $logs->withQueryString()->links() }}
                 </div>
                 @endif
             </div>

@@ -221,13 +221,8 @@
         </div>
 
         @if($dudis->hasPages())
-        <div class="p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2" style="border-top-color: var(--border-color) !important;">
-            <div class="small text-muted font-heading">
-                Menampilkan <strong>{{ $dudis->firstItem() }}</strong> - <strong>{{ $dudis->lastItem() }}</strong> dari <strong>{{ $dudis->total() }}</strong> mitra DUDI
-            </div>
-            <div>
-                {{ $dudis->withQueryString()->links() }}
-            </div>
+        <div class="border-top" style="border-top-color: var(--border-color) !important;">
+            {{ $dudis->withQueryString()->links() }}
         </div>
         @endif
     </div>
