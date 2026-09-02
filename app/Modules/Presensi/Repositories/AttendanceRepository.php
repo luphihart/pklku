@@ -37,6 +37,7 @@ class AttendanceRepository implements AttendanceRepositoryInterface
                 'status_masuk' => $p->status_masuk,
                 'status_pulang' => $p->status_pulang,
                 'shift_harian' => $p->shift_harian ?? null,
+                'is_wfa' => (bool) ($p->is_wfa ?? false),
                 'keterangan' => $p->keterangan ?? ($p->status_masuk === 'libur_shift' ? 'Libur Shift DUDI' : null),
                 'surat_pendukung' => null,
             ]);

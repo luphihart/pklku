@@ -27,6 +27,44 @@
     #selfie-canvas {
         display: none;
     }
+    .attendance-card-item {
+        transition: all 0.2s ease-in-out;
+        border: 1px solid var(--border-color) !important;
+        background-color: var(--bg-card);
+    }
+    .attendance-card-item:hover {
+        border-color: rgba(79, 70, 229, 0.3) !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+    }
+    .attendance-photo-thumb {
+        position: relative;
+        cursor: pointer;
+        display: inline-block;
+        border-radius: 8px;
+        overflow: hidden;
+        flex-shrink: 0;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .attendance-photo-thumb:hover {
+        transform: scale(1.06);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    }
+    .attendance-photo-thumb img {
+        display: block;
+        object-fit: cover;
+    }
+    .attendance-photo-thumb .photo-badge {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
     @media (max-width: 576px) {
         .btn-attendance {
             font-size: 12px !important;
@@ -102,7 +140,7 @@
                     <div>
                         <span class="text-muted text-uppercase fw-bold d-block" style="font-size: 11px; letter-spacing: 0.5px;">Status Hari Ini: {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}</span>
                         @if($isTodayLiburShift)
-                            <span class="fw-bold text-info font-heading" style="font-size: 15px; color: #0284c7 !important;">🌴 Hari Ini Jadwal Libur Shift DUDI (Off Day)</span>
+                            <span class="fw-bold text-info font-heading" style="font-size: 15px; color: #0284c7 !important;">Jadwal Libur Shift DUDI (Off Day)</span>
                         @elseif($today && $today->jam_pulang)
                             <span class="fw-bold text-success font-heading" style="font-size: 15px;">Selesai Presensi Hari Ini (Masuk: {{ substr($today->jam_masuk, 0, 5) }} | Pulang: {{ substr($today->jam_pulang, 0, 5) }})</span>
                         @elseif($today && $today->jam_masuk)
@@ -147,15 +185,15 @@
                         <h5 class="fw-bold font-heading m-0 text-dark dark-text-light">Panel Presensi Mandiri</h5>
                         @if($isTodayLiburShift)
                             <span class="badge bg-info-light text-info fw-semibold px-2 py-1" style="font-size: 12px; background-color: rgba(14, 165, 233, 0.12); color: #0284c7;">
-                                🌴 Libur Shift Aktif
+                                Libur Shift Aktif
                             </span>
                         @elseif($isWfaToday)
                             <span class="badge bg-primary-light text-primary fw-semibold px-2 py-1" style="font-size: 12px;">
-                                🏠 Mode WFA (Bebas Radius)
+                                Mode WFA (Bebas Radius)
                             </span>
                         @else
                             <span class="badge bg-secondary-light text-secondary fw-semibold px-2 py-1" style="font-size: 12px;">
-                                🏢 Mode WFO (Di Kantor DUDI)
+                                Mode WFO (Di Kantor DUDI)
                             </span>
                         @endif
                     </div>
@@ -182,7 +220,7 @@
                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 p-2 px-3 rounded" style="background-color: var(--bg-canvas); border: 1px solid var(--border-color);">
                                 <div class="d-flex align-items-center gap-2">
                                     <span class="badge bg-indigo-light text-indigo fw-semibold" style="font-size: 12px; background-color: rgba(79, 70, 229, 0.12); color: #4f46e5;">
-                                        ⏱️ {{ $shiftInfo['label'] }}
+                                        {{ $shiftInfo['label'] }}
                                     </span>
                                     @if(($placement->tipe_shift ?? 'reguler') === 'rolling' && !$activeShift)
                                         <span class="badge bg-purple-light text-purple" style="font-size: 11px; background-color: rgba(147, 51, 234, 0.1); color: #9333ea;">Auto-Detect Saat Check-In</span>
@@ -205,7 +243,7 @@
                                     <strong class="font-heading" style="font-size: 14px;">DUDI: {{ $placement->dudi->nama }}</strong>
                                     <span class="badge bg-primary text-white" style="font-size: 11px;">Jadwal Hari Ini: WFA</span>
                                 </div>
-                                <small class="d-block" style="font-size: 12px;">🏠 <strong>Mode Bebas Radius Aktif:</strong> Anda dapat melakukan presensi dari mana saja hari ini.</small>
+                                <small class="d-block" style="font-size: 12px;"><strong>Mode Bebas Radius Aktif:</strong> Anda dapat melakukan presensi dari mana saja hari ini.</small>
                                 <small class="d-block text-muted mt-1" style="font-size: 11px;">Status GPS Anda: <span class="fw-bold text-dark" x-text="distanceString">Mendeteksi...</span></small>
                             </div>
                         @else
@@ -258,7 +296,7 @@
                             <div class="alert alert-warning border-0 mb-3" style="background-color: rgba(245, 158, 11, 0.12); color: #b45309; border-left: 4px solid #f59e0b !important;">
                                 <div class="d-flex align-items-center gap-2 mb-1">
                                     <span class="badge {{ $todayLeave->tipe === 'sakit' ? 'bg-danger' : 'bg-primary' }} text-white">
-                                        {{ $todayLeave->tipe === 'sakit' ? '🏥 Sakit' : '📝 Izin' }} (Disetujui)
+                                        {{ $todayLeave->tipe === 'sakit' ? 'Sakit' : 'Izin' }} (Disetujui)
                                     </span>
                                     <strong class="font-heading" style="font-size: 13px;">Anda Sedang Izin/Sakit Hari Ini</strong>
                                 </div>
@@ -288,7 +326,12 @@
                         </div>
                         
                         <div class="mt-3 text-center" x-show="!isWfa && !inRadius">
-                            <span class="text-danger small fw-bold">⚠️ Anda tidak berada di dalam wilayah DUDI. Tombol absen dinonaktifkan.</span>
+                            <div class="d-inline-flex align-items-center gap-1.5 px-3 py-1.5 rounded-pill bg-danger-light text-danger small fw-semibold">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                                <span>Anda berada di luar radius presensi DUDI. Tombol absen dinonaktifkan.</span>
+                            </div>
                         </div>
 
                         <!-- Libur Shift Self-Service Option -->
@@ -299,7 +342,7 @@
                             <div class="mt-3 pt-3 border-top">
                                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 p-2 rounded bg-light border">
                                     <div class="text-start">
-                                        <small class="d-block fw-semibold text-dark font-heading">🌴 Hari Ini Jadwal Libur / Off Shift DUDI?</small>
+                                        <small class="d-block fw-semibold text-dark font-heading">Hari Ini Jadwal Libur / Off Shift DUDI?</small>
                                         <small class="text-muted" style="font-size: 11px;">
                                             Sisa kuota libur shift minggu ini: <strong class="text-primary">{{ $remainingOff }} hari</strong> (dari {{ $weeklyOffQuota ?? 2 }} hari)
                                         </small>
@@ -316,123 +359,232 @@
                         @endif
                     @endif
                 </div>
-            </div>
-
-            <!-- History panel -->
+            </div>            <!-- History panel -->
             <div class="col-md-5 mb-4">
                 <div class="card-premium">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold font-heading m-0 text-dark">Riwayat Bulan Ini</h5>
-                        <a href="{{ route('laporan.murid_presensi_pdf') }}" class="btn btn-sm btn-outline-primary d-flex align-items-center" style="font-size: 12px; padding: 4px 8px;" aria-label="Unduh Rekap Presensi PDF">
-                            <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                        <div>
+                            <h5 class="fw-bold font-heading m-0 text-dark">Riwayat Bulan Ini</h5>
+                            <small class="text-muted" style="font-size: 11px;">{{ \Carbon\Carbon::now()->translatedFormat('F Y') }} &bull; {{ count($history) }} Catatan</small>
+                        </div>
+                        <a href="{{ route('laporan.murid_presensi_pdf') }}" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 font-heading" style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px;" aria-label="Unduh Rekap Presensi PDF">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
-                            Unduh PDF
+                            <span>Unduh PDF</span>
                         </a>
                     </div>
+
+                    <!-- Monthly Stats Micro-Bar -->
+                    @php
+                        $cntHadir = $history->where('status_masuk', 'tepat_waktu')->count();
+                        $cntTerlambat = $history->where('status_masuk', 'terlambat')->count();
+                        $cntIzinSakit = $history->whereIn('type', ['izin', 'sakit'])->count();
+                        $cntLiburShift = $history->where('type', 'libur_shift')->count();
+                    @endphp
+                    <div class="row g-2 mb-3">
+                        <div class="col-3">
+                            <div class="p-2 rounded text-center bg-light border" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
+                                <div class="fw-bold font-heading text-success" style="font-size: 15px; line-height: 1;">{{ $cntHadir }}</div>
+                                <span class="text-muted text-uppercase" style="font-size: 9px; font-weight: 600;">Hadir</span>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="p-2 rounded text-center bg-light border" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
+                                <div class="fw-bold font-heading text-danger" style="font-size: 15px; line-height: 1;">{{ $cntTerlambat }}</div>
+                                <span class="text-muted text-uppercase" style="font-size: 9px; font-weight: 600;">Telat</span>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="p-2 rounded text-center bg-light border" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
+                                <div class="fw-bold font-heading text-info" style="font-size: 15px; line-height: 1;">{{ $cntIzinSakit }}</div>
+                                <span class="text-muted text-uppercase" style="font-size: 9px; font-weight: 600;">Izin/Skt</span>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="p-2 rounded text-center bg-light border" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
+                                <div class="fw-bold font-heading text-primary" style="font-size: 15px; line-height: 1;">{{ $cntLiburShift }}</div>
+                                <span class="text-muted text-uppercase" style="font-size: 9px; font-weight: 600;">Off Shift</span>
+                            </div>
+                        </div>
+                    </div>
                     
-                    <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
-                        <table class="table table-sm align-middle text-dark dark-text-light mb-0" style="font-size: 13px;">
-                            <thead>
-                                <tr class="text-muted">
-                                    <th>Tanggal</th>
-                                    <th>Masuk</th>
-                                    <th>Pulang</th>
-                                    <th class="text-end">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($history as $h)
-                                    <tr>
-                                        <td>{{ \Carbon\Carbon::parse($h->tanggal)->translatedFormat('d M Y') }}</td>
-                                        <td>
-                                            @if($h->type === 'izin' || $h->type === 'sakit' || $h->type === 'libur_shift' || $h->type === 'alpha')
-                                                <span class="text-muted" style="font-size: 11px;">-</span>
-                                            @else
-                                                <span class="text-success fw-semibold">{{ $h->jam_masuk ? substr($h->jam_masuk, 0, 5) : '-' }}</span>
-                                                @if($h->foto_masuk)
-                                                    <div class="mt-1">
-                                                        <a href="{{ asset('storage/attendance/' . $h->foto_masuk) }}" target="_blank">
-                                                            <img src="{{ asset('storage/attendance/' . $h->foto_masuk) }}" class="rounded border" width="30" height="30" style="object-fit: cover;" title="Foto Check In" alt="Foto Masuk">
-                                                        </a>
-                                                    </div>
-                                                @endif
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($h->type === 'izin' || $h->type === 'sakit' || $h->type === 'libur_shift' || $h->type === 'alpha')
-                                                <span class="text-muted" style="font-size: 11px;">-</span>
-                                            @else
-                                                <span class="text-warning fw-semibold">{{ $h->jam_pulang ? substr($h->jam_pulang, 0, 5) : '-' }}</span>
-                                                @if($h->foto_pulang)
-                                                    <div class="mt-1">
-                                                        <a href="{{ asset('storage/attendance/' . $h->foto_pulang) }}" target="_blank">
-                                                            <img src="{{ asset('storage/attendance/' . $h->foto_pulang) }}" class="rounded border" width="30" height="30" style="object-fit: cover;" title="Foto Check Out" alt="Foto Pulang">
-                                                        </a>
-                                                    </div>
-                                                @endif
-                                            @endif
-                                        </td>
-                                        <td class="text-end">
-                                            @if($h->type === 'libur_shift' || $h->status_masuk === 'libur_shift')
-                                                <span class="badge bg-info-light text-info fw-semibold py-1 px-2" style="background-color: rgba(14, 165, 233, 0.12); color: #0284c7; font-size: 11px;" title="{{ $h->keterangan ?? 'Libur Shift DUDI' }}">
-                                                    🌴 Libur Shift
-                                                </span>
-                                            @elseif($h->type === 'alpha' || $h->status_masuk === 'alpha')
-                                                <span class="badge bg-danger-light text-danger fw-semibold py-1 px-2" style="background-color: rgba(239, 68, 68, 0.12); color: #dc2626; font-size: 11px;" title="Tidak Hadir Tanpa Keterangan">
-                                                    ❌ Alpha
-                                                </span>
-                                            @elseif($h->type === 'izin')
-                                                <span class="badge bg-info-light text-info fw-semibold py-1 px-2" style="background-color: rgba(14, 165, 233, 0.12); color: #0284c7; font-size: 11px;" title="{{ $h->keterangan }}">
-                                                    📝 Izin
-                                                </span>
-                                                @if($h->surat_pendukung)
-                                                    <div class="mt-1">
-                                                        <a href="{{ asset('storage/izin/' . $h->surat_pendukung) }}" target="_blank" class="badge bg-light text-muted border text-decoration-none" style="font-size: 10px;">
-                                                            📄 Surat
-                                                        </a>
-                                                    </div>
-                                                @endif
-                                            @elseif($h->type === 'sakit')
-                                                <span class="badge bg-danger-light text-danger fw-semibold py-1 px-2" style="background-color: rgba(239, 68, 68, 0.12); color: #dc2626; font-size: 11px;" title="{{ $h->keterangan }}">
-                                                    🏥 Sakit
-                                                </span>
-                                                @if($h->surat_pendukung)
-                                                    <div class="mt-1">
-                                                        <a href="{{ asset('storage/izin/' . $h->surat_pendukung) }}" target="_blank" class="badge bg-light text-muted border text-decoration-none" style="font-size: 10px;">
-                                                            📄 Surat
-                                                        </a>
-                                                    </div>
-                                                @endif
-                                            @elseif($h->status_masuk === 'tepat_waktu')
-                                                <span class="status-badge bg-success-light text-success">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                                    Hadir
-                                                </span>
-                                            @else
-                                                <span class="status-badge bg-danger-light text-danger">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                    Terlambat
-                                                </span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="text-center py-4">
-                                            <div class="empty-state py-3">
-                                                <span class="empty-state-text d-block m-0">Belum ada riwayat presensi bulan ini.</span>
+                    <!-- History Cards Feed -->
+                    <div class="attendance-history-feed" style="max-height: 520px; overflow-y: auto; padding-right: 2px;">
+                        @forelse($history as $h)
+                            <div class="attendance-card-item p-3 mb-2.5 rounded-3">
+                                <!-- Top Row: Date & Status Badge -->
+                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="text-center px-2 py-1 rounded bg-light border flex-shrink-0" style="min-width: 44px; background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
+                                            <div class="text-uppercase fw-bold text-muted" style="font-size: 8.5px; line-height: 1;">{{ \Carbon\Carbon::parse($h->tanggal)->translatedFormat('D') }}</div>
+                                            <div class="fw-bold text-dark font-heading" style="font-size: 14px; line-height: 1.2;">{{ \Carbon\Carbon::parse($h->tanggal)->format('d') }}</div>
+                                            <div class="text-muted" style="font-size: 8.5px; line-height: 1;">{{ \Carbon\Carbon::parse($h->tanggal)->translatedFormat('M') }}</div>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold font-heading text-dark" style="font-size: 13px;">
+                                                {{ \Carbon\Carbon::parse($h->tanggal)->translatedFormat('l, d F Y') }}
                                             </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                            <div class="d-flex align-items-center gap-1 mt-0.5">
+                                                @if(!empty($h->shift_harian))
+                                                    <span class="badge bg-secondary-light text-secondary" style="font-size: 9.5px; padding: 2px 6px;">{{ ucfirst($h->shift_harian) }}</span>
+                                                @endif
+                                                @if(!empty($h->is_wfa))
+                                                    <span class="badge bg-primary-light text-primary" style="font-size: 9.5px; padding: 2px 6px;">WFA</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        @if($h->type === 'libur_shift' || $h->status_masuk === 'libur_shift')
+                                            <span class="status-badge bg-info-light text-info" style="font-size: 11px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                                                Libur Shift
+                                            </span>
+                                        @elseif($h->type === 'alpha' || $h->status_masuk === 'alpha')
+                                            <span class="status-badge bg-danger-light text-danger" style="font-size: 11px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                                                Alpha
+                                            </span>
+                                        @elseif($h->type === 'izin')
+                                            <span class="status-badge bg-info-light text-info" style="font-size: 11px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                                Izin
+                                            </span>
+                                        @elseif($h->type === 'sakit')
+                                            <span class="status-badge bg-danger-light text-danger" style="font-size: 11px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                                Sakit
+                                            </span>
+                                        @elseif($h->status_masuk === 'tepat_waktu')
+                                            <span class="status-badge bg-success-light text-success" style="font-size: 11px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                Hadir
+                                            </span>
+                                        @else
+                                            <span class="status-badge bg-danger-light text-danger" style="font-size: 11px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                Terlambat
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <!-- Bottom Row: Check-in / Check-out Details -->
+                                @if($h->type === 'izin' || $h->type === 'sakit')
+                                    <div class="p-2 rounded bg-light border d-flex justify-content-between align-items-center" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important; font-size: 12px;">
+                                        <div class="text-truncate me-2">
+                                            <span class="text-muted">Keterangan:</span> <strong class="text-dark">{{ $h->keterangan ?: 'Izin tidak hadir' }}</strong>
+                                        </div>
+                                        @if($h->surat_pendukung)
+                                            <a href="{{ asset('storage/izin/' . $h->surat_pendukung) }}" target="_blank" class="btn btn-xs btn-outline-primary text-nowrap d-inline-flex align-items-center gap-1 font-heading" style="font-size: 11px; padding: 2px 8px; border-radius: 4px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                                                <span>Surat</span>
+                                            </a>
+                                        @endif
+                                    </div>
+                                @elseif($h->type === 'libur_shift')
+                                    <div class="text-muted small" style="font-size: 11.5px;">
+                                        Jadwal libur shift mandiri / off day DUDI.
+                                    </div>
+                                @elseif($h->type === 'alpha')
+                                    <div class="text-danger small fw-medium" style="font-size: 11.5px;">
+                                        Tidak melakukan presensi harian (Alpha).
+                                    </div>
+                                @else
+                                    <div class="row g-2">
+                                        <!-- Masuk Box -->
+                                        <div class="col-6">
+                                            <div class="p-2 rounded border d-flex align-items-center justify-content-between" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    @if($h->foto_masuk)
+                                                        <div class="attendance-photo-thumb" onclick="previewAttendancePhoto('{{ asset('storage/attendance/' . $h->foto_masuk) }}', 'Foto Check In Masuk', '{{ \Carbon\Carbon::parse($h->tanggal)->translatedFormat('l, d F Y') }}', '{{ substr($h->jam_masuk, 0, 5) }} WIB')" title="Klik untuk perbesar foto">
+                                                            <img src="{{ asset('storage/attendance/' . $h->foto_masuk) }}" class="rounded-2 border" width="36" height="36" alt="Foto Masuk" loading="lazy">
+                                                            <span class="photo-badge bg-success text-white">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                                            </span>
+                                                        </div>
+                                                    @else
+                                                        <div class="rounded-2 bg-light border d-flex align-items-center justify-content-center text-muted" style="width: 36px; height: 36px; flex-shrink: 0;">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                                                        </div>
+                                                    @endif
+                                                    <div>
+                                                        <span class="text-muted d-block text-uppercase" style="font-size: 9.5px; font-weight: 600;">Masuk</span>
+                                                        <span class="fw-bold text-success font-heading" style="font-size: 13px;">{{ $h->jam_masuk ? substr($h->jam_masuk, 0, 5) : '-' }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Pulang Box -->
+                                        <div class="col-6">
+                                            <div class="p-2 rounded border d-flex align-items-center justify-content-between" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    @if($h->foto_pulang)
+                                                        <div class="attendance-photo-thumb" onclick="previewAttendancePhoto('{{ asset('storage/attendance/' . $h->foto_pulang) }}', 'Foto Check Out Pulang', '{{ \Carbon\Carbon::parse($h->tanggal)->translatedFormat('l, d F Y') }}', '{{ substr($h->jam_pulang, 0, 5) }} WIB')" title="Klik untuk perbesar foto">
+                                                            <img src="{{ asset('storage/attendance/' . $h->foto_pulang) }}" class="rounded-2 border" width="36" height="36" alt="Foto Pulang" loading="lazy">
+                                                            <span class="photo-badge bg-warning text-white">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                                            </span>
+                                                        </div>
+                                                    @else
+                                                        <div class="rounded-2 bg-light border d-flex align-items-center justify-content-center text-muted" style="width: 36px; height: 36px; flex-shrink: 0;">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                                        </div>
+                                                    @endif
+                                                    <div>
+                                                        <span class="text-muted d-block text-uppercase" style="font-size: 9.5px; font-weight: 600;">Pulang</span>
+                                                        <span class="fw-bold {{ $h->jam_pulang ? 'text-warning' : 'text-muted' }} font-heading" style="font-size: 13px;">
+                                                            {{ $h->jam_pulang ? substr($h->jam_pulang, 0, 5) : 'Belum Out' }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        @empty
+                            <div class="empty-state py-4 text-center">
+                                <div class="empty-state-icon mb-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                                <h6 class="empty-state-title" style="font-size: 13px;">Belum Ada Presensi</h6>
+                                <p class="empty-state-text" style="font-size: 11.5px;">Riwayat presensi kehadiran Anda bulan ini akan otomatis muncul di sini.</p>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
         </div>
     @endif
+</div>
+
+<!-- Modal Preview Foto Presensi Lightbox -->
+<div class="modal fade" id="modalPreviewFotoPresensi" tabindex="-1" aria-labelledby="modalPreviewFotoPresensiLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color);">
+            <div class="modal-header py-2.5 px-3 border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                <div>
+                    <h6 class="modal-title fw-bold font-heading m-0" id="previewFotoTitle" style="font-size: 14px;">Foto Bukti Presensi</h6>
+                    <small class="text-muted" id="previewFotoSubtitle" style="font-size: 11px;">-</small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-3">
+                <div class="rounded-3 overflow-hidden border shadow-sm mx-auto position-relative" style="max-width: 360px; background-color: #0f172a;">
+                    <img src="" id="previewFotoImg" class="img-fluid w-100" style="object-fit: cover; max-height: 400px; display: block;" alt="Bukti Presensi">
+                </div>
+            </div>
+            <div class="modal-footer py-2 px-3 border-top d-flex justify-content-between" style="border-top-color: var(--border-color) !important;">
+                <span class="text-muted small" id="previewFotoTime" style="font-size: 11.5px;">-</span>
+                <button type="button" class="btn btn-sm btn-secondary font-heading" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -861,6 +1013,25 @@
                     }
                 });
             }
+        }
+    }
+
+    function previewAttendancePhoto(url, title, date, time) {
+        if (!url) return;
+        const imgEl = document.getElementById('previewFotoImg');
+        const titleEl = document.getElementById('previewFotoTitle');
+        const subtitleEl = document.getElementById('previewFotoSubtitle');
+        const timeEl = document.getElementById('previewFotoTime');
+        
+        if (imgEl) imgEl.src = url;
+        if (titleEl) titleEl.innerText = title || 'Foto Bukti Presensi';
+        if (subtitleEl) subtitleEl.innerText = date || '';
+        if (timeEl) timeEl.innerText = 'Waktu Rekam: ' + (time || '-');
+        
+        const modalEl = document.getElementById('modalPreviewFotoPresensi');
+        if (modalEl) {
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
         }
     }
 </script>
