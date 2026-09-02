@@ -12,27 +12,27 @@
 
     <!-- Filter & Search Card -->
     <div class="card-premium mb-4">
-        <!-- Quick Status Pills (Horizontally scrollable on mobile) -->
-        <div class="d-flex align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom flex-wrap" style="border-bottom-color: var(--border-color) !important;">
-            <div class="d-flex align-items-center gap-1.5 overflow-x-auto no-scrollbar py-1" style="white-space: nowrap; -webkit-overflow-scrolling: touch; max-width: 100%;">
-                <span class="small fw-bold text-muted font-heading me-1 flex-shrink-0">Status:</span>
-                <a href="{{ route('jurnal.index', request()->except('status')) }}" class="btn btn-xs font-heading flex-shrink-0 {{ !request('status') ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
+        <!-- Quick Status Pills (Wrap naturally so none are cut off on mobile) -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
+            <div class="d-flex flex-wrap align-items-center gap-1.5">
+                <span class="small fw-bold text-muted font-heading me-1">Status:</span>
+                <a href="{{ route('jurnal.index', request()->except('status')) }}" class="btn btn-xs font-heading {{ !request('status') ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 10px;">
                     Semua
                 </a>
-                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'pending'])) }}" class="btn btn-xs font-heading flex-shrink-0 {{ request('status') === 'pending' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
-                    Menunggu Verifikasi
+                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'pending'])) }}" class="btn btn-xs font-heading {{ request('status') === 'pending' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 10px;">
+                    Menunggu (Pending)
                 </a>
-                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'disetujui'])) }}" class="btn btn-xs font-heading flex-shrink-0 {{ request('status') === 'disetujui' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
+                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'disetujui'])) }}" class="btn btn-xs font-heading {{ request('status') === 'disetujui' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 10px;">
                     Disetujui
                 </a>
-                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'revisi'])) }}" class="btn btn-xs font-heading flex-shrink-0 {{ request('status') === 'revisi' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
-                    Butuh Revisi
+                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'revisi'])) }}" class="btn btn-xs font-heading {{ request('status') === 'revisi' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 10px;">
+                    Revisi
                 </a>
-                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'ditolak'])) }}" class="btn btn-xs font-heading flex-shrink-0 {{ request('status') === 'ditolak' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 12px;">
+                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'ditolak'])) }}" class="btn btn-xs font-heading {{ request('status') === 'ditolak' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 10px;">
                     Ditolak
                 </a>
             </div>
-            <span class="badge bg-primary-light text-primary font-heading px-2.5 py-1 flex-shrink-0 ms-auto" style="font-size: 11px;">
+            <span class="badge bg-primary-light text-primary font-heading px-2.5 py-1" style="font-size: 11px;">
                 Total: {{ $journals->total() }} Jurnal
             </span>
         </div>
