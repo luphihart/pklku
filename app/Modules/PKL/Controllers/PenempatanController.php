@@ -36,7 +36,7 @@ class PenempatanController extends Controller
             ->orderBy('nama', 'asc')
             ->get();
 
-        $kelasOptions = $unassignedStudents->pluck('kelas')->unique('id')->filter()->sortBy('nama')->values();
+        $kelasOptions = $unassignedStudents->pluck('kelas')->filter()->unique('id')->sortBy('nama')->values();
 
         return view('pkl::penempatan.index', compact('placements', 'dudis', 'gurus', 'unassignedStudents', 'kelasOptions'));
     }
