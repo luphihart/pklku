@@ -229,63 +229,106 @@
     <div class="row">
         <!-- Kehadiran Hari Ini -->
         <div class="col-md-8 mb-4">
-            <div class="card-premium h-100">
-                <div class="mb-3">
-                    <h5 class="fw-bold font-heading m-0 text-dark dark-text-light">Kehadiran Hari Ini</h5>
-                    <small class="text-muted" style="font-size: 11.5px;">{{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }} &bull; Total {{ $attendance['total_pkl'] ?? 0 }} Siswa Aktif</small>
+            <div class="card-premium h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                        <div>
+                            <h5 class="fw-bold font-heading m-0 text-dark dark-text-light">Kehadiran Hari Ini</h5>
+                            <small class="text-muted" style="font-size: 11.5px;">{{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }} &bull; Total {{ $attendance['total_pkl'] ?? 0 }} Siswa Aktif</small>
+                        </div>
+                        @php
+                            $totalPkl = $attendance['total_pkl'] ?? 0;
+                            $hadirTotal = $attendance['hadir'] ?? 0;
+                            $rate = $totalPkl > 0 ? round(($hadirTotal / $totalPkl) * 100) : 0;
+                        @endphp
+                        <span class="badge bg-success-light text-success font-heading fw-bold px-2.5 py-1 rounded-pill" style="font-size: 11px;">
+                            {{ $rate }}% Kehadiran
+                        </span>
+                    </div>
+
+                    <!-- Mini Visual Progress Bar -->
+                    @php
+                        $tepatP = $totalPkl > 0 ? (($attendance['tepat_waktu'] ?? 0) / $totalPkl) * 100 : 0;
+                        $telatP = $totalPkl > 0 ? (($attendance['terlambat'] ?? 0) / $totalPkl) * 100 : 0;
+                        $izinP = $totalPkl > 0 ? ((($attendance['izin'] ?? 0) + ($attendance['sakit'] ?? 0)) / $totalPkl) * 100 : 0;
+                        $liburP = $totalPkl > 0 ? (($attendance['libur_shift'] ?? 0) / $totalPkl) * 100 : 0;
+                        $alphaP = $totalPkl > 0 ? (($attendance['alpha'] ?? 0) / $totalPkl) * 100 : 0;
+                    @endphp
+                    <div class="progress my-2.5 rounded-pill" style="height: 5px; background-color: var(--border-color); overflow: hidden;">
+                        <div class="progress-bar bg-success" style="width: {{ $tepatP }}%" title="Tepat Waktu: {{ $attendance['tepat_waktu'] ?? 0 }}"></div>
+                        <div class="progress-bar bg-warning" style="width: {{ $telatP }}%" title="Terlambat: {{ $attendance['terlambat'] ?? 0 }}"></div>
+                        <div class="progress-bar bg-info" style="width: {{ $izinP }}%" title="Izin/Sakit: {{ ($attendance['izin'] ?? 0) + ($attendance['sakit'] ?? 0) }}"></div>
+                        <div class="progress-bar" style="width: {{ $liburP }}%; background-color: #6366f1;" title="Libur Shift: {{ $attendance['libur_shift'] ?? 0 }}"></div>
+                        <div class="progress-bar bg-danger" style="width: {{ $alphaP }}%" title="Alpha: {{ $attendance['alpha'] ?? 0 }}"></div>
+                    </div>
                 </div>
 
                 <div class="row g-2 mt-1">
                     <!-- Hadir (Tepat Waktu & Telat) -->
-                    <div class="col-6 col-sm-4 col-lg">
-                        <div class="p-2.5 rounded-3 text-center border h-100 d-flex flex-column justify-content-between" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
-                            <span class="text-muted small text-uppercase fw-semibold" style="font-size: 10px;">Hadir</span>
-                            <h3 class="fw-bold text-success m-0 my-1 font-heading" style="font-size: 22px;">{{ $attendance['hadir'] ?? 0 }}</h3>
-                            <div class="d-flex justify-content-center gap-1 flex-wrap" style="font-size: 9.5px;">
-                                <span class="text-success fw-medium">{{ $attendance['tepat_waktu'] ?? 0 }} Tepat</span>
+                    <div class="col-6 col-md">
+                        <div class="p-2.5 rounded-3 text-center border h-100 d-flex flex-column justify-content-between" style="background-color: rgba(16, 185, 129, 0.05) !important; border-color: rgba(16, 185, 129, 0.22) !important; min-height: 88px;">
+                            <div class="d-flex align-items-center justify-content-center gap-1.5">
+                                <span class="rounded-circle" style="width: 6px; height: 6px; background-color: var(--success, #10b981);"></span>
+                                <span class="text-muted small text-uppercase fw-bold" style="font-size: 10px; letter-spacing: 0.3px;">Hadir</span>
+                            </div>
+                            <h3 class="fw-bold text-success m-0 my-0.5 font-heading" style="font-size: 22px; line-height: 1.2;">{{ $attendance['hadir'] ?? 0 }}</h3>
+                            <div class="d-flex justify-content-center gap-1 flex-wrap" style="font-size: 9.5px; line-height: 1;">
+                                <span class="text-success fw-semibold">{{ $attendance['tepat_waktu'] ?? 0 }} Tepat</span>
                                 <span class="text-muted">&bull;</span>
-                                <span class="text-warning fw-medium">{{ $attendance['terlambat'] ?? 0 }} Telat</span>
+                                <span class="text-warning fw-semibold">{{ $attendance['terlambat'] ?? 0 }} Telat</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Izin & Sakit -->
-                    <div class="col-6 col-sm-4 col-lg">
-                        <div class="p-2.5 rounded-3 text-center border h-100 d-flex flex-column justify-content-between" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
-                            <span class="text-muted small text-uppercase fw-semibold" style="font-size: 10px;">Izin / Sakit</span>
-                            <h3 class="fw-bold text-info m-0 my-1 font-heading" style="font-size: 22px;">{{ ($attendance['izin'] ?? 0) + ($attendance['sakit'] ?? 0) }}</h3>
-                            <div class="d-flex justify-content-center gap-1 flex-wrap" style="font-size: 9.5px;">
-                                <span class="text-info fw-medium">{{ $attendance['izin'] ?? 0 }} Izin</span>
+                    <div class="col-6 col-md">
+                        <div class="p-2.5 rounded-3 text-center border h-100 d-flex flex-column justify-content-between" style="background-color: rgba(14, 165, 233, 0.05) !important; border-color: rgba(14, 165, 233, 0.22) !important; min-height: 88px;">
+                            <div class="d-flex align-items-center justify-content-center gap-1.5">
+                                <span class="rounded-circle" style="width: 6px; height: 6px; background-color: var(--info, #0ea5e9);"></span>
+                                <span class="text-muted small text-uppercase fw-bold" style="font-size: 10px; letter-spacing: 0.3px;">Izin / Sakit</span>
+                            </div>
+                            <h3 class="fw-bold text-info m-0 my-0.5 font-heading" style="font-size: 22px; line-height: 1.2;">{{ ($attendance['izin'] ?? 0) + ($attendance['sakit'] ?? 0) }}</h3>
+                            <div class="d-flex justify-content-center gap-1 flex-wrap" style="font-size: 9.5px; line-height: 1;">
+                                <span class="text-info fw-semibold">{{ $attendance['izin'] ?? 0 }} Izin</span>
                                 <span class="text-muted">&bull;</span>
-                                <span class="text-danger fw-medium">{{ $attendance['sakit'] ?? 0 }} Sakit</span>
+                                <span class="text-danger fw-semibold">{{ $attendance['sakit'] ?? 0 }} Sakit</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Libur Shift DUDI -->
-                    <div class="col-6 col-sm-4 col-lg">
-                        <div class="p-2.5 rounded-3 text-center border h-100 d-flex flex-column justify-content-between" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
-                            <span class="text-muted small text-uppercase fw-semibold" style="font-size: 10px;">Libur Shift</span>
-                            <h3 class="fw-bold text-primary m-0 my-1 font-heading" style="font-size: 22px;">{{ $attendance['libur_shift'] ?? 0 }}</h3>
-                            <span class="text-muted" style="font-size: 9.5px;">Off Day DUDI</span>
+                    <div class="col-4 col-md">
+                        <div class="p-2.5 rounded-3 text-center border h-100 d-flex flex-column justify-content-between" style="background-color: rgba(99, 102, 241, 0.05) !important; border-color: rgba(99, 102, 241, 0.22) !important; min-height: 88px;">
+                            <div class="d-flex align-items-center justify-content-center gap-1.5">
+                                <span class="rounded-circle" style="width: 6px; height: 6px; background-color: #6366f1;"></span>
+                                <span class="text-muted small text-uppercase fw-bold" style="font-size: 10px; letter-spacing: 0.3px;">Libur Shift</span>
+                            </div>
+                            <h3 class="fw-bold m-0 my-0.5 font-heading" style="color: #6366f1; font-size: 22px; line-height: 1.2;">{{ $attendance['libur_shift'] ?? 0 }}</h3>
+                            <span class="text-muted" style="font-size: 9.5px; line-height: 1;">Off DUDI</span>
                         </div>
                     </div>
 
                     <!-- Belum Absen -->
-                    <div class="col-6 col-sm-6 col-lg">
-                        <div class="p-2.5 rounded-3 text-center border h-100 d-flex flex-column justify-content-between" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
-                            <span class="text-muted small text-uppercase fw-semibold" style="font-size: 10px;">Belum Absen</span>
-                            <h3 class="fw-bold text-secondary m-0 my-1 font-heading" style="font-size: 22px;">{{ $attendance['belum_hadir'] ?? 0 }}</h3>
-                            <span class="text-muted" style="font-size: 9.5px;">Menunggu tap</span>
+                    <div class="col-4 col-md">
+                        <div class="p-2.5 rounded-3 text-center border h-100 d-flex flex-column justify-content-between" style="background-color: rgba(100, 116, 139, 0.05) !important; border-color: rgba(100, 116, 139, 0.22) !important; min-height: 88px;">
+                            <div class="d-flex align-items-center justify-content-center gap-1.5">
+                                <span class="rounded-circle" style="width: 6px; height: 6px; background-color: #64748b;"></span>
+                                <span class="text-muted small text-uppercase fw-bold" style="font-size: 10px; letter-spacing: 0.3px;">Belum Absen</span>
+                            </div>
+                            <h3 class="fw-bold text-secondary m-0 my-0.5 font-heading" style="font-size: 22px; line-height: 1.2;">{{ $attendance['belum_hadir'] ?? 0 }}</h3>
+                            <span class="text-muted" style="font-size: 9.5px; line-height: 1;">Menunggu</span>
                         </div>
                     </div>
 
                     <!-- Alpha -->
-                    <div class="col-12 col-sm-6 col-lg">
-                        <div class="p-2.5 rounded-3 text-center border h-100 d-flex flex-column justify-content-between" style="background-color: rgba(239, 68, 68, 0.04) !important; border-color: rgba(239, 68, 68, 0.25) !important;">
-                            <span class="text-danger small text-uppercase fw-semibold" style="font-size: 10px;">Alpha</span>
-                            <h3 class="fw-bold text-danger m-0 my-1 font-heading" style="font-size: 22px;">{{ $attendance['alpha'] ?? 0 }}</h3>
-                            <span class="text-danger" style="font-size: 9.5px;">Tanpa Ket.</span>
+                    <div class="col-4 col-md">
+                        <div class="p-2.5 rounded-3 text-center border h-100 d-flex flex-column justify-content-between" style="background-color: rgba(239, 68, 68, 0.05) !important; border-color: rgba(239, 68, 68, 0.22) !important; min-height: 88px;">
+                            <div class="d-flex align-items-center justify-content-center gap-1.5">
+                                <span class="rounded-circle" style="width: 6px; height: 6px; background-color: #ef4444;"></span>
+                                <span class="text-danger small text-uppercase fw-bold" style="font-size: 10px; letter-spacing: 0.3px;">Alpha</span>
+                            </div>
+                            <h3 class="fw-bold text-danger m-0 my-0.5 font-heading" style="font-size: 22px; line-height: 1.2;">{{ $attendance['alpha'] ?? 0 }}</h3>
+                            <span class="text-danger" style="font-size: 9.5px; line-height: 1;">Tanpa Ket.</span>
                         </div>
                     </div>
                 </div>
