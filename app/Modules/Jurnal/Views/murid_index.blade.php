@@ -32,24 +32,9 @@
                         </div>
 
                         <div class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <label for="deskripsi_aktivitas" class="form-label font-heading fw-semibold text-secondary m-0" style="font-size: 13px;">Rincian Aktivitas Harian</label>
-                                <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 11px;">Kaidah 5W + 1H</span>
-                            </div>
-                            
-                            <div class="p-2 mb-2 rounded border" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important; font-size: 11.5px; line-height: 1.5;">
-                                <span class="fw-bold text-dark d-block mb-1">💡 Panduan Penulisan Jurnal (5W + 1H):</span>
-                                <ul class="mb-0 ps-3 text-secondary">
-                                    <li><strong>What (Apa):</strong> Tugas / materi / modul yang dikerjakan.</li>
-                                    <li><strong>Why (Mengapa):</strong> Tujuan atau manfaat pekerjaan tersebut.</li>
-                                    <li><strong>Where (Di mana):</strong> Divisi / lokasi kerja atau tools/software yang dipakai.</li>
-                                    <li><strong>When (Kapan):</strong> Waktu atau durasi pengerjaan aktivitas.</li>
-                                    <li><strong>Who (Siapa):</strong> Pembimbing industri / rekan yang terlibat.</li>
-                                    <li><strong>How (Bagaimana):</strong> Langkah pengerjaan, hasil, kendala & cara mengatasinya.</li>
-                                </ul>
-                            </div>
-
-                            <textarea name="deskripsi_aktivitas" id="deskripsi_aktivitas" class="form-control form-control-sm" rows="6" placeholder="Tulis aktivitas harian Anda dengan kaidah 5W + 1H:&#10;Contoh: Hari ini saya mengerjakan [What] untuk keperluan [Why] di ruang/tools [Where] pada pukul [When] bersama arahan Bapak/Ibu [Who]. Langkah pengerjaannya meliputi [How]..." required></textarea>
+                            <label for="deskripsi_aktivitas" class="form-label font-heading fw-semibold text-secondary mb-1" style="font-size: 13px;">Rincian Aktivitas Harian</label>
+                            <textarea name="deskripsi_aktivitas" id="deskripsi_aktivitas" class="form-control form-control-sm" rows="5" placeholder="Tuliskan aktivitas, tugas yang dikerjakan, atau materi yang dipelajari hari ini..." required></textarea>
+                            <small class="text-muted d-block mt-1" style="font-size: 11.5px;">* Jelaskan pekerjaan yang Anda lakukan dan hasil atau pembelajarannya secara ringkas.</small>
                         </div>
 
                         <div class="mb-3">
