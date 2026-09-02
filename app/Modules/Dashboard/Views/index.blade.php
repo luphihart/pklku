@@ -229,20 +229,72 @@
     <div class="row">
         <!-- Kehadiran Hari Ini -->
         <div class="col-md-8 mb-4">
-            <div class="card-premium">
-                <h5 class="fw-bold font-heading mb-3 text-dark dark-text-light">Kehadiran Hari Ini</h5>
-                <div class="row mt-4">
-                    <div class="col-4 d-flex flex-column align-items-center text-center">
-                        <span class="text-muted small d-flex align-items-center justify-content-center" style="min-height: 40px; line-height: 1.2;">Sudah Hadir</span>
-                        <h2 class="fw-bold text-success mt-2 mb-0 font-heading">{{ $attendance['hadir'] ?? 0 }}</h2>
+            <div class="card-premium h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="fw-bold font-heading m-0 text-dark dark-text-light">Kehadiran Hari Ini</h5>
+                        <small class="text-muted" style="font-size: 11.5px;">{{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }} &bull; Total {{ $attendance['total_pkl'] ?? 0 }} Siswa Aktif</small>
                     </div>
-                    <div class="col-4 d-flex flex-column align-items-center text-center">
-                        <span class="text-muted small d-flex align-items-center justify-content-center" style="min-height: 40px; line-height: 1.2;">Terlambat</span>
-                        <h2 class="fw-bold text-warning mt-2 mb-0 font-heading">{{ $attendance['terlambat'] ?? 0 }}</h2>
+                    <a href="{{ route('presensi.index') }}" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 font-heading" style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px;" aria-label="Lihat Pemantauan Presensi Lengkap">
+                        <span>Monitoring Detail</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <div class="row g-2 mt-1">
+                    <!-- Hadir (Tepat Waktu & Telat) -->
+                    <div class="col-6 col-sm-4 col-lg">
+                        <div class="p-2.5 rounded-3 text-center border h-100 d-flex flex-column justify-content-between" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
+                            <span class="text-muted small text-uppercase fw-semibold" style="font-size: 10px;">Hadir</span>
+                            <h3 class="fw-bold text-success m-0 my-1 font-heading" style="font-size: 22px;">{{ $attendance['hadir'] ?? 0 }}</h3>
+                            <div class="d-flex justify-content-center gap-1 flex-wrap" style="font-size: 9.5px;">
+                                <span class="text-success fw-medium">{{ $attendance['tepat_waktu'] ?? 0 }} Tepat</span>
+                                <span class="text-muted">&bull;</span>
+                                <span class="text-warning fw-medium">{{ $attendance['terlambat'] ?? 0 }} Telat</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-4 d-flex flex-column align-items-center text-center">
-                        <span class="text-muted small d-flex align-items-center justify-content-center" style="min-height: 40px; line-height: 1.2;">Belum Absen</span>
-                        <h2 class="fw-bold text-danger mt-2 mb-0 font-heading">{{ $attendance['belum_hadir'] ?? 0 }}</h2>
+
+                    <!-- Izin & Sakit -->
+                    <div class="col-6 col-sm-4 col-lg">
+                        <div class="p-2.5 rounded-3 text-center border h-100 d-flex flex-column justify-content-between" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
+                            <span class="text-muted small text-uppercase fw-semibold" style="font-size: 10px;">Izin / Sakit</span>
+                            <h3 class="fw-bold text-info m-0 my-1 font-heading" style="font-size: 22px;">{{ ($attendance['izin'] ?? 0) + ($attendance['sakit'] ?? 0) }}</h3>
+                            <div class="d-flex justify-content-center gap-1 flex-wrap" style="font-size: 9.5px;">
+                                <span class="text-info fw-medium">{{ $attendance['izin'] ?? 0 }} Izin</span>
+                                <span class="text-muted">&bull;</span>
+                                <span class="text-danger fw-medium">{{ $attendance['sakit'] ?? 0 }} Sakit</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Libur Shift DUDI -->
+                    <div class="col-6 col-sm-4 col-lg">
+                        <div class="p-2.5 rounded-3 text-center border h-100 d-flex flex-column justify-content-between" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
+                            <span class="text-muted small text-uppercase fw-semibold" style="font-size: 10px;">Libur Shift</span>
+                            <h3 class="fw-bold text-primary m-0 my-1 font-heading" style="font-size: 22px;">{{ $attendance['libur_shift'] ?? 0 }}</h3>
+                            <span class="text-muted" style="font-size: 9.5px;">Off Day DUDI</span>
+                        </div>
+                    </div>
+
+                    <!-- Belum Absen -->
+                    <div class="col-6 col-sm-6 col-lg">
+                        <div class="p-2.5 rounded-3 text-center border h-100 d-flex flex-column justify-content-between" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
+                            <span class="text-muted small text-uppercase fw-semibold" style="font-size: 10px;">Belum Absen</span>
+                            <h3 class="fw-bold text-secondary m-0 my-1 font-heading" style="font-size: 22px;">{{ $attendance['belum_hadir'] ?? 0 }}</h3>
+                            <span class="text-muted" style="font-size: 9.5px;">Menunggu tap</span>
+                        </div>
+                    </div>
+
+                    <!-- Alpha -->
+                    <div class="col-12 col-sm-6 col-lg">
+                        <div class="p-2.5 rounded-3 text-center border h-100 d-flex flex-column justify-content-between" style="background-color: rgba(239, 68, 68, 0.04) !important; border-color: rgba(239, 68, 68, 0.25) !important;">
+                            <span class="text-danger small text-uppercase fw-semibold" style="font-size: 10px;">Alpha</span>
+                            <h3 class="fw-bold text-danger m-0 my-1 font-heading" style="font-size: 22px;">{{ $attendance['alpha'] ?? 0 }}</h3>
+                            <span class="text-danger" style="font-size: 9.5px;">Tanpa Ket.</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -443,19 +495,47 @@
                                 </svg>{{ $dudiItem['dudi']->alamat }}
                             </small>
                             
-                            @if(auth()->user()->role === 'guru')
-                                <!-- Show details (like list of students) for Guru -->
-                                <div class="mt-2 pt-2 border-top" style="border-top-color: var(--border-color) !important;">
-                                    <span class="text-muted d-block mb-1 fw-semibold" style="font-size: 11px; text-uppercase;">Daftar Siswa Bimbingan:</span>
-                                    <ul class="ps-3 mb-0" style="font-size: 12px; color: var(--text-primary);">
-                                        @foreach($dudiItem['placements'] as $placement)
-                                            <li class="mb-1">
-                                                <strong>{{ $placement->murid?->nama ?? 'Murid' }}</strong> ({{ $placement->murid?->kelas?->nama ?? '-' }})
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
+                            <!-- Student List with Attendance Badges -->
+                            <div class="mt-2 pt-2 border-top" style="border-top-color: var(--border-color) !important;">
+                                <span class="text-muted d-block mb-1.5 fw-semibold text-uppercase" style="font-size: 10px; letter-spacing: 0.3px;">Status Siswa Hari Ini:</span>
+                                <ul class="list-unstyled mb-0" style="font-size: 12px; color: var(--text-primary);">
+                                    @foreach($dudiItem['placements'] as $placement)
+                                        @php
+                                            $pres = $todayPresensi[$placement->id] ?? null;
+                                            $leave = $todayLeaves[$placement->id] ?? null;
+                                        @endphp
+                                        <li class="py-1 d-flex justify-content-between align-items-center border-bottom" style="border-bottom-color: rgba(226, 232, 240, 0.4) !important;">
+                                            <div class="text-truncate me-2" style="max-width: 60%;">
+                                                <strong class="text-dark d-block text-truncate" style="font-size: 12px;">{{ $placement->murid?->nama ?? 'Murid' }}</strong>
+                                                <small class="text-muted d-block" style="font-size: 10.5px;">{{ $placement->murid?->kelas?->nama ?? '-' }}</small>
+                                            </div>
+                                            <div class="flex-shrink-0 text-end">
+                                                @if($pres)
+                                                    @if($pres->status_masuk === 'libur_shift')
+                                                        <span class="badge bg-info-light text-info fw-semibold" style="font-size: 9.5px; padding: 2px 6px;">Libur Shift</span>
+                                                    @elseif($pres->status_masuk === 'alpha')
+                                                        <span class="badge bg-danger-light text-danger fw-semibold" style="font-size: 9.5px; padding: 2px 6px;">Alpha</span>
+                                                    @elseif($pres->status_masuk === 'tepat_waktu')
+                                                        <span class="badge bg-success-light text-success fw-semibold" style="font-size: 9.5px; padding: 2px 6px;">Hadir ({{ substr($pres->jam_masuk, 0, 5) }})</span>
+                                                    @elseif($pres->status_masuk === 'terlambat')
+                                                        <span class="badge bg-warning-light text-warning fw-semibold" style="font-size: 9.5px; padding: 2px 6px;">Telat ({{ substr($pres->jam_masuk, 0, 5) }})</span>
+                                                    @else
+                                                        <span class="badge bg-success-light text-success fw-semibold" style="font-size: 9.5px; padding: 2px 6px;">Hadir</span>
+                                                    @endif
+                                                @elseif($leave)
+                                                    @if($leave->tipe === 'izin')
+                                                        <span class="badge bg-info-light text-info fw-semibold" style="font-size: 9.5px; padding: 2px 6px;" title="{{ $leave->alasan }}">Izin</span>
+                                                    @else
+                                                        <span class="badge bg-danger-light text-danger fw-semibold" style="font-size: 9.5px; padding: 2px 6px;" title="{{ $leave->alasan }}">Sakit</span>
+                                                    @endif
+                                                @else
+                                                    <span class="badge bg-secondary-light text-muted fw-semibold" style="font-size: 9.5px; padding: 2px 6px;">Belum Absen</span>
+                                                @endif
+                                            </div>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
                         </div>
                     @empty
                         <div class="empty-state py-4">

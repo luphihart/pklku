@@ -45,10 +45,20 @@ class DashboardService
             $placements = $query->get();
 
             $placementIds = $placements->pluck('id');
+            $today = now()->toDateString();
             $todayPresensi = \App\Modules\Presensi\Models\Presensi::whereIn('penempatan_pkl_id', $placementIds)
-                ->where('tanggal', now()->toDateString())
+                ->where('tanggal', $today)
                 ->select(['id', 'penempatan_pkl_id', 'tanggal', 'jam_masuk', 'jam_pulang', 'status_masuk', 'lat_masuk', 'lng_masuk', 'lat_pulang', 'lng_pulang'])
-                ->get();
+                ->get()
+                ->keyBy('penempatan_pkl_id');
+
+            $todayLeaves = \App\Modules\Presensi\Models\IzinSakit::whereIn('penempatan_pkl_id', $placementIds)
+                ->where('status_approval', 'disetujui')
+                ->where('tanggal_mulai', '<=', $today)
+                ->where('tanggal_selesai', '>=', $today)
+                ->select(['id', 'penempatan_pkl_id', 'tipe', 'alasan'])
+                ->get()
+                ->keyBy('penempatan_pkl_id');
 
             foreach ($placements as $p) {
                 if ($p->dudi) {
@@ -74,6 +84,8 @@ class DashboardService
                 });
             }
             unset($dItem);
+        } else {
+            $todayLeaves = collect();
         }
 
         return [
@@ -83,6 +95,7 @@ class DashboardService
             'placements' => $placements,
             'dudiList' => $dudiList,
             'todayPresensi' => $todayPresensi,
+            'todayLeaves' => $todayLeaves,
         ];
     }
 }
