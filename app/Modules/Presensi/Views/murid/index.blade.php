@@ -472,23 +472,32 @@
 
                                 <!-- Bottom Row: Check-in / Check-out Details -->
                                 @if($h->type === 'izin' || $h->type === 'sakit')
-                                    <div class="p-2 rounded bg-light border d-flex justify-content-between align-items-center" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important; font-size: 12px;">
-                                        <div class="text-truncate me-2">
-                                            <span class="text-muted">Keterangan:</span> <strong class="text-dark">{{ $h->keterangan ?: 'Izin tidak hadir' }}</strong>
+                                    <div class="p-2.5 rounded bg-light border" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important; font-size: 12px;">
+                                        <div class="d-flex justify-content-between align-items-start gap-2">
+                                            <div style="min-width: 0; flex: 1;">
+                                                <span class="text-muted d-block mb-1" style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;">Keterangan:</span>
+                                                <div class="text-dark fw-medium" style="line-height: 1.45; word-break: break-word;">
+                                                    {{ $h->keterangan ?: 'Izin tidak hadir' }}
+                                                </div>
+                                            </div>
+                                            @if($h->surat_pendukung)
+                                                <div class="flex-shrink-0 pt-0.5">
+                                                    <a href="{{ asset('storage/izin/' . $h->surat_pendukung) }}" target="_blank" class="btn btn-xs btn-outline-primary text-nowrap d-inline-flex align-items-center gap-1 font-heading" style="font-size: 11px; padding: 3px 8px; border-radius: 6px;" title="Lihat Dokumen Surat">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                                                        </svg>
+                                                        <span>Surat</span>
+                                                    </a>
+                                                </div>
+                                            @endif
                                         </div>
-                                        @if($h->surat_pendukung)
-                                            <a href="{{ asset('storage/izin/' . $h->surat_pendukung) }}" target="_blank" class="btn btn-xs btn-outline-primary text-nowrap d-inline-flex align-items-center gap-1 font-heading" style="font-size: 11px; padding: 2px 8px; border-radius: 4px;">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
-                                                <span>Surat</span>
-                                            </a>
-                                        @endif
                                     </div>
                                 @elseif($h->type === 'libur_shift')
-                                    <div class="text-muted small" style="font-size: 11.5px;">
+                                    <div class="p-2 rounded bg-light border text-muted" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important; font-size: 11.5px; line-height: 1.4;">
                                         Jadwal libur shift mandiri / off day DUDI.
                                     </div>
                                 @elseif($h->type === 'alpha')
-                                    <div class="text-danger small fw-medium" style="font-size: 11.5px;">
+                                    <div class="p-2 rounded bg-light border text-danger fw-medium" style="background-color: rgba(239, 68, 68, 0.05) !important; border-color: rgba(239, 68, 68, 0.2) !important; font-size: 11.5px; line-height: 1.4;">
                                         Tidak melakukan presensi harian (Alpha).
                                     </div>
                                 @else
