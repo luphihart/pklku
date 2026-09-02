@@ -292,11 +292,6 @@
             </div>
         @endforeach
 
-        @if($gurus->hasPages())
-        <div class="px-4 py-3 border-top d-flex justify-content-end" style="border-top-color: var(--border-color) !important;">
-            {{ $gurus->withQueryString()->links() }}
-        </div>
-        @endif
     </div>
 </div>
 

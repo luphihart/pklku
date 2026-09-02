@@ -171,11 +171,6 @@
                     </div>
                 @endforeach
 
-                @if($kelases->hasPages())
-                <div class="px-4 py-3 border-top d-flex justify-content-end" style="border-top-color: var(--border-color) !important;">
-                    {{ $kelases->links() }}
-                </div>
-                @endif
             </div>
         </div>
     </div>
