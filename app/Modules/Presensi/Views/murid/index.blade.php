@@ -498,7 +498,15 @@
                                             <div class="p-2 rounded border d-flex align-items-center justify-content-between" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
                                                 <div class="d-flex align-items-center gap-2">
                                                     @if($h->foto_masuk)
-                                                        <div class="attendance-photo-thumb" onclick="previewAttendancePhoto('{{ asset('storage/attendance/' . $h->foto_masuk) }}', 'Foto Check In Masuk', '{{ \Carbon\Carbon::parse($h->tanggal)->translatedFormat('l, d F Y') }}', '{{ substr($h->jam_masuk, 0, 5) }} WIB')" title="Klik untuk perbesar foto">
+                                                        <div class="attendance-photo-thumb" 
+                                                             data-bs-toggle="modal" 
+                                                             data-bs-target="#modalPreviewFotoPresensi"
+                                                             data-foto-url="{{ asset('storage/attendance/' . $h->foto_masuk) }}" 
+                                                             data-foto-title="Foto Check In Masuk" 
+                                                             data-foto-date="{{ \Carbon\Carbon::parse($h->tanggal)->translatedFormat('l, d F Y') }}" 
+                                                             data-foto-time="{{ substr($h->jam_masuk, 0, 5) }} WIB"
+                                                             onclick="window.previewAttendancePhoto('{{ asset('storage/attendance/' . $h->foto_masuk) }}', 'Foto Check In Masuk', '{{ \Carbon\Carbon::parse($h->tanggal)->translatedFormat('l, d F Y') }}', '{{ substr($h->jam_masuk, 0, 5) }} WIB')" 
+                                                             title="Klik untuk melihat foto presensi">
                                                             <img src="{{ asset('storage/attendance/' . $h->foto_masuk) }}" class="rounded-2 border" width="36" height="36" alt="Foto Masuk" loading="lazy">
                                                             <span class="photo-badge bg-success text-white">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -522,7 +530,15 @@
                                             <div class="p-2 rounded border d-flex align-items-center justify-content-between" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
                                                 <div class="d-flex align-items-center gap-2">
                                                     @if($h->foto_pulang)
-                                                        <div class="attendance-photo-thumb" onclick="previewAttendancePhoto('{{ asset('storage/attendance/' . $h->foto_pulang) }}', 'Foto Check Out Pulang', '{{ \Carbon\Carbon::parse($h->tanggal)->translatedFormat('l, d F Y') }}', '{{ substr($h->jam_pulang, 0, 5) }} WIB')" title="Klik untuk perbesar foto">
+                                                        <div class="attendance-photo-thumb" 
+                                                             data-bs-toggle="modal" 
+                                                             data-bs-target="#modalPreviewFotoPresensi"
+                                                             data-foto-url="{{ asset('storage/attendance/' . $h->foto_pulang) }}" 
+                                                             data-foto-title="Foto Check Out Pulang" 
+                                                             data-foto-date="{{ \Carbon\Carbon::parse($h->tanggal)->translatedFormat('l, d F Y') }}" 
+                                                             data-foto-time="{{ substr($h->jam_pulang, 0, 5) }} WIB"
+                                                             onclick="window.previewAttendancePhoto('{{ asset('storage/attendance/' . $h->foto_pulang) }}', 'Foto Check Out Pulang', '{{ \Carbon\Carbon::parse($h->tanggal)->translatedFormat('l, d F Y') }}', '{{ substr($h->jam_pulang, 0, 5) }} WIB')" 
+                                                             title="Klik untuk melihat foto presensi">
                                                             <img src="{{ asset('storage/attendance/' . $h->foto_pulang) }}" class="rounded-2 border" width="36" height="36" alt="Foto Pulang" loading="lazy">
                                                             <span class="photo-badge bg-warning text-white">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -572,16 +588,24 @@
                     <h6 class="modal-title fw-bold font-heading m-0" id="previewFotoTitle" style="font-size: 14px;">Foto Bukti Presensi</h6>
                     <small class="text-muted" id="previewFotoSubtitle" style="font-size: 11px;">-</small>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="window.closeAttendancePhotoModal()"></button>
             </div>
             <div class="modal-body text-center p-3">
                 <div class="rounded-3 overflow-hidden border shadow-sm mx-auto position-relative" style="max-width: 360px; background-color: #0f172a;">
-                    <img src="" id="previewFotoImg" class="img-fluid w-100" style="object-fit: cover; max-height: 400px; display: block;" alt="Bukti Presensi">
+                    <img src="" id="previewFotoImg" class="img-fluid w-100" style="object-fit: cover; max-height: 420px; display: block;" alt="Bukti Presensi">
                 </div>
             </div>
-            <div class="modal-footer py-2 px-3 border-top d-flex justify-content-between" style="border-top-color: var(--border-color) !important;">
+            <div class="modal-footer py-2 px-3 border-top d-flex justify-content-between align-items-center" style="border-top-color: var(--border-color) !important;">
                 <span class="text-muted small" id="previewFotoTime" style="font-size: 11.5px;">-</span>
-                <button type="button" class="btn btn-sm btn-secondary font-heading" data-bs-dismiss="modal">Tutup</button>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="#" id="previewFotoDirectLink" target="_blank" class="btn btn-sm btn-outline-primary font-heading d-inline-flex align-items-center gap-1" style="font-size: 11.5px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                        <span>Buka Tab Baru</span>
+                    </a>
+                    <button type="button" class="btn btn-sm btn-secondary font-heading" data-bs-dismiss="modal" onclick="window.closeAttendancePhotoModal()">Tutup</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1016,24 +1040,108 @@
         }
     }
 
-    function previewAttendancePhoto(url, title, date, time) {
+    window.previewAttendancePhoto = function(url, title, date, time) {
         if (!url) return;
         const imgEl = document.getElementById('previewFotoImg');
         const titleEl = document.getElementById('previewFotoTitle');
         const subtitleEl = document.getElementById('previewFotoSubtitle');
         const timeEl = document.getElementById('previewFotoTime');
+        const linkEl = document.getElementById('previewFotoDirectLink');
         
         if (imgEl) imgEl.src = url;
         if (titleEl) titleEl.innerText = title || 'Foto Bukti Presensi';
         if (subtitleEl) subtitleEl.innerText = date || '';
         if (timeEl) timeEl.innerText = 'Waktu Rekam: ' + (time || '-');
+        if (linkEl) linkEl.href = url;
         
         const modalEl = document.getElementById('modalPreviewFotoPresensi');
-        if (modalEl) {
-            const modal = new bootstrap.Modal(modalEl);
-            modal.show();
+        if (!modalEl) return;
+
+        // 1. Try Bootstrap 5 Modal
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            try {
+                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modal.show();
+                return;
+            } catch(e) {
+                console.warn("Bootstrap modal failed, falling back", e);
+            }
         }
-    }
+        
+        // 2. Try jQuery Modal
+        if (typeof window.$ !== 'undefined' && typeof window.$.fn.modal !== 'undefined') {
+            try {
+                window.$(modalEl).modal('show');
+                return;
+            } catch(e) {
+                console.warn("jQuery modal failed", e);
+            }
+        }
+
+        // 3. Fallback: Native CSS Modal display
+        modalEl.classList.add('show');
+        modalEl.style.display = 'block';
+        modalEl.removeAttribute('aria-hidden');
+        modalEl.setAttribute('aria-modal', 'true');
+        
+        let backdrop = document.getElementById('customPhotoBackdrop');
+        if (!backdrop) {
+            backdrop = document.createElement('div');
+            backdrop.id = 'customPhotoBackdrop';
+            backdrop.className = 'modal-backdrop fade show';
+            document.body.appendChild(backdrop);
+            backdrop.addEventListener('click', window.closeAttendancePhotoModal);
+        }
+    };
+
+    window.closeAttendancePhotoModal = function() {
+        const modalEl = document.getElementById('modalPreviewFotoPresensi');
+        if (modalEl) {
+            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                try {
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                } catch(e) {}
+            }
+            modalEl.classList.remove('show');
+            modalEl.style.display = 'none';
+            modalEl.setAttribute('aria-hidden', 'true');
+        }
+        const backdrop = document.getElementById('customPhotoBackdrop');
+        if (backdrop) {
+            backdrop.remove();
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Event delegation for clicks on photo thumbs
+        document.addEventListener('click', function(e) {
+            const thumb = e.target.closest('.attendance-photo-thumb');
+            if (!thumb) return;
+            const url = thumb.getAttribute('data-foto-url');
+            if (url) {
+                const title = thumb.getAttribute('data-foto-title');
+                const date = thumb.getAttribute('data-foto-date');
+                const time = thumb.getAttribute('data-foto-time');
+                window.previewAttendancePhoto(url, title, date, time);
+            }
+        });
+
+        // Bootstrap show.bs.modal listener
+        const modalEl = document.getElementById('modalPreviewFotoPresensi');
+        if (modalEl) {
+            modalEl.addEventListener('show.bs.modal', function(event) {
+                const trigger = event.relatedTarget;
+                if (trigger && trigger.hasAttribute('data-foto-url')) {
+                    const url = trigger.getAttribute('data-foto-url');
+                    const title = trigger.getAttribute('data-foto-title');
+                    const date = trigger.getAttribute('data-foto-date');
+                    const time = trigger.getAttribute('data-foto-time');
+                    window.previewAttendancePhoto(url, title, date, time);
+                }
+            });
+        }
+    });
 </script>
 @endif
 @endsection
