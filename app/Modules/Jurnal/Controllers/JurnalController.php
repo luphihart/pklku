@@ -153,11 +153,16 @@ class JurnalController extends Controller
         }
 
         $request->validate([
-            'status' => 'required|in:disetujui,ditolak,revisi',
+            'status' => 'required|in:disetujui,ditolak,revisi,pending',
             'catatan_verifikasi' => 'required_if:status,revisi,ditolak|nullable|string',
         ]);
 
         $guruId = auth()->user()->role === 'guru' ? auth()->user()->guru?->id : null;
+
+        if ($request->status === 'pending') {
+            $this->service->cancelVerification($id);
+            return redirect()->route('jurnal.index')->with('success', 'Status verifikasi jurnal berhasil dikembalikan ke Pending.');
+        }
 
         $this->service->verifyEntry(
             $id,
@@ -167,6 +172,20 @@ class JurnalController extends Controller
         );
 
         return redirect()->route('jurnal.index')->with('success', 'Jurnal bimbingan berhasil diverifikasi.');
+    }
+
+    /**
+     * Cancel verification of a journal and reset status back to pending.
+     */
+    public function cancelVerify(int $id)
+    {
+        if (!in_array(auth()->user()->role, ['guru', 'admin'])) {
+            abort(403, 'Hanya Guru Pembimbing atau Admin yang dapat membatalkan verifikasi jurnal.');
+        }
+
+        $this->service->cancelVerification($id);
+
+        return redirect()->route('jurnal.index')->with('success', 'Status verifikasi jurnal berhasil dibatalkan dan dikembalikan ke Pending.');
     }
 
     /**

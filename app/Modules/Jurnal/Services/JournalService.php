@@ -97,6 +97,23 @@ class JournalService
         return $updated;
     }
 
+    /**
+     * Cancel verification / Reset status to pending.
+     */
+    public function cancelVerification(int $id)
+    {
+        $journal = $this->repo->findById($id);
+
+        $updated = $this->repo->updateJournal($id, [
+            'status_verifikasi' => 'pending',
+            'catatan_verifikasi' => null,
+            'verified_by' => null,
+        ]);
+
+        $this->logActivity("Membatalkan verifikasi jurnal ID: {$id} (kembali ke Pending)");
+        return $updated;
+    }
+
     private function logActivity(string $aktivitas, ?int $userId = null): void
     {
         $uId = $userId ?? \Illuminate\Support\Facades\Auth::id();

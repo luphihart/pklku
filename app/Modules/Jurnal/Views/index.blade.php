@@ -173,12 +173,31 @@
                             </td>
                             <td class="text-center pe-4">
                                 <div class="d-flex gap-1 justify-content-center align-items-center">
-                                    @if($j->status_verifikasi === 'pending' && (auth()->user()->role === 'guru' || auth()->user()->role === 'admin'))
-                                        <button class="btn btn-sm btn-outline-primary btn-action" data-bs-toggle="modal" data-bs-target="#reviewModal_{{ $j->id }}" title="Tinjau Jurnal" aria-label="Tinjau Jurnal {{ $j->penempatanPkl?->murid?->nama }}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                            </svg>
-                                        </button>
+                                    @if(auth()->user()->role === 'guru' || auth()->user()->role === 'admin')
+                                        @if($j->status_verifikasi === 'pending')
+                                            <button class="btn btn-sm btn-outline-primary btn-action" data-bs-toggle="modal" data-bs-target="#reviewModal_{{ $j->id }}" title="Tinjau Jurnal" aria-label="Tinjau Jurnal {{ $j->penempatanPkl?->murid?->nama }}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                            </button>
+                                        @else
+                                            <!-- Tombol Batalkan Verifikasi (Kembalikan ke Pending) -->
+                                            <form action="{{ route('jurnal.cancel_verify', $j->id) }}" method="POST" id="cancelVerifyForm_{{ $j->id }}" style="display: inline-block;">
+                                                @csrf
+                                                <button type="button" class="btn btn-sm btn-outline-warning btn-action" title="Batalkan Verifikasi (Kembalikan ke Status Pending)" aria-label="Batalkan Verifikasi Jurnal {{ $j->penempatanPkl?->murid?->nama }}" onclick="confirmCancelVerify({{ $j->id }}, '{{ addslashes($j->penempatanPkl?->murid?->nama ?? 'siswa') }}')">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                                                    </svg>
+                                                </button>
+                                            </form>
+
+                                            <!-- Tombol Ubah Keputusan Verifikasi -->
+                                            <button class="btn btn-sm btn-outline-secondary btn-action" data-bs-toggle="modal" data-bs-target="#reviewModal_{{ $j->id }}" title="Ubah Keputusan / Catatan" aria-label="Ubah Keputusan Jurnal {{ $j->penempatanPkl?->murid?->nama }}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                </svg>
+                                            </button>
+                                        @endif
 
                                         <!-- Modal Verifikasi Jurnal -->
                                         <div class="modal fade text-start" id="reviewModal_{{ $j->id }}" tabindex="-1" aria-hidden="true">
@@ -190,10 +209,16 @@
                                                     </div>
                                                     <form action="{{ route('jurnal.verify', $j->id) }}" method="POST">
                                                         @csrf
-                                                        <div class="modal-body" x-data="{ decision: 'disetujui' }">
+                                                        <div class="modal-body" x-data="{ decision: '{{ $j->status_verifikasi !== 'pending' ? $j->status_verifikasi : 'disetujui' }}' }">
+                                                            <div class="mb-3">
+                                                                <label class="form-label small fw-semibold text-muted">Siswa & Tanggal</label>
+                                                                <div class="fw-semibold text-dark">{{ $j->penempatanPkl?->murid?->nama }} ({{ $j->penempatanPkl?->murid?->kelas?->nama ?? '-' }})</div>
+                                                                <small class="text-muted">{{ $j->tanggal ? \Carbon\Carbon::parse($j->tanggal)->translatedFormat('d F Y') : '-' }} - {{ $j->penempatanPkl?->dudi?->nama }}</small>
+                                                            </div>
+
                                                             <div class="mb-3">
                                                                 <label class="form-label small fw-semibold text-muted">Aktivitas Siswa</label>
-                                                                <div class="p-2 border rounded bg-light small" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
+                                                                <div class="p-2 border rounded bg-light small" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important; line-height: 1.5; white-space: pre-line; word-break: break-word;">
                                                                     {{ $j->deskripsi_aktivitas }}
                                                                 </div>
                                                             </div>
@@ -204,12 +229,13 @@
                                                                     <option value="disetujui">Setujui Jurnal</option>
                                                                     <option value="revisi">Minta Revisi Jurnal</option>
                                                                     <option value="ditolak">Tolak Jurnal</option>
+                                                                    <option value="pending">Kembalikan ke Status Pending</option>
                                                                 </select>
                                                             </div>
 
                                                             <div class="mb-3">
                                                                 <label for="catatan_{{ $j->id }}" class="form-label small fw-semibold">Catatan / Komentar Guru (Wajib untuk revisi/tolak)</label>
-                                                                <textarea name="catatan_verifikasi" id="catatan_{{ $j->id }}" class="form-control form-control-sm" rows="3" placeholder="Masukkan instruksi revisi atau alasan penolakan..." :required="decision === 'revisi' || decision === 'ditolak'"></textarea>
+                                                                <textarea name="catatan_verifikasi" id="catatan_{{ $j->id }}" class="form-control form-control-sm" rows="3" placeholder="Masukkan instruksi revisi atau catatan apresiasi..." :required="decision === 'revisi' || decision === 'ditolak'">{{ $j->catatan_verifikasi }}</textarea>
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer border-top" style="border-top-color: var(--border-color) !important;">
@@ -262,4 +288,33 @@
         @endif
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    function confirmCancelVerify(id, namaSiswa) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Batalkan Verifikasi?',
+                text: `Apakah Anda yakin ingin membatalkan status verifikasi jurnal ${namaSiswa} dan mengembalikannya menjadi Pending?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Kembalikan ke Pending',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#f59e0b',
+                cancelButtonColor: '#6b7280'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.getElementById('cancelVerifyForm_' + id);
+                    if (form) form.submit();
+                }
+            });
+        } else {
+            if (confirm(`Batalkan verifikasi jurnal ${namaSiswa} dan kembalikan ke Pending?`)) {
+                const form = document.getElementById('cancelVerifyForm_' + id);
+                if (form) form.submit();
+            }
+        }
+    }
+</script>
 @endsection
