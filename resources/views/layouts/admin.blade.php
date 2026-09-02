@@ -8,6 +8,57 @@
     <!-- Modern SVG Favicon representing a digital briefcase & learning growth -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234f46e5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z'></path><path d='M12 11v6'></path><path d='M9 14h6'></path></svg>">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        #sidebar {
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+            display: flex;
+            flex-direction: column;
+            z-index: 1020;
+        }
+        #sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+        #sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #sidebar::-webkit-scrollbar-thumb {
+            background-color: rgba(148, 163, 184, 0.3);
+            border-radius: 4px;
+        }
+        #sidebar::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(148, 163, 184, 0.6);
+        }
+        .sidebar-header {
+            position: sticky;
+            top: 0;
+            background-color: var(--bg-card);
+            z-index: 10;
+            flex-shrink: 0;
+        }
+        .sidebar-menu {
+            padding-bottom: 3rem !important;
+            flex: 1;
+        }
+        @media (max-width: 768px) {
+            #sidebar {
+                position: fixed !important;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                height: 100vh !important;
+                height: 100dvh !important;
+                z-index: 1040;
+                overflow-y: auto !important;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+    </style>
     @yield('styles')
 </head>
 <body x-data="{ 
