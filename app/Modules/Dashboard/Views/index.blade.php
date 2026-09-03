@@ -251,7 +251,7 @@
                 {{-- Header --}}
                 <div class="mb-3">
                     <h5 class="fw-bold font-heading m-0 text-dark dark-text-light" style="font-size: 15px;">Kehadiran Hari Ini</h5>
-                    <p class="text-muted m-0 mt-0.5" style="font-size: 12px;">{{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }} &bull; <span class="fw-semibold">{{ $totalPkl }} Siswa Aktif</span></p>
+                    <p class="text-muted m-0 mt-0.5" style="font-size: 12px;">{{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}</p>
                 </div>
 
                 {{-- Progress Bar --}}
