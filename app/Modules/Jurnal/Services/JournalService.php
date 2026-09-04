@@ -56,6 +56,7 @@ class JournalService
         }
 
         $updateData = [
+            'tanggal' => $data['tanggal'] ?? $journal->tanggal,
             'deskripsi_aktivitas' => $data['deskripsi_aktivitas'],
             'status_verifikasi' => 'pending', // Reset status to pending when modified
         ];
@@ -76,7 +77,7 @@ class JournalService
         }
 
         $updated = $this->repo->updateJournal($id, $updateData);
-        $this->logActivity("Mengubah jurnal kegiatan harian, tanggal: " . $journal->tanggal);
+        $this->logActivity("Mengubah jurnal kegiatan harian, tanggal: " . ($updateData['tanggal'] ?? $journal->tanggal));
         return $updated;
     }
 

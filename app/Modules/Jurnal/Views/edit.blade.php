@@ -14,8 +14,11 @@
                 @method('PUT')
 
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold">Tanggal Kegiatan</label>
-                    <input type="text" class="form-control" value="{{ \Carbon\Carbon::parse($journal->tanggal)->translatedFormat('d F Y') }}" readonly style="background-color: var(--bg-canvas);">
+                    <label for="tanggal" class="form-label small fw-semibold">Tanggal Kegiatan</label>
+                    <input type="date" name="tanggal" id="tanggal" class="form-control @error('tanggal') is-invalid @enderror" value="{{ old('tanggal', $journal->tanggal ? \Carbon\Carbon::parse($journal->tanggal)->format('Y-m-d') : '') }}" required>
+                    @error('tanggal')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">

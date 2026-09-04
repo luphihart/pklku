@@ -118,6 +118,7 @@ class JurnalController extends Controller
         }
 
         $rules = [
+            'tanggal' => 'required|date',
             'deskripsi_aktivitas' => 'required|string',
         ];
 
@@ -128,6 +129,8 @@ class JurnalController extends Controller
         }
 
         $request->validate($rules, [
+            'tanggal.required' => 'Tanggal kegiatan wajib diisi.',
+            'tanggal.date' => 'Format tanggal kegiatan tidak valid.',
             'deskripsi_aktivitas.required' => 'Deskripsi aktivitas wajib diisi.',
             'foto.required' => 'Bukti kegiatan wajib dilampirkan.',
             'foto.mimes' => 'Format bukti kegiatan harus JPG, JPEG, PNG, atau PDF.',
@@ -135,7 +138,7 @@ class JurnalController extends Controller
         ]);
 
         try {
-            $this->service->editEntry($id, $request->only('deskripsi_aktivitas'), $request->file('foto'));
+            $this->service->editEntry($id, $request->only('tanggal', 'deskripsi_aktivitas'), $request->file('foto'));
             return redirect()->route('jurnal.index')->with('success', 'Jurnal harian berhasil diperbarui.');
         } catch (\Throwable $e) {
             return back()->with('error', $e->getMessage());
