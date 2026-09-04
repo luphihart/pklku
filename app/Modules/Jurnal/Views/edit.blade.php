@@ -9,6 +9,45 @@
         <div class="card-premium">
             <h5 class="fw-bold font-heading mb-4 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">Form Edit Jurnal Harian</h5>
 
+            @if($journal->catatan_verifikasi)
+                @php
+                    $editNoteTheme = match($journal->status_verifikasi) {
+                        'disetujui' => [
+                            'bg'     => 'rgba(16, 185, 129, 0.08)',
+                            'border' => 'rgba(16, 185, 129, 0.3)',
+                            'class'  => 'text-success',
+                            'style'  => '',
+                            'label'  => 'Catatan Guru Pembimbing (Disetujui):',
+                        ],
+                        'revisi' => [
+                            'bg'     => 'rgba(245, 158, 11, 0.08)',
+                            'border' => 'rgba(245, 158, 11, 0.3)',
+                            'class'  => 'text-warning',
+                            'style'  => 'color: #b45309 !important;',
+                            'label'  => 'Catatan Guru Pembimbing (Perlu Revisi):',
+                        ],
+                        'ditolak' => [
+                            'bg'     => 'rgba(239, 68, 68, 0.08)',
+                            'border' => 'rgba(239, 68, 68, 0.3)',
+                            'class'  => 'text-danger',
+                            'style'  => '',
+                            'label'  => 'Catatan Guru Pembimbing (Ditolak):',
+                        ],
+                        default => [
+                            'bg'     => 'rgba(100, 116, 139, 0.08)',
+                            'border' => 'rgba(100, 116, 139, 0.3)',
+                            'class'  => 'text-secondary',
+                            'style'  => '',
+                            'label'  => 'Catatan Guru Pembimbing:',
+                        ],
+                    };
+                @endphp
+                <div class="p-3 rounded mb-3 border" style="background-color: {{ $editNoteTheme['bg'] }}; border-color: {{ $editNoteTheme['border'] }} !important; font-size: 13px; line-height: 1.5;">
+                    <strong class="{{ $editNoteTheme['class'] }}" style="{{ $editNoteTheme['style'] }}">{{ $editNoteTheme['label'] }}</strong>
+                    <div class="text-dark mt-1" style="white-space: pre-line;">{{ $journal->catatan_verifikasi }}</div>
+                </div>
+            @endif
+
             <form action="{{ route('jurnal.update', $journal->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')

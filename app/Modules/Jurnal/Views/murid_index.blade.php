@@ -109,7 +109,25 @@
                                         <td>
                                             <div style="line-height: 1.5; word-break: break-word; white-space: normal;">{{ $j->deskripsi_aktivitas }}</div>
                                             @if($j->catatan_verifikasi)
-                                                <small class="text-danger d-block mt-1"><strong>Catatan Guru:</strong> {{ $j->catatan_verifikasi }}</small>
+                                                @php
+                                                    $komentarColor = match($j->status_verifikasi) {
+                                                        'disetujui' => 'text-success',
+                                                        'revisi'    => 'text-warning',
+                                                        'ditolak'   => 'text-danger',
+                                                        default     => 'text-secondary'
+                                                    };
+                                                    $komentarStyle = match($j->status_verifikasi) {
+                                                        'revisi'    => 'color: #d97706 !important;',
+                                                        default     => ''
+                                                    };
+                                                    $komentarLabel = match($j->status_verifikasi) {
+                                                        'disetujui' => 'Catatan Guru (Disetujui):',
+                                                        'revisi'    => 'Catatan Guru (Perlu Revisi):',
+                                                        'ditolak'   => 'Catatan Guru (Ditolak):',
+                                                        default     => 'Catatan Guru:'
+                                                    };
+                                                @endphp
+                                                <small class="{{ $komentarColor }} d-block mt-1" style="{{ $komentarStyle }}"><strong>{{ $komentarLabel }}</strong> {{ $j->catatan_verifikasi }}</small>
                                             @endif
                                         </td>
                                         <td class="text-center">
@@ -228,8 +246,40 @@
 
                                 <!-- Catatan Guru -->
                                 @if($j->catatan_verifikasi)
-                                    <div class="p-2 rounded mb-2 border" style="background-color: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.2) !important; font-size: 12px; line-height: 1.4;">
-                                        <strong class="text-danger">Catatan Guru:</strong>
+                                    @php
+                                        $cardTheme = match($j->status_verifikasi) {
+                                            'disetujui' => [
+                                                'bg'     => 'rgba(16, 185, 129, 0.08)',
+                                                'border' => 'rgba(16, 185, 129, 0.25)',
+                                                'class'  => 'text-success',
+                                                'style'  => '',
+                                                'label'  => 'Catatan Guru (Disetujui):',
+                                            ],
+                                            'revisi' => [
+                                                'bg'     => 'rgba(245, 158, 11, 0.08)',
+                                                'border' => 'rgba(245, 158, 11, 0.3)',
+                                                'class'  => 'text-warning',
+                                                'style'  => 'color: #b45309 !important;',
+                                                'label'  => 'Catatan Guru (Perlu Revisi):',
+                                            ],
+                                            'ditolak' => [
+                                                'bg'     => 'rgba(239, 68, 68, 0.08)',
+                                                'border' => 'rgba(239, 68, 68, 0.25)',
+                                                'class'  => 'text-danger',
+                                                'style'  => '',
+                                                'label'  => 'Catatan Guru (Ditolak):',
+                                            ],
+                                            default => [
+                                                'bg'     => 'rgba(100, 116, 139, 0.08)',
+                                                'border' => 'rgba(100, 116, 139, 0.25)',
+                                                'class'  => 'text-secondary',
+                                                'style'  => '',
+                                                'label'  => 'Catatan Guru:',
+                                            ],
+                                        };
+                                    @endphp
+                                    <div class="p-2 rounded mb-2 border" style="background-color: {{ $cardTheme['bg'] }}; border-color: {{ $cardTheme['border'] }} !important; font-size: 12px; line-height: 1.4;">
+                                        <strong class="{{ $cardTheme['class'] }}" style="{{ $cardTheme['style'] }}">{{ $cardTheme['label'] }}</strong>
                                         <div class="text-dark mt-0.5" style="white-space: pre-line;">{{ $j->catatan_verifikasi }}</div>
                                     </div>
                                 @endif
