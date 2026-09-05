@@ -20,6 +20,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::middleware('role:admin,guru')->group(function () {
         Route::get('/kunjungan', [KunjunganController::class, 'index'])->name('kunjungan.index');
         Route::get('/kunjungan/export/pdf', [KunjunganController::class, 'exportPdf'])->name('kunjungan.export_pdf');
+        Route::post('/kunjungan/{id}/export-sppd', [KunjunganController::class, 'exportSppd'])->name('kunjungan.export_sppd');
+        Route::get('/kunjungan/{id}/export-sppd', [KunjunganController::class, 'exportSppd'])->name('kunjungan.export_sppd_get');
         Route::post('/kunjungan', [KunjunganController::class, 'store'])->name('kunjungan.store');
         Route::put('/kunjungan/{id}', [KunjunganController::class, 'update'])->name('kunjungan.update');
         Route::delete('/kunjungan/{id}', [KunjunganController::class, 'destroy'])->name('kunjungan.destroy');

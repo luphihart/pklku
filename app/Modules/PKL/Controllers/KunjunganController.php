@@ -39,8 +39,9 @@ class KunjunganController extends Controller
         }
         $placements = $placementsQuery->get();
         $dudiPlacements = $placements->unique('dudi_id');
+        $branding = $this->getBranding();
 
-        return view('pkl::kunjungan.index', compact('kunjungans', 'placements', 'dudiPlacements'));
+        return view('pkl::kunjungan.index', compact('kunjungans', 'placements', 'dudiPlacements', 'branding'));
     }
 
     public function store(Request $request)
@@ -148,6 +149,65 @@ class KunjunganController extends Controller
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pkl::kunjungan.pdf', compact('kunjungans', 'branding'));
         return $pdf->download('rekap_kunjungan_dudi_' . time() . '.pdf');
+    }
+
+    public function exportSppd(Request $request, int $id)
+    {
+        $kunjungan = KunjunganMonitoring::with(['penempatanPkl.murid', 'penempatanPkl.dudi', 'penempatanPkl.guru'])->findOrFail($id);
+
+        if (auth()->user()->role === 'guru') {
+            $guruId = auth()->user()->guru?->id ?: -1;
+            if ($kunjungan->penempatanPkl?->guru_id !== $guruId) {
+                abort(403, 'Anda tidak memiliki hak akses untuk mengunduh laporan kunjungan ini.');
+            }
+        }
+
+        $guru = $kunjungan->penempatanPkl?->guru;
+        $dudi = $kunjungan->penempatanPkl?->dudi;
+
+        $nama = $request->input('nama') ?: ($guru?->nama ?: auth()->user()->name);
+        $nip = $request->input('nip') ?: ($guru?->nip ?: '-');
+        $pangkatGolongan = $request->input('pangkat_golongan') ?: '-';
+
+        $defaultTujuan = ($dudi?->nama ?: 'Mitra DUDI');
+        if ($dudi?->alamat) {
+            $defaultTujuan .= ', ' . $dudi->alamat;
+        }
+        $tempatTujuan = $request->input('tempat_tujuan') ?: $defaultTujuan;
+        $lamaPerjalanan = $request->input('lama_perjalanan') ?: '1 (satu) Hari';
+
+        $branding = $this->getBranding();
+        $kota = strtoupper($request->input('kota') ?: ($branding['kota_sekolah'] ?? 'PATI'));
+
+        $tanggalRaw = $request->input('tanggal') ?: $kunjungan->tanggal;
+        $tanggalFormatted = \Carbon\Carbon::parse($tanggalRaw)->translatedFormat('d F Y');
+
+        $laporanKegiatan = $request->input('laporan_kegiatan') ?: $kunjungan->deskripsi_kunjungan;
+        $lampirkanFoto = $request->boolean('lampirkan_foto', true);
+
+        // Encode photo to base64 for reliable Dompdf rendering
+        $fotoBase64 = null;
+        if ($lampirkanFoto && $kunjungan->foto_kunjungan) {
+            $path = public_path('storage/kunjungan/' . $kunjungan->foto_kunjungan);
+            if (file_exists($path)) {
+                $type = pathinfo($path, PATHINFO_EXTENSION);
+                $data = @file_get_contents($path);
+                if ($data !== false) {
+                    $fotoBase64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                }
+            }
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pkl::kunjungan.sppd_pdf', compact(
+            'kunjungan', 'nama', 'nip', 'pangkatGolongan', 'tempatTujuan',
+            'lamaPerjalanan', 'kota', 'tanggalFormatted', 'laporanKegiatan',
+            'lampirkanFoto', 'fotoBase64', 'branding'
+        ))->setPaper('a4', 'portrait');
+
+        $safeDudi = \Illuminate\Support\Str::slug($dudi?->nama ?: 'DUDI');
+        $filename = 'Laporan_SPPD_' . $safeDudi . '_' . $kunjungan->tanggal . '.pdf';
+
+        return $pdf->download($filename);
     }
 
     private function getBranding(): array
