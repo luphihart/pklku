@@ -5,51 +5,50 @@
     <title>Laporan Perjalanan Dinas - {{ $nama }}</title>
     <style>
         @page {
-            margin: 15mm 16mm 15mm 16mm;
+            margin: 12mm 15mm 12mm 15mm;
             size: a4 portrait;
         }
         body {
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 10.5pt;
-            line-height: 1.4;
+            font-size: 10pt;
+            line-height: 1.35;
             color: #111;
             margin: 0;
             padding: 0;
         }
         .page-frame {
             border: 1.5px solid #111;
-            padding: 16px 20px 20px 20px;
+            padding: 14px 18px;
             box-sizing: border-box;
-            min-height: 980px;
         }
         .title {
             text-align: center;
-            font-size: 13pt;
+            font-size: 12.5pt;
             font-weight: bold;
             text-decoration: underline;
             letter-spacing: 0.5px;
-            margin-top: 4px;
-            margin-bottom: 24px;
+            margin-top: 2px;
+            margin-bottom: 16px;
             text-transform: uppercase;
         }
         .table-meta {
             width: 100%;
             border-collapse: collapse;
-            font-size: 10.5pt;
+            font-size: 10pt;
         }
         .table-meta td {
-            padding: 4.5px 0;
+            padding: 3.5px 0;
             vertical-align: top;
         }
         .label-col {
-            width: 250px;
+            width: 240px;
             font-weight: bold;
             text-transform: uppercase;
             color: #111;
             letter-spacing: 0.2px;
         }
         .colon-col {
-            width: 18px;
+            width: 16px;
             font-weight: bold;
             text-align: center;
         }
@@ -60,12 +59,12 @@
 
         /* Area Laporan Pelaksanaan Kegiatan */
         .laporan-wrapper {
-            margin-top: 4px;
+            margin-top: 2px;
             width: 100%;
         }
         .laporan-text {
-            font-size: 10.5pt;
-            line-height: 25px;
+            font-size: 10pt;
+            line-height: 22px;
             text-align: justify;
             color: #111;
             margin-bottom: 0;
@@ -74,7 +73,7 @@
         }
         .ruled-line {
             border-bottom: 1px solid #777;
-            height: 25px;
+            height: 22px;
             width: 100%;
             display: block;
         }
@@ -82,8 +81,8 @@
         /* Blok Tanda Tangan */
         .signature-section {
             width: 100%;
-            margin-top: 25px;
-            font-size: 10.5pt;
+            margin-top: 16px;
+            font-size: 10pt;
         }
         .signature-table {
             width: 100%;
@@ -93,7 +92,7 @@
             vertical-align: top;
         }
         .sig-city-date {
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             text-transform: uppercase;
             font-weight: normal;
         }
@@ -103,7 +102,7 @@
             letter-spacing: 0.3px;
         }
         .sig-space {
-            height: 60px;
+            height: 48px;
         }
         .sig-name {
             font-weight: bold;
@@ -111,7 +110,7 @@
             text-transform: uppercase;
         }
         .sig-nip {
-            font-size: 10pt;
+            font-size: 9.5pt;
             margin-top: 2px;
         }
 
@@ -121,32 +120,32 @@
         }
         .doc-frame {
             border: 1.5px solid #111;
-            padding: 20px;
-            min-height: 980px;
+            padding: 14px 18px;
             box-sizing: border-box;
         }
         .doc-title {
             text-align: center;
-            font-size: 12pt;
+            font-size: 11.5pt;
             font-weight: bold;
             text-transform: uppercase;
             text-decoration: underline;
-            margin-bottom: 20px;
+            margin-top: 2px;
+            margin-bottom: 14px;
         }
         .doc-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 15px;
-            font-size: 10pt;
+            margin-bottom: 12px;
+            font-size: 9.5pt;
         }
         .doc-table td {
-            padding: 4px 6px;
+            padding: 3.5px 6px;
             border: 1px solid #ccc;
         }
         .doc-photo-box {
             text-align: center;
-            margin: 20px 0;
-            padding: 10px;
+            margin: 12px 0;
+            padding: 8px;
             border: 1px dashed #999;
             background: #fafafa;
         }
@@ -196,9 +195,12 @@
             <div class="laporan-text">{{ $laporanKegiatan }}</div>
 
             @php
-                // Hitung perkiraan baris kosong untuk mengisi blangko secara proporsional
-                $lineCount = substr_count($laporanKegiatan, "\n") + ceil(strlen($laporanKegiatan) / 85);
-                $blankLinesCount = max(5, 15 - $lineCount);
+                // Hitung estimasi baris teks agar pas 1 halaman tanpa overflow
+                $wrappedLines = explode("\n", wordwrap($laporanKegiatan, 80, "\n", true));
+                $estLines = count($wrappedLines);
+                // Total baris aman agar halaman 1 pas tanpa melompat ke halaman 2
+                $maxAvailableLines = 15;
+                $blankLinesCount = max(2, $maxAvailableLines - $estLines);
             @endphp
 
             @for($i = 0; $i < $blankLinesCount; $i++)
@@ -249,16 +251,16 @@
             </table>
 
             <div class="doc-photo-box">
-                <img src="{{ $fotoBase64 }}" style="max-width: 520px; max-height: 480px; object-fit: contain; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.1);">
-                <div style="font-size: 9.5pt; color: #555; margin-top: 8px; font-style: italic;">
+                <img src="{{ $fotoBase64 }}" style="max-width: 480px; max-height: 400px; object-fit: contain; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.1);">
+                <div style="font-size: 9pt; color: #555; margin-top: 6px; font-style: italic;">
                     Foto Bukti Dokumentasi Kegiatan Kunjungan di {{ $kunjungan->penempatanPkl?->dudi?->nama ?? 'Mitra DUDI' }}
                 </div>
             </div>
 
-            <div style="margin-top: 40px; text-align: right; padding-right: 30px; font-size: 10.5pt;">
+            <div style="margin-top: 25px; text-align: right; padding-right: 30px; font-size: 10pt;">
                 <div>{{ $kota }}, {{ $tanggalFormatted }}</div>
-                <div style="font-weight: bold; margin-top: 4px;">Guru Pembimbing / Pelaksana,</div>
-                <div style="height: 55px;"></div>
+                <div style="font-weight: bold; margin-top: 3px;">Guru Pembimbing / Pelaksana,</div>
+                <div style="height: 48px;"></div>
                 <div style="font-weight: bold; text-decoration: underline;">{{ $nama }}</div>
                 <div>NIP. {{ $nip }}</div>
             </div>
