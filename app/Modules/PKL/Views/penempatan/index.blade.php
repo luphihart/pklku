@@ -257,7 +257,9 @@
                                             <span class="badge bg-indigo-light text-indigo fw-semibold" style="background-color: rgba(79, 70, 229, 0.1); color: #4f46e5;" title="Kustom: {{ $shiftInfo['jam_masuk'] }} - {{ $shiftInfo['jam_pulang'] }}">⚙️ {{ $shiftInfo['jam_masuk'] }}-{{ $shiftInfo['jam_pulang'] }}</span>
                                         @endif
                                     </div>
-                                    @if(!empty($p->hari_libur))
+                                    @if($p->hari_libur === 'none')
+                                        <small class="text-info d-block fw-semibold" style="font-size: 11px;">Libur: Bergantian (Off Shift)</small>
+                                    @elseif(!empty($p->hari_libur))
                                         <small class="text-muted d-block" style="font-size: 11px;">Libur: {{ $p->hari_libur }}</small>
                                     @endif
                                 </td>
@@ -510,6 +512,7 @@
                                     </div>
                                 @endforeach
                             </div>
+                            <small class="text-muted d-block mt-1" style="font-size: 11px;">*Kosongkan semua centang jika siswa <strong>tidak memiliki libur tetap</strong> (libur bergantian / rolling shift).</small>
                         </div>
                     </div>
 
@@ -687,7 +690,9 @@
                         </div>
 
                         @php
-                            $currentHariLibur = array_map('trim', explode(',', $p->hari_libur ?? 'Sabtu,Minggu'));
+                            $currentHariLibur = (!empty($p->hari_libur) && $p->hari_libur !== 'none') 
+                                ? array_map('trim', explode(',', $p->hari_libur)) 
+                                : ($p->hari_libur === 'none' ? [] : ['Sabtu', 'Minggu']);
                         @endphp
                         <div class="mb-3">
                             <label class="form-label small fw-semibold">Hari Libur Rutin Mingguan Siswa</label>
@@ -700,6 +705,7 @@
                                     </div>
                                 @endforeach
                             </div>
+                            <small class="text-muted d-block mt-1" style="font-size: 11px;">*Kosongkan semua centang jika siswa <strong>tidak memiliki libur tetap</strong> (libur bergantian / rolling shift).</small>
                         </div>
 
                         @php

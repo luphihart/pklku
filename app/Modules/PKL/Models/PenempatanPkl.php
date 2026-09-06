@@ -205,6 +205,11 @@ class PenempatanPkl extends Model
         ];
         $dayNameIndo = $daysMap[$dateObj->format('l')] ?? '';
 
+        // 0. If placement explicitly configured with NO weekly holidays (Rolling / Libur Bergantian)
+        if ($this->hari_libur === 'none') {
+            return false;
+        }
+
         // 1. Placement specific custom regular holidays (e.g. 'Sabtu,Minggu' or 'Minggu' or 'Senin')
         if (!empty($this->hari_libur)) {
             $offDays = array_map('trim', explode(',', $this->hari_libur));

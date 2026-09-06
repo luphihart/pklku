@@ -129,8 +129,11 @@ class PenempatanExport
             $shiftInfo = $p->getEffectiveShiftHours();
             $shiftKerja = ucfirst($p->tipe_shift ?? 'reguler');
             $jamKerja = $shiftInfo['jam_masuk'] . ' - ' . $shiftInfo['jam_pulang'];
-            $hariWfa = $p->tipe_kerja === 'hybrid' ? ($p->hari_wfa ?: '-') : '-';
-            $hariLibur = $p->hari_libur ?: 'Sabtu, Minggu (Default)';
+            if ($p->hari_libur === 'none') {
+                $hariLibur = 'Libur Bergantian (Off Shift DUDI)';
+            } else {
+                $hariLibur = $p->hari_libur ?: 'Sabtu, Minggu (Default)';
+            }
 
             $tglMulai = $p->tanggal_mulai ? Carbon::parse($p->tanggal_mulai)->format('d/m/Y') : '-';
             $tglSelesai = $p->tanggal_selesai ? Carbon::parse($p->tanggal_selesai)->format('d/m/Y') : '-';

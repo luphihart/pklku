@@ -179,9 +179,14 @@ class NotificationService
                 $murid = $user->murid;
                 $placement = $murid ? $murid->penempatanAktif : null;
                 if ($placement) {
-                    // Check if today is working day (not placement holiday)
-                    $isHoliday = $placement->isPlacementHoliday($today->format('Y-m-d'));
-                    if (!$isHoliday) {
+                    // Check if today is working day (not placement holiday and not libur shift)
+                    $isOffToday = $placement->isPlacementHoliday($today->format('Y-m-d')) ||
+                        \App\Modules\Presensi\Models\Presensi::where('penempatan_pkl_id', $placement->id)
+                            ->whereDate('tanggal', $today->format('Y-m-d'))
+                            ->where('status_masuk', 'libur_shift')
+                            ->exists();
+
+                    if (!$isOffToday) {
                         $hasJournal = Jurnal::where('penempatan_pkl_id', $placement->id)
                             ->whereDate('tanggal', $today->format('Y-m-d'))
                             ->exists();

@@ -77,7 +77,7 @@ class PenempatanController extends Controller
 
         $hariLibur = ($request->has('hari_libur') && is_array($request->input('hari_libur')) && count($request->input('hari_libur')) > 0)
             ? implode(',', array_filter($request->input('hari_libur', [])))
-            : null;
+            : 'none';
 
         $tipeShift = $request->input('tipe_shift', 'reguler');
         $jamMasuk = $tipeShift === 'custom' ? $this->sanitizeTime($request->input('jam_masuk')) : null;
@@ -146,7 +146,7 @@ class PenempatanController extends Controller
 
         $hariLibur = ($request->has('hari_libur') && is_array($request->input('hari_libur')) && count($request->input('hari_libur')) > 0)
             ? implode(',', array_filter($request->input('hari_libur', [])))
-            : null;
+            : 'none';
 
         $tipeShift = $request->input('tipe_shift', 'reguler');
         $jamMasuk = $tipeShift === 'custom' ? $this->sanitizeTime($request->input('jam_masuk')) : null;
