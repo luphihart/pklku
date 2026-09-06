@@ -129,6 +129,7 @@ class PenempatanExport
             $shiftInfo = $p->getEffectiveShiftHours();
             $shiftKerja = ucfirst($p->tipe_shift ?? 'reguler');
             $jamKerja = $shiftInfo['jam_masuk'] . ' - ' . $shiftInfo['jam_pulang'];
+            $hariWfa = $p->tipe_kerja === 'hybrid' ? ($p->hari_wfa ?: '-') : '-';
             if ($p->hari_libur === 'none') {
                 $hariLibur = 'Libur Bergantian (Off Shift DUDI)';
             } else {
