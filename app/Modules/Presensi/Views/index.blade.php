@@ -14,31 +14,14 @@
         font-weight: 600;
     }
 
-    /* Student avatar circle */
-    .avatar-circle-sm {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 100%);
-        color: #4338ca;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 13.5px;
-        border: 1px solid #c7d2fe;
-        flex-shrink: 0;
-    }
-
     /* Shift Badges with Bulletproof Contrast & Legibility */
     .badge-shift {
         font-size: 11px !important;
         font-weight: 600 !important;
         padding: 3px 8px !important;
-        border-radius: 6px !important;
+        border-radius: 5px !important;
         display: inline-flex !important;
         align-items: center !important;
-        gap: 4px !important;
         line-height: 1.3 !important;
         text-decoration: none !important;
     }
@@ -74,7 +57,6 @@
         border-radius: 5px !important;
         display: inline-flex !important;
         align-items: center !important;
-        gap: 3px !important;
     }
     .badge-mode-wfa {
         background-color: #e0e7ff !important;
@@ -86,7 +68,17 @@
         border-radius: 5px !important;
         display: inline-flex !important;
         align-items: center !important;
-        gap: 3px !important;
+    }
+    .badge-mode-hybrid {
+        background-color: #e0f2fe !important;
+        color: #0369a1 !important;
+        border: 1px solid #bae6fd !important;
+        font-size: 10.5px !important;
+        font-weight: 600 !important;
+        padding: 2.5px 7px !important;
+        border-radius: 5px !important;
+        display: inline-flex !important;
+        align-items: center !important;
     }
 
     /* Status Badges */
@@ -257,28 +249,10 @@
                         <tr>
                             <!-- Murid (Kelas) -->
                             <td class="ps-4">
-                                @php
-                                    $namaMurid = $p->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus';
-                                    $initial = strtoupper(mb_substr($namaMurid, 0, 1));
-                                @endphp
-                                <div class="d-flex align-items-center gap-2.5">
-                                    <div class="avatar-circle-sm">
-                                        {{ $initial }}
-                                    </div>
-                                    <div>
-                                        <div class="fw-bold text-dark font-heading" style="font-size: 13.5px; line-height: 1.25;">
-                                            {{ $namaMurid }}
-                                        </div>
-                                        <div class="d-flex align-items-center gap-1.5 mt-1">
-                                            <span class="badge bg-light text-secondary border px-1.5 py-0.5" style="font-size: 10px; font-weight: 600;">
-                                                {{ $p->penempatanPkl?->murid?->kelas?->nama ?? '-' }}
-                                            </span>
-                                            @if(!empty($p->penempatanPkl?->murid?->nis))
-                                                <span class="text-muted" style="font-size: 11px;">{{ $p->penempatanPkl->murid->nis }}</span>
-                                            @endif
-                                        </div>
-                                    </div>
+                                <div class="fw-bold text-dark font-heading" style="font-size: 13.5px; line-height: 1.3;">
+                                    {{ $p->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus' }}
                                 </div>
+                                <small class="text-muted">{{ $p->penempatanPkl?->murid?->kelas?->nama ?? '-' }}</small>
                             </td>
 
                             <!-- DUDI Tempat PKL & Shift -->
@@ -286,21 +260,23 @@
                                 <div class="fw-semibold text-dark font-heading" style="font-size: 13px; line-height: 1.3;">
                                     {{ $p->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}
                                 </div>
-                                <div class="d-flex align-items-center gap-1.5 flex-wrap mt-1.5">
-                                    @if($p->is_wfa)
-                                        <span class="badge badge-mode-wfa">💻 WFA</span>
+                                <div class="d-flex align-items-center gap-1.5 flex-wrap mt-1">
+                                    @if($p->penempatanPkl?->tipe_kerja === 'hybrid')
+                                        <span class="badge badge-mode-hybrid">Hybrid</span>
+                                    @elseif($p->is_wfa)
+                                        <span class="badge badge-mode-wfa">WFA</span>
                                     @else
-                                        <span class="badge badge-mode-wfo">🏢 WFO</span>
+                                        <span class="badge badge-mode-wfo">WFO</span>
                                     @endif
 
                                     @if($p->shift_harian === 'pagi')
-                                        <span class="badge badge-shift badge-shift-pagi" style="background-color: #ecfdf5 !important; color: #047857 !important; border: 1px solid #a7f3d0 !important;">🌅 Shift Pagi</span>
+                                        <span class="badge badge-shift badge-shift-pagi" style="background-color: #ecfdf5 !important; color: #047857 !important; border: 1px solid #a7f3d0 !important;">Shift Pagi</span>
                                     @elseif($p->shift_harian === 'siang')
-                                        <span class="badge badge-shift badge-shift-siang" style="background-color: #fef3c7 !important; color: #b45309 !important; border: 1px solid #fde68a !important;">☀️ Shift Siang</span>
+                                        <span class="badge badge-shift badge-shift-siang" style="background-color: #fef3c7 !important; color: #b45309 !important; border: 1px solid #fde68a !important;">Shift Siang</span>
                                     @elseif($p->shift_harian === 'sore')
-                                        <span class="badge badge-shift badge-shift-sore" style="background-color: #ffedd5 !important; color: #9a3412 !important; border: 1px solid #fed7aa !important;">🌇 Shift Sore</span>
+                                        <span class="badge badge-shift badge-shift-sore" style="background-color: #ffedd5 !important; color: #9a3412 !important; border: 1px solid #fed7aa !important;">Shift Sore</span>
                                     @elseif(!empty($p->shift_harian))
-                                        <span class="badge badge-shift badge-shift-other" style="background-color: #f3e8ff !important; color: #7e22ce !important; border: 1px solid #e9d5ff !important;">🔄 {{ ucfirst($p->shift_harian) }}</span>
+                                        <span class="badge badge-shift badge-shift-other" style="background-color: #f3e8ff !important; color: #7e22ce !important; border: 1px solid #e9d5ff !important;">{{ ucfirst($p->shift_harian) }}</span>
                                     @endif
                                 </div>
                             </td>
@@ -452,20 +428,22 @@
 
                     <!-- Work Mode & Shift -->
                     <div class="d-flex align-items-center gap-1.5 mb-2 pb-2 border-bottom flex-wrap" style="border-bottom-color: var(--border-color) !important;">
-                        @if($p->is_wfa)
-                            <span class="badge badge-mode-wfa">💻 WFA</span>
+                        @if($p->penempatanPkl?->tipe_kerja === 'hybrid')
+                            <span class="badge badge-mode-hybrid">Hybrid</span>
+                        @elseif($p->is_wfa)
+                            <span class="badge badge-mode-wfa">WFA</span>
                         @else
-                            <span class="badge badge-mode-wfo">🏢 WFO</span>
+                            <span class="badge badge-mode-wfo">WFO</span>
                         @endif
 
                         @if($p->shift_harian === 'pagi')
-                            <span class="badge badge-shift badge-shift-pagi" style="background-color: #ecfdf5 !important; color: #047857 !important; border: 1px solid #a7f3d0 !important;">🌅 Shift Pagi</span>
+                            <span class="badge badge-shift badge-shift-pagi" style="background-color: #ecfdf5 !important; color: #047857 !important; border: 1px solid #a7f3d0 !important;">Shift Pagi</span>
                         @elseif($p->shift_harian === 'siang')
-                            <span class="badge badge-shift badge-shift-siang" style="background-color: #fef3c7 !important; color: #b45309 !important; border: 1px solid #fde68a !important;">☀️ Shift Siang</span>
+                            <span class="badge badge-shift badge-shift-siang" style="background-color: #fef3c7 !important; color: #b45309 !important; border: 1px solid #fde68a !important;">Shift Siang</span>
                         @elseif($p->shift_harian === 'sore')
-                            <span class="badge badge-shift badge-shift-sore" style="background-color: #ffedd5 !important; color: #9a3412 !important; border: 1px solid #fed7aa !important;">🌇 Shift Sore</span>
+                            <span class="badge badge-shift badge-shift-sore" style="background-color: #ffedd5 !important; color: #9a3412 !important; border: 1px solid #fed7aa !important;">Shift Sore</span>
                         @elseif(!empty($p->shift_harian))
-                            <span class="badge badge-shift badge-shift-other" style="background-color: #f3e8ff !important; color: #7e22ce !important; border: 1px solid #e9d5ff !important;">🔄 {{ ucfirst($p->shift_harian) }}</span>
+                            <span class="badge badge-shift badge-shift-other" style="background-color: #f3e8ff !important; color: #7e22ce !important; border: 1px solid #e9d5ff !important;">{{ ucfirst($p->shift_harian) }}</span>
                         @endif
 
                         @if($p->status_pulang === 'pulang_cepat')

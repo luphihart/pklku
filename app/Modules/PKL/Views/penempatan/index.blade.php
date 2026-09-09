@@ -235,26 +235,26 @@
                                 <td class="text-center">
                                     <div class="d-flex align-items-center justify-content-center gap-1 flex-wrap mb-1">
                                         @if(($p->tipe_kerja ?? 'wfo') === 'wfa')
-                                            <span class="badge bg-primary-light text-primary fw-semibold" title="100% WFA (Full Remote)">🏠 WFA</span>
+                                            <span class="badge bg-primary-light text-primary fw-semibold" title="100% WFA (Full Remote)">WFA</span>
                                         @elseif(($p->tipe_kerja ?? 'wfo') === 'hybrid')
-                                            <span class="badge bg-info-light text-info fw-semibold" title="Hybrid: WFA pada {{ $p->hari_wfa }}">🔄 Hybrid ({{ $p->hari_wfa }})</span>
+                                            <span class="badge bg-info-light text-info fw-semibold" title="Hybrid: WFA pada {{ $p->hari_wfa }}">Hybrid ({{ $p->hari_wfa }})</span>
                                         @else
-                                            <span class="badge bg-secondary-light text-secondary fw-semibold" title="100% WFO (Di Kantor DUDI)">🏢 WFO</span>
+                                            <span class="badge bg-secondary-light text-secondary fw-semibold" title="100% WFO (Di Kantor DUDI)">WFO</span>
                                         @endif
 
                                         @php
                                             $shiftInfo = $p->getEffectiveShiftHours();
                                         @endphp
                                         @if(($p->tipe_shift ?? 'reguler') === 'rolling')
-                                            <span class="badge bg-purple-light text-purple fw-semibold" style="background-color: rgba(147, 51, 234, 0.12); color: #9333ea;" title="Rolling Shift (Auto-Detect)">🔄 Rolling</span>
+                                            <span class="badge bg-purple-light text-purple fw-semibold" style="background-color: rgba(147, 51, 234, 0.12); color: #9333ea;" title="Rolling Shift (Auto-Detect)">Rolling</span>
                                         @elseif(($p->tipe_shift ?? 'reguler') === 'pagi')
-                                            <span class="badge bg-success-light text-success fw-semibold" title="{{ $shiftInfo['label'] }}">🌅 Pagi</span>
+                                            <span class="badge bg-success-light text-success fw-semibold" title="{{ $shiftInfo['label'] }}">Pagi</span>
                                         @elseif(($p->tipe_shift ?? 'reguler') === 'siang')
-                                            <span class="badge bg-warning-light text-warning fw-semibold" title="{{ $shiftInfo['label'] }}">🌆 Siang</span>
+                                            <span class="badge bg-warning-light text-warning fw-semibold" title="{{ $shiftInfo['label'] }}">Siang</span>
                                         @elseif(($p->tipe_shift ?? 'reguler') === 'sore')
-                                            <span class="badge bg-orange-light text-orange fw-semibold" style="background-color: rgba(249, 115, 22, 0.12); color: #ea580c;" title="{{ $shiftInfo['label'] }}">🌇 Sore</span>
+                                            <span class="badge bg-orange-light text-orange fw-semibold" style="background-color: #ffedd5; color: #9a3412;" title="{{ $shiftInfo['label'] }}">Sore</span>
                                         @elseif(($p->tipe_shift ?? 'reguler') === 'custom')
-                                            <span class="badge bg-indigo-light text-indigo fw-semibold" style="background-color: rgba(79, 70, 229, 0.1); color: #4f46e5;" title="Kustom: {{ $shiftInfo['jam_masuk'] }} - {{ $shiftInfo['jam_pulang'] }}">⚙️ {{ $shiftInfo['jam_masuk'] }}-{{ $shiftInfo['jam_pulang'] }}</span>
+                                            <span class="badge bg-indigo-light text-indigo fw-semibold" style="background-color: rgba(79, 70, 229, 0.1); color: #4f46e5;" title="Kustom: {{ $shiftInfo['jam_masuk'] }} - {{ $shiftInfo['jam_pulang'] }}">{{ $shiftInfo['jam_masuk'] }}-{{ $shiftInfo['jam_pulang'] }}</span>
                                         @endif
                                     </div>
                                     @if($p->hari_libur === 'none')
@@ -469,19 +469,19 @@
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="tipe_kerja" id="mass_tipe_wfo" value="wfo" checked onchange="toggleMassHybridDays(this.value)">
                                     <label class="form-check-label small" for="mass_tipe_wfo">
-                                        🏢 100% WFO (Di Kantor DUDI)
+                                        100% WFO (Di Kantor DUDI)
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="tipe_kerja" id="mass_tipe_wfa" value="wfa" onchange="toggleMassHybridDays(this.value)">
                                     <label class="form-check-label small" for="mass_tipe_wfa">
-                                        🏠 100% WFA (Full Remote)
+                                        100% WFA (Full Remote)
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="tipe_kerja" id="mass_tipe_hybrid" value="hybrid" onchange="toggleMassHybridDays(this.value)">
                                     <label class="form-check-label small" for="mass_tipe_hybrid">
-                                        🔄 Hybrid (Kombinasi)
+                                        Hybrid (Kombinasi)
                                     </label>
                                 </div>
                             </div>
@@ -660,19 +660,19 @@
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="tipe_kerja" id="edit_tipe_wfo_{{ $p->id }}" value="wfo" {{ $currentTipe === 'wfo' ? 'checked' : '' }} onchange="toggleEditHybridDays({{ $p->id }}, this.value)">
                                     <label class="form-check-label small" for="edit_tipe_wfo_{{ $p->id }}">
-                                        🏢 WFO
+                                        WFO
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="tipe_kerja" id="edit_tipe_wfa_{{ $p->id }}" value="wfa" {{ $currentTipe === 'wfa' ? 'checked' : '' }} onchange="toggleEditHybridDays({{ $p->id }}, this.value)">
                                     <label class="form-check-label small" for="edit_tipe_wfa_{{ $p->id }}">
-                                        🏠 WFA (Full)
+                                        WFA (Full)
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="tipe_kerja" id="edit_tipe_hybrid_{{ $p->id }}" value="hybrid" {{ $currentTipe === 'hybrid' ? 'checked' : '' }} onchange="toggleEditHybridDays({{ $p->id }}, this.value)">
                                     <label class="form-check-label small" for="edit_tipe_hybrid_{{ $p->id }}">
-                                        🔄 Hybrid
+                                        Hybrid
                                     </label>
                                 </div>
                             </div>
