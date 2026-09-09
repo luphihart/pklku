@@ -305,34 +305,30 @@
     <!-- Desktop Table View (lg and up) -->
     <div class="card-premium p-0 overflow-hidden d-none d-lg-block mb-4">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0" style="min-width: 950px; color: var(--text-primary); font-size: 13px;">
+            <table class="table table-hover align-middle mb-0" style="min-width: 1000px; color: var(--text-primary); font-size: 13px;">
                 <thead class="table-light">
                     <tr class="font-heading" style="font-size: 13px; font-weight: 600;">
-                        <th class="ps-4" style="width: 110px;">Tanggal</th>
-                        <th style="width: 200px;">Siswa & Kelas</th>
+                        <th class="ps-4" style="width: 180px; min-width: 165px;">Tanggal</th>
+                        <th style="width: 190px;">Siswa & Kelas</th>
                         <th style="width: 180px;">DUDI Tempat PKL</th>
-                        <th style="min-width: 280px;">Isi Laporan Aktivitas</th>
-                        <th class="text-center" style="width: 90px;">Foto Bukti</th>
-                        <th class="text-center" style="width: 120px;">Status</th>
-                        <th class="text-center pe-4" style="width: 120px;">Verifikasi</th>
+                        <th style="min-width: 270px;">Isi Laporan Aktivitas</th>
+                        <th class="text-center" style="width: 85px;">Foto Bukti</th>
+                        <th class="text-center" style="width: 115px;">Status</th>
+                        <th class="text-center pe-4" style="width: 115px;">Verifikasi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($journals as $j)
                         <tr>
-                            <td class="ps-4 fw-semibold">
-                                {{ $j->tanggal ? \Carbon\Carbon::parse($j->tanggal)->format('d/m/Y') : '-' }}
+                            <td class="ps-4 fw-semibold text-nowrap" style="font-size: 13px;">
+                                {{ $j->tanggal ? \Carbon\Carbon::parse($j->tanggal)->locale('id')->translatedFormat('l, j F Y') : '-' }}
                             </td>
                             <td>
-                                <div class="fw-bold text-dark dark-text-light">{{ $j->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus' }}</div>
-                                <div class="d-flex align-items-center gap-1.5 mt-0.5">
-                                    <span class="badge bg-light text-dark border font-monospace" style="font-size: 10px;">NIS: {{ $j->penempatanPkl?->murid?->nis ?? '-' }}</span>
-                                    <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 10px;">{{ $j->penempatanPkl?->murid?->kelas?->nama ?? '-' }}</span>
-                                </div>
+                                <div class="fw-bold text-dark dark-text-light font-heading" style="font-size: 13.5px; line-height: 1.3;">{{ $j->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus' }}</div>
+                                <div class="text-muted small" style="font-size: 12px; margin-top: 2px;">{{ $j->penempatanPkl?->murid?->kelas?->nama ?? '-' }}</div>
                             </td>
                             <td>
-                                <div class="fw-semibold text-dark dark-text-light">{{ $j->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</div>
-                                <small class="text-muted" style="font-size: 11px;">{{ $j->penempatanPkl?->dudi?->alamat ? Str::limit($j->penempatanPkl->dudi->alamat, 35) : '-' }}</small>
+                                <div class="fw-semibold text-dark dark-text-light font-heading" style="font-size: 13px; line-height: 1.3;">{{ $j->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</div>
                             </td>
                             <td>
                                 <div class="text-break" style="line-height: 1.5; word-break: break-word; white-space: normal;">{{ $j->deskripsi_aktivitas }}</div>
@@ -468,9 +464,8 @@
                         <div class="fw-bold text-dark font-heading" style="font-size: 14px;">
                             {{ $j->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus' }}
                         </div>
-                        <div class="d-flex align-items-center gap-1.5 mt-1">
-                            <span class="badge bg-light text-dark border font-monospace" style="font-size: 10px;">NIS: {{ $j->penempatanPkl?->murid?->nis ?? '-' }}</span>
-                            <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 10.5px;">{{ $j->penempatanPkl?->murid?->kelas?->nama ?? '-' }}</span>
+                        <div class="text-muted small" style="font-size: 12px; margin-top: 2px;">
+                            {{ $j->penempatanPkl?->murid?->kelas?->nama ?? '-' }}
                         </div>
                     </div>
                     <div>
@@ -504,7 +499,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-muted">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
-                        <strong class="text-dark">{{ $j->tanggal ? \Carbon\Carbon::parse($j->tanggal)->translatedFormat('l, d M Y') : '-' }}</strong>
+                        <strong class="text-dark">{{ $j->tanggal ? \Carbon\Carbon::parse($j->tanggal)->locale('id')->translatedFormat('l, j F Y') : '-' }}</strong>
                     </div>
                     <div class="d-flex align-items-center gap-1 text-truncate" style="max-width: 180px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-muted flex-shrink-0">

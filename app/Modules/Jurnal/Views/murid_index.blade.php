@@ -95,7 +95,7 @@
                         <table class="table table-hover align-middle mb-0" style="min-width: 520px; color: var(--text-primary); font-size: 13px;">
                             <thead>
                                 <tr class="text-muted">
-                                    <th style="width: 90px;">Tanggal</th>
+                                    <th style="width: 175px; min-width: 160px;">Tanggal</th>
                                     <th>Aktivitas</th>
                                     <th class="text-center" style="width: 70px;">Bukti</th>
                                     <th class="text-center" style="width: 110px;">Status</th>
@@ -105,7 +105,7 @@
                             <tbody>
                                 @forelse($journals as $j)
                                     <tr>
-                                        <td class="fw-semibold">{{ \Carbon\Carbon::parse($j->tanggal)->translatedFormat('d/m/y') }}</td>
+                                        <td class="fw-semibold text-nowrap">{{ \Carbon\Carbon::parse($j->tanggal)->locale('id')->translatedFormat('l, j F Y') }}</td>
                                         <td>
                                             <div style="line-height: 1.5; word-break: break-word; white-space: normal;">{{ $j->deskripsi_aktivitas }}</div>
                                             @if($j->catatan_verifikasi)
@@ -211,7 +211,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                         </svg>
                                         <span class="fw-bold font-heading text-dark" style="font-size: 13px;">
-                                            {{ \Carbon\Carbon::parse($j->tanggal)->translatedFormat('l, d M Y') }}
+                                            {{ \Carbon\Carbon::parse($j->tanggal)->locale('id')->translatedFormat('l, j F Y') }}
                                         </span>
                                     </div>
                                     <div>
