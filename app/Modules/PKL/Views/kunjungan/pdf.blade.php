@@ -72,10 +72,17 @@
             text-align: center;
         }
         .badge-type {
-            font-size: 9px;
+            font-size: 8.5px;
             font-weight: bold;
-            color: #4f46e5;
+            padding: 2px 5px;
+            border-radius: 3px;
+            display: inline-block;
+            margin-top: 3px;
         }
+        .badge-penjajakan { background-color: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; }
+        .badge-penyerahan { background-color: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
+        .badge-monitoring { background-color: #d1fae5; color: #047857; border: 1px solid #a7f3d0; }
+        .badge-penarikan  { background-color: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
         .footer {
             width: 100%;
             margin-top: 35px;
@@ -115,7 +122,16 @@
                     <td class="center">{{ \Carbon\Carbon::parse($k->tanggal)->format('d/m/Y') }}</td>
                     <td>
                         <strong>{{ $k->penempatanPkl->dudi->nama }}</strong><br>
-                        <span class="badge-type">{{ $k->jenis_kunjungan ?? 'Monitoring Berkala' }}</span>
+                        @php
+                            $pdfBadgeClass = match($k->jenis_kunjungan) {
+                                'Penjajakan Kerja Sama' => 'badge-penjajakan',
+                                'Penyerahan Murid'      => 'badge-penyerahan',
+                                'Monitoring Berkala'    => 'badge-monitoring',
+                                'Penarikan PKL'         => 'badge-penarikan',
+                                default                 => 'badge-monitoring',
+                            };
+                        @endphp
+                        <span class="badge-type {{ $pdfBadgeClass }}">{{ $k->jenis_kunjungan ?? 'Monitoring Berkala' }}</span>
                     </td>
                     <td>
                         <strong>{{ $k->penempatanPkl->guru->nama }}</strong>

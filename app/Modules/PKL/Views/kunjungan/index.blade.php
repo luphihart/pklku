@@ -71,6 +71,37 @@
 
         <!-- Visitations History Card -->
         <div class="{{ auth()->user()->role === 'guru' ? 'col-md-8' : 'col-md-12' }} mb-4">
+            @php
+                $getJenisKunjunganBadge = function ($jenis) {
+                    return match($jenis) {
+                        'Penjajakan Kerja Sama' => [
+                            'class'  => 'bg-purple-light text-purple',
+                            'border' => 'rgba(147, 51, 234, 0.25)',
+                            'icon'   => '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="me-1"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>',
+                        ],
+                        'Penyerahan Murid' => [
+                            'class'  => 'bg-info-light text-info',
+                            'border' => 'rgba(14, 165, 233, 0.25)',
+                            'icon'   => '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="me-1"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>',
+                        ],
+                        'Monitoring Berkala' => [
+                            'class'  => 'bg-success-light text-success',
+                            'border' => 'rgba(16, 185, 129, 0.25)',
+                            'icon'   => '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="me-1"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+                        ],
+                        'Penarikan PKL' => [
+                            'class'  => 'bg-orange-light text-orange',
+                            'border' => 'rgba(249, 115, 22, 0.25)',
+                            'icon'   => '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="me-1"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>',
+                        ],
+                        default => [
+                            'class'  => 'bg-secondary-light text-secondary',
+                            'border' => 'rgba(100, 116, 139, 0.25)',
+                            'icon'   => '',
+                        ],
+                    };
+                };
+            @endphp
             <div class="card-premium p-0 overflow-hidden">
                 <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="border-bottom-color: var(--border-color) !important;">
                     <h6 class="fw-bold m-0 text-dark">Riwayat Kunjungan Pembimbing</h6>
@@ -100,8 +131,11 @@
                                 <tr>
                                     <td class="ps-4 fw-semibold">{{ \Carbon\Carbon::parse($k->tanggal)->format('d/m/Y') }}</td>
                                     <td>
-                                        <div class="fw-semibold text-primary">{{ $k->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</div>
-                                        <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 11px;">{{ $k->jenis_kunjungan ?? 'Monitoring Berkala' }}</span>
+                                        <div class="fw-semibold text-primary mb-1">{{ $k->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</div>
+                                        @php $badge = $getJenisKunjunganBadge($k->jenis_kunjungan); @endphp
+                                        <span class="badge rounded-pill {{ $badge['class'] }} fw-semibold d-inline-flex align-items-center" style="font-size: 11px; padding: 3px 8px; border: 1px solid {{ $badge['border'] }};">
+                                            {!! $badge['icon'] !!}{{ $k->jenis_kunjungan ?? 'Monitoring Berkala' }}
+                                        </span>
                                     </td>
                                     <td>
                                         <div class="fw-semibold">{{ $k->penempatanPkl?->guru?->nama ?? 'Guru Terhapus' }}</div>
@@ -172,8 +206,10 @@
                                     <span class="fw-bold font-heading text-dark" style="font-size: 13px;">
                                         {{ \Carbon\Carbon::parse($k->tanggal)->translatedFormat('d M Y') }}
                                     </span>
-                                </div>
-                                <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 11px;">{{ $k->jenis_kunjungan ?? 'Monitoring' }}</span>
+                                @php $badge = $getJenisKunjunganBadge($k->jenis_kunjungan); @endphp
+                                <span class="badge rounded-pill {{ $badge['class'] }} fw-semibold d-inline-flex align-items-center" style="font-size: 11px; padding: 3px 8px; border: 1px solid {{ $badge['border'] }};">
+                                    {!! $badge['icon'] !!}{{ $k->jenis_kunjungan ?? 'Monitoring' }}
+                                </span>
                             </div>
 
                             <!-- DUDI & Guru -->
