@@ -375,15 +375,31 @@
 
                     <!-- Card Header -->
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold font-heading m-0 text-dark dark-text-light" style="font-size: 15.5px;">Status Penempatan PKL</h5>
+                        <h5 class="fw-bold font-heading m-0 text-dark dark-text-light" style="font-size: 15px;">Status Penempatan PKL</h5>
                         @if($penempatan)
-                            <div class="d-flex align-items-center gap-1.5">
+                            @php
+                                $rawShift = $penempatan->tipe_shift ?? $penempatan->shift_harian;
+                                $shiftBadge = match(strtolower($rawShift ?? '')) {
+                                    'rolling' => 'Rolling',
+                                    'pagi' => 'Pagi',
+                                    'siang' => 'Siang',
+                                    'sore' => 'Sore',
+                                    'custom' => 'Custom',
+                                    default => null
+                                };
+                            @endphp
+                            <div class="d-flex align-items-center gap-1.5 flex-wrap justify-content-end">
                                 @if($penempatan->tipe_kerja)
-                                    <span class="badge bg-secondary-light text-secondary fw-semibold px-2 py-1" style="font-size: 11px; border-radius: 6px;">
-                                        {{ strtoupper($penempatan->tipe_kerja) }}
+                                    <span class="badge fw-semibold text-uppercase" style="font-size: 10.5px; padding: 3px 8px; background: rgba(99, 102, 241, 0.08); color: #4f46e5; border-radius: 6px;">
+                                        {{ $penempatan->tipe_kerja }}
                                     </span>
                                 @endif
-                                <span class="badge bg-success-light text-success fw-semibold px-2 py-1 d-inline-flex align-items-center gap-1" style="font-size: 11px; border-radius: 6px;">
+                                @if($shiftBadge)
+                                    <span class="badge fw-semibold" style="font-size: 10.5px; padding: 3px 8px; background: rgba(245, 158, 11, 0.1); color: #b45309; border-radius: 6px;">
+                                        {{ $shiftBadge }}
+                                    </span>
+                                @endif
+                                <span class="badge fw-semibold d-inline-flex align-items-center gap-1" style="font-size: 10.5px; padding: 3px 8px; background: rgba(16, 185, 129, 0.1); color: #059669; border-radius: 6px;">
                                     <span style="width: 5px; height: 5px; border-radius: 50%; background-color: #10b981; display: inline-block;"></span>
                                     Aktif
                                 </span>
@@ -405,68 +421,70 @@
                             }
                         @endphp
 
-                        <!-- DUDI Info (Hero & Clean, No Box Borders) -->
-                        <div class="mb-3 pb-3 border-bottom" style="border-bottom-color: var(--border-color) !important;">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 text-white shadow-xs" style="width: 44px; height: 44px; background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                                    </svg>
+                        <!-- Mitra DUDI Hero Block -->
+                        <div class="d-flex align-items-start gap-3 mb-3">
+                            <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 text-white shadow-xs" style="width: 46px; height: 46px; background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                </svg>
+                            </div>
+                            <div class="min-w-0 flex-grow-1">
+                                <div class="text-muted fw-bold text-uppercase mb-0.5" style="font-size: 10px; letter-spacing: 0.5px;">Mitra Tempat PKL</div>
+                                <h6 class="fw-bold text-dark font-heading mb-1 text-truncate" style="font-size: 16.5px; line-height: 1.35;" title="{{ $penempatan->dudi?->nama }}">
+                                    {{ $penempatan->dudi?->nama ?? 'DUDI Terhapus' }}
+                                </h6>
+                                @if($penempatan->dudi?->alamat && trim($penempatan->dudi->alamat) !== '-')
+                                    <div class="text-muted small d-flex align-items-start gap-1" style="font-size: 11.5px; line-height: 1.45;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-muted flex-shrink-0 mt-0.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        <span style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" title="{{ $penempatan->dudi->alamat }}">{{ $penempatan->dudi->alamat }}</span>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- 2-Column Mentors Section (Balanced Soft Panel) -->
+                        <div class="rounded-3 p-3 mb-3" style="background-color: var(--bg-canvas);">
+                            <div class="row g-3">
+                                <!-- Guru Pembimbing -->
+                                <div class="col-6">
+                                    <div class="text-muted fw-bold text-uppercase mb-1" style="font-size: 10px; letter-spacing: 0.5px;">Guru Pembimbing</div>
+                                    <div class="fw-bold text-dark font-heading text-truncate" style="font-size: 13.5px; line-height: 1.3;" title="{{ $penempatan->guru?->nama }}">
+                                        {{ $penempatan->guru?->nama ?? 'Guru Terhapus' }}
+                                    </div>
+                                    <div class="text-muted small mt-0.5" style="font-size: 11px;">Pembimbing Sekolah</div>
                                 </div>
-                                <div class="min-w-0 flex-grow-1">
-                                    <span class="text-muted fw-bold text-uppercase d-block" style="font-size: 10px; letter-spacing: 0.6px;">Mitra Tempat PKL</span>
-                                    <h6 class="fw-bold text-dark font-heading mb-0 text-truncate" style="font-size: 16px; line-height: 1.3;" title="{{ $penempatan->dudi?->nama }}">
-                                        {{ $penempatan->dudi?->nama ?? 'DUDI Terhapus' }}
-                                    </h6>
-                                    @if($penempatan->dudi?->alamat && trim($penempatan->dudi->alamat) !== '-')
-                                        <p class="text-muted small mb-0 d-flex align-items-center gap-1 mt-0.5 text-truncate" style="font-size: 11.5px; line-height: 1.4;">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-muted flex-shrink-0">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            </svg>
-                                            <span class="text-truncate">{{ $penempatan->dudi->alamat }}</span>
-                                        </p>
-                                    @endif
+
+                                <!-- Pembimbing Industri -->
+                                <div class="col-6">
+                                    <div class="text-muted fw-bold text-uppercase mb-1" style="font-size: 10px; letter-spacing: 0.5px;">Pembimbing DUDI</div>
+                                    <div class="fw-bold text-dark font-heading text-truncate" style="font-size: 13.5px; line-height: 1.3;">
+                                        @if($pembimbingIndustriNama)
+                                            {{ $pembimbingIndustriNama }}
+                                        @else
+                                            <span class="text-muted fw-normal fst-italic" style="font-size: 12px;">Belum ditentukan</span>
+                                        @endif
+                                    </div>
+                                    <div class="text-muted small mt-0.5" style="font-size: 11px;">Instruktur Industri</div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 2-Column Mentors Section (Clean, No Box Borders) -->
-                        <div class="row g-3 mb-3 pb-3 border-bottom" style="border-bottom-color: var(--border-color) !important;">
-                            <!-- Guru Pembimbing -->
-                            <div class="col-6">
-                                <div class="text-muted fw-semibold text-uppercase mb-1" style="font-size: 10px; letter-spacing: 0.5px;">Guru Pembimbing</div>
-                                <div class="fw-bold text-dark font-heading text-truncate" style="font-size: 13.5px; line-height: 1.3;" title="{{ $penempatan->guru?->nama }}">
-                                    {{ $penempatan->guru?->nama ?? 'Guru Terhapus' }}
-                                </div>
-                                <div class="text-muted small mt-0.5" style="font-size: 11px;">Pembimbing Sekolah</div>
-                            </div>
-
-                            <!-- Pembimbing Industri -->
-                            <div class="col-6">
-                                <div class="text-muted fw-semibold text-uppercase mb-1" style="font-size: 10px; letter-spacing: 0.5px;">Pembimbing DUDI</div>
-                                <div class="fw-bold text-dark font-heading text-truncate" style="font-size: 13.5px; line-height: 1.3;">
-                                    @if($pembimbingIndustriNama)
-                                        {{ $pembimbingIndustriNama }}
-                                    @else
-                                        <span class="text-muted fw-normal fst-italic" style="font-size: 12px;">Belum ditentukan</span>
-                                    @endif
-                                </div>
-                                <div class="text-muted small mt-0.5" style="font-size: 11px;">Instruktur Industri</div>
-                            </div>
-                        </div>
-
-                        <!-- Periode PKL Section (Clean, No Box Border) -->
-                        <div class="d-flex align-items-center justify-content-between pt-0.5">
-                            <div>
-                                <div class="text-muted fw-semibold text-uppercase mb-1" style="font-size: 10px; letter-spacing: 0.5px;">Periode Pelaksanaan</div>
-                                <div class="fw-bold text-dark font-heading d-flex align-items-center gap-1.5" style="font-size: 13px;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-primary flex-shrink-0">
+                        <!-- Periode PKL Section (Highlighted & Balanced) -->
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-0.5">
+                            <div class="d-flex align-items-center gap-2.5 min-w-0">
+                                <div class="rounded-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px; background: rgba(79, 70, 229, 0.08); color: var(--accent-primary, #4f46e5);">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
-                                    <span>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-muted fw-bold text-uppercase mb-0.5" style="font-size: 10px; letter-spacing: 0.5px;">Periode Pelaksanaan</div>
+                                    <div class="fw-bold text-dark font-heading text-truncate" style="font-size: 13.5px; line-height: 1.3;">
                                         {{ \Carbon\Carbon::parse($penempatan->tanggal_mulai)->locale('id')->translatedFormat('d F Y') }} &ndash; {{ \Carbon\Carbon::parse($penempatan->tanggal_selesai)->locale('id')->translatedFormat('d F Y') }}
-                                    </span>
+                                    </div>
                                 </div>
                             </div>
                             @php
@@ -475,7 +493,7 @@
                                 $diffMonths = round($start->diffInMonths($end));
                             @endphp
                             @if($diffMonths > 0)
-                                <span class="badge bg-primary-light text-primary fw-semibold px-2.5 py-1" style="font-size: 11px; border-radius: 6px;">
+                                <span class="badge fw-semibold px-2.5 py-1 flex-shrink-0" style="font-size: 11px; background: rgba(79, 70, 229, 0.08); color: var(--accent-primary, #4f46e5); border-radius: 6px;">
                                     {{ $diffMonths }} Bulan
                                 </span>
                             @endif
