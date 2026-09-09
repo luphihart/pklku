@@ -138,7 +138,7 @@
                                     </svg>
                                     <span>{{ $a->created_at->translatedFormat('d M Y') }}</span>
                                 </div>
-                                <span class="badge bg-primary-light text-primary fw-semibold text-capitalize" style="font-size: 10.5px;">
+                                <span class="badge bg-primary-light text-primary fw-semibold text-capitalize" style="font-size: 11px;">
                                     {{ $a->target_role }}
                                 </span>
                             </div>
@@ -146,7 +146,7 @@
                             <!-- Judul & Isi -->
                             <div class="mb-2">
                                 <h6 class="fw-bold font-heading text-dark mb-1" style="font-size: 14px;">{{ $a->judul }}</h6>
-                                <p class="text-secondary small m-0" style="font-size: 12.5px; line-height: 1.5;">
+                                <p class="text-secondary small m-0" style="font-size: 13px; line-height: 1.5;">
                                     {{ Str::limit($a->isi, 100) }}
                                     @if(strlen($a->isi) > 100)
                                         <a href="javascript:void(0);" class="text-primary fw-semibold ms-1 text-decoration-none" data-bs-toggle="modal" data-bs-target="#readAnnounceModal_{{ $a->id }}">
@@ -177,6 +177,11 @@
                         </div>
                     @empty
                         <div class="empty-state py-4 text-center">
+                            <div class="empty-state-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                                </svg>
+                            </div>
                             <h6 class="empty-state-title">Belum Ada Pengumuman</h6>
                             <p class="empty-state-text">Gunakan form di atas untuk mempublikasikan pengumuman sekolah baru.</p>
                         </div>

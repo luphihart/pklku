@@ -42,7 +42,9 @@
         <!-- Leaflet Map Column -->
         <div class="col-lg-8 mb-4">
             <div class="card-premium">
-                <h5 class="fw-bold font-heading mb-3 text-dark dark-text-light">Peta Lokasi PKL Aktif</h5>
+                <div class="mb-3">
+                    <h6 class="fw-bold m-0 text-dark dark-text-light font-heading">Peta Lokasi PKL Aktif</h6>
+                </div>
                 <div id="monitoringMap"></div>
             </div>
         </div>
@@ -50,9 +52,11 @@
         <!-- DUDI List Column -->
         <div class="col-lg-4 mb-4">
             <div class="card-premium">
-                <h5 class="fw-bold font-heading mb-3 text-dark dark-text-light">
-                    {{ auth()->user()->role === 'guru' ? 'Daftar DUDI & Bimbingan' : 'Daftar Seluruh DUDI' }}
-                </h5>
+                <div class="mb-3">
+                    <h6 class="fw-bold m-0 text-dark dark-text-light font-heading">
+                        {{ auth()->user()->role === 'guru' ? 'Daftar DUDI & Bimbingan' : 'Daftar Seluruh DUDI' }}
+                    </h6>
+                </div>
                 
                 <div class="feed-container pe-2" style="max-height: 400px; overflow-y: auto;">
                     @forelse($dudiList as $dudiId => $dudiItem)
@@ -78,8 +82,14 @@
                             </ul>
                         </div>
                     @empty
-                        <div class="text-center py-5 text-muted small">
-                            Belum ada mitra DUDI aktif saat ini.
+                        <div class="empty-state py-4">
+                            <div class="empty-state-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                </svg>
+                            </div>
+                            <h6 class="empty-state-title">Belum Ada DUDI Aktif</h6>
+                            <p class="empty-state-text">Belum ada mitra DUDI dengan penempatan aktif saat ini.</p>
                         </div>
                     @endforelse
                 </div>

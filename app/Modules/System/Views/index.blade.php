@@ -61,34 +61,34 @@ if (!function_exists('formatAktivitas')) {
 if (!function_exists('getActivityBadge')) {
     function getActivityBadge($text) {
         if (empty($text)) {
-            return '<span class="badge bg-secondary-light text-secondary px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Sistem</span>';
+            return '<span class="badge bg-secondary-light text-secondary px-2 py-1 fw-semibold" style="font-size: 11px; border-radius: 6px;">Sistem</span>';
         }
         // Critical / Danger actions
         if (stripos($text, 'hapus') !== false || stripos($text, 'membatalkan') !== false || stripos($text, 'wipe') !== false || stripos($text, 'kosongkan') !== false) {
-            return '<span class="badge bg-danger-light text-danger px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Hapus / Kritis</span>';
+            return '<span class="badge bg-danger-light text-danger px-2 py-1 fw-semibold" style="font-size: 11px; border-radius: 6px;">Hapus / Kritis</span>';
         }
         if (stripos($text, 'masuk') !== false || stripos($text, 'Login') !== false) {
-            return '<span class="badge bg-success-light text-success px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Login</span>';
+            return '<span class="badge bg-success-light text-success px-2 py-1 fw-semibold" style="font-size: 11px; border-radius: 6px;">Login</span>';
         }
         if (stripos($text, 'keluar') !== false || stripos($text, 'Logout') !== false) {
-            return '<span class="badge bg-secondary-light text-secondary px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Logout</span>';
+            return '<span class="badge bg-secondary-light text-secondary px-2 py-1 fw-semibold" style="font-size: 11px; border-radius: 6px;">Logout</span>';
         }
         if (stripos($text, 'password') !== false) {
-            return '<span class="badge bg-warning-light text-warning px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Sandi</span>';
+            return '<span class="badge bg-warning-light text-warning px-2 py-1 fw-semibold" style="font-size: 11px; border-radius: 6px;">Sandi</span>';
         }
         if (stripos($text, 'pengaturan') !== false || stripos($text, 'konfigurasi') !== false || stripos($text, 'branding') !== false) {
-            return '<span class="badge bg-indigo-light text-indigo px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Pengaturan</span>';
+            return '<span class="badge bg-indigo-light text-indigo px-2 py-1 fw-semibold" style="font-size: 11px; border-radius: 6px;">Pengaturan</span>';
         }
         if (stripos($text, 'jurnal') !== false) {
-            return '<span class="badge bg-primary-light text-primary px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Jurnal</span>';
+            return '<span class="badge bg-primary-light text-primary px-2 py-1 fw-semibold" style="font-size: 11px; border-radius: 6px;">Jurnal</span>';
         }
         if (stripos($text, 'penilaian') !== false || stripos($text, 'nilai') !== false) {
-            return '<span class="badge bg-amber-light text-amber px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Penilaian</span>';
+            return '<span class="badge bg-amber-light text-amber px-2 py-1 fw-semibold" style="font-size: 11px; border-radius: 6px;">Penilaian</span>';
         }
         if (stripos($text, 'murid') !== false || stripos($text, 'siswa') !== false || stripos($text, 'guru') !== false || stripos($text, 'dudi') !== false || stripos($text, 'industri') !== false || stripos($text, 'penempatan') !== false) {
-            return '<span class="badge bg-purple-light text-purple px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Master</span>';
+            return '<span class="badge bg-purple-light text-purple px-2 py-1 fw-semibold" style="font-size: 11px; border-radius: 6px;">Master</span>';
         }
-        return '<span class="badge bg-secondary-light text-secondary px-2 py-1 fw-semibold" style="font-size: 10.5px; border-radius: 6px;">Sistem</span>';
+        return '<span class="badge bg-secondary-light text-secondary px-2 py-1 fw-semibold" style="font-size: 11px; border-radius: 6px;">Sistem</span>';
     }
 }
 
@@ -284,7 +284,7 @@ if (!function_exists('parseUserAgent')) {
 
                 <!-- Desktop Table View (md and up) -->
                 <div class="table-responsive d-none d-md-block" style="max-height: 560px; overflow-y: auto;">
-                    <table class="table table-hover align-middle mb-0" style="color: var(--text-primary); font-size: 12.5px; min-width: 780px;">
+                    <table class="table table-hover align-middle mb-0" style="color: var(--text-primary); font-size: 13px; min-width: 780px;">
                         <thead class="table-light sticky-top" style="z-index: 2;">
                             <tr class="text-muted font-heading" style="background-color: var(--bg-canvas);">
                                 <th class="ps-4 py-3" style="width: 140px;">Waktu</th>
@@ -323,21 +323,21 @@ if (!function_exists('parseUserAgent')) {
                                                 {{ $log->user ? strtoupper(substr($log->user->name, 0, 2)) : 'SY' }}
                                             </div>
                                             <div class="text-truncate" style="max-width: 150px;">
-                                                <div class="fw-bold text-dark dark-text-light text-truncate" style="font-size: 12.5px;" title="{{ $log->user ? $log->user->name : 'Sistem Otomatis' }}">
+                                                <div class="fw-bold text-dark dark-text-light text-truncate" style="font-size: 13px;" title="{{ $log->user ? $log->user->name : 'Sistem Otomatis' }}">
                                                     {{ $log->user ? $log->user->name : 'Sistem Otomatis' }}
                                                 </div>
                                                 @if($log->user)
                                                     @if($log->user->role === 'admin')
-                                                        <span class="badge bg-danger-light text-danger fw-semibold px-1.5 py-0.5" style="font-size: 9.5px; border-radius: 4px;">Admin</span>
+                                                        <span class="badge bg-danger-light text-danger fw-semibold px-1.5 py-0.5" style="font-size: 11px; border-radius: 4px;">Admin</span>
                                                     @elseif($log->user->role === 'guru')
-                                                        <span class="badge bg-primary-light text-primary fw-semibold px-1.5 py-0.5" style="font-size: 9.5px; border-radius: 4px;">Guru</span>
+                                                        <span class="badge bg-primary-light text-primary fw-semibold px-1.5 py-0.5" style="font-size: 11px; border-radius: 4px;">Guru</span>
                                                     @elseif($log->user->role === 'industri')
-                                                        <span class="badge bg-warning-light text-warning fw-semibold px-1.5 py-0.5" style="font-size: 9.5px; border-radius: 4px;">Industri</span>
+                                                        <span class="badge bg-warning-light text-warning fw-semibold px-1.5 py-0.5" style="font-size: 11px; border-radius: 4px;">Industri</span>
                                                     @else
-                                                        <span class="badge bg-success-light text-success fw-semibold px-1.5 py-0.5" style="font-size: 9.5px; border-radius: 4px;">Siswa</span>
+                                                        <span class="badge bg-success-light text-success fw-semibold px-1.5 py-0.5" style="font-size: 11px; border-radius: 4px;">Siswa</span>
                                                     @endif
                                                 @else
-                                                    <span class="badge bg-secondary-light text-secondary fw-semibold px-1.5 py-0.5" style="font-size: 9.5px; border-radius: 4px;">System</span>
+                                                    <span class="badge bg-secondary-light text-secondary fw-semibold px-1.5 py-0.5" style="font-size: 11px; border-radius: 4px;">System</span>
                                                 @endif
                                             </div>
                                         </div>
@@ -349,8 +349,8 @@ if (!function_exists('parseUserAgent')) {
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-light text-dark font-monospace border px-2 py-0.5" style="font-size: 10.5px; border-radius: 4px;">{{ $log->ip_address }}</span>
-                                        <div class="d-flex align-items-center gap-1 mt-1 text-muted text-truncate" style="font-size: 10.5px; max-width: 170px;" title="{{ $log->user_agent }}">
+                                        <span class="badge bg-light text-dark font-monospace border px-2 py-0.5" style="font-size: 11px; border-radius: 4px;">{{ $log->ip_address }}</span>
+                                        <div class="d-flex align-items-center gap-1 mt-1 text-muted text-truncate" style="font-size: 11px; max-width: 170px;" title="{{ $log->user_agent }}">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-secondary flex-shrink-0">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                                             </svg>
@@ -516,7 +516,7 @@ if (!function_exists('parseUserAgent')) {
                 <div>
                     <label class="form-label small fw-semibold text-muted mb-1">Rincian Data Payload (Sebelum / Sesudah)</label>
                     <div id="payload_container">
-                        <pre class="p-3 rounded bg-light border font-monospace mb-0" style="font-size: 11.5px; max-height: 220px; overflow-y: auto; background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;" id="detail_payload_json">-</pre>
+                        <pre class="p-3 rounded bg-light border font-monospace mb-0" style="font-size: 12px; max-height: 220px; overflow-y: auto; background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;" id="detail_payload_json">-</pre>
                     </div>
                 </div>
             </div>

@@ -152,7 +152,7 @@
         line-height: 1.2;
     }
     .attendance-time {
-        font-size: 13.5px !important;
+        font-size: 13px !important;
         font-weight: 700 !important;
         color: #0f172a !important;
         font-variant-numeric: tabular-nums !important;
@@ -301,7 +301,7 @@
                         <tr>
                             <!-- Murid (Kelas) -->
                             <td class="ps-4 py-3">
-                                <div class="fw-bold text-dark font-heading" style="font-size: 13.5px; line-height: 1.3;">
+                                <div class="fw-bold text-dark font-heading" style="font-size: 13px; line-height: 1.3;">
                                     {{ $p->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus' }}
                                 </div>
                                 <div class="text-muted small" style="font-size: 12px; margin-top: 2px;">
@@ -323,7 +323,7 @@
                                         <span class="text-secondary fw-medium">WFO</span>
                                     @endif
 
-                                    <span class="text-muted opacity-50" style="font-size: 9px;">&bull;</span>
+                                    <span class="text-muted opacity-50" style="font-size: 11px;">&bull;</span>
 
                                     @if($p->shift_harian === 'pagi')
                                         <span class="shift-tag shift-tag-pagi" style="background-color: #ecfdf5 !important; color: #047857 !important;">Shift Pagi</span>
@@ -477,6 +477,11 @@
                         <tr>
                             <td colspan="5" class="text-center py-4">
                                 <div class="empty-state py-4">
+                                    <div class="empty-state-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                    </div>
                                     <h6 class="empty-state-title">Tidak ada data presensi</h6>
                                     <p class="empty-state-text">Belum ada murid yang melakukan presensi pada tanggal ini.</p>
                                 </div>
@@ -494,8 +499,8 @@
                     <!-- Top: Student Name & Class + Status Badge -->
                     <div class="d-flex justify-content-between align-items-start mb-2 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
                         <div>
-                            <div class="fw-bold text-dark font-heading" style="font-size: 13.5px;">{{ $p->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus' }}</div>
-                            <div class="text-muted" style="font-size: 11.5px;">{{ $p->penempatanPkl?->murid?->kelas?->nama ?? '-' }} &bull; <span class="fw-semibold text-secondary">{{ $p->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</span></div>
+                            <div class="fw-bold text-dark font-heading" style="font-size: 13px;">{{ $p->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus' }}</div>
+                            <div class="text-muted" style="font-size: 12px;">{{ $p->penempatanPkl?->murid?->kelas?->nama ?? '-' }} &bull; <span class="fw-semibold text-secondary">{{ $p->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</span></div>
                         </div>
                         <div class="text-end">
                             @if($p->status_masuk === 'libur_shift')
@@ -530,7 +535,7 @@
                             <span class="text-secondary fw-medium">WFO</span>
                         @endif
 
-                        <span class="text-muted opacity-50" style="font-size: 9px;">&bull;</span>
+                        <span class="text-muted opacity-50" style="font-size: 11px;">&bull;</span>
 
                         @if($p->shift_harian === 'pagi')
                             <span class="shift-tag shift-tag-pagi" style="background-color: #ecfdf5 !important; color: #047857 !important;">Shift Pagi</span>
@@ -636,6 +641,11 @@
                 </div>
             @empty
                 <div class="empty-state py-4 text-center">
+                    <div class="empty-state-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
                     <h6 class="empty-state-title">Tidak ada data presensi</h6>
                     <p class="empty-state-text">Belum ada murid yang melakukan presensi pada tanggal ini.</p>
                 </div>
@@ -655,8 +665,8 @@
 <div class="modal fade" id="modalTambahManual" tabindex="-1" aria-labelledby="modalTambahManualLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color);">
-            <div class="modal-header">
-                <h6 class="modal-title fw-bold" id="modalTambahManualLabel">Input Presensi Manual</h6>
+            <div class="modal-header border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                <h5 class="modal-title font-heading fw-bold" id="modalTambahManualLabel">Input Presensi Manual</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{ route('presensi.store_manual') }}" method="POST">
@@ -689,12 +699,12 @@
                                         <div class="d-flex justify-content-between align-items-center mb-0.5">
                                             <span class="fw-semibold text-dark">{{ $item->murid?->nama ?? 'Siswa' }}</span>
                                             @if($item->murid?->kelas)
-                                                <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 10.5px;">{{ $item->murid->kelas->nama }}</span>
+                                                <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 11px;">{{ $item->murid->kelas->nama }}</span>
                                             @endif
                                         </div>
                                         <div class="text-muted small d-flex justify-content-between" style="font-size: 11px;">
                                             <span>NIS: {{ $item->murid?->nis ?? '-' }}</span>
-                                            <span class="text-secondary fw-medium">🏢 {{ $item->dudi?->nama ?? '-' }}</span>
+                                            <span class="text-secondary fw-medium">{{ $item->dudi?->nama ?? '-' }}</span>
                                         </div>
                                     </div>
                                 @endforeach
@@ -719,8 +729,8 @@
                                 <option value="">-- Pilih Status Masuk --</option>
                                 <option value="tepat_waktu">Tepat Waktu</option>
                                 <option value="terlambat">Terlambat</option>
-                                <option value="libur_shift">🌴 Libur Shift DUDI</option>
-                                <option value="alpha">❌ Alpha</option>
+                                <option value="libur_shift">Libur Shift DUDI</option>
+                                <option value="alpha">Alpha</option>
                             </select>
                         </div>
                     </div>
@@ -742,7 +752,7 @@
                         * Isikan Jam Masuk / Jam Pulang, atau pilih status khusus seperti Libur Shift / Alpha.
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer border-top" style="border-top-color: var(--border-color) !important;">
                     <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-sm btn-primary">Simpan Presensi</button>
                 </div>
@@ -755,8 +765,8 @@
 <div class="modal fade" id="modalEditManual" tabindex="-1" aria-labelledby="modalEditManualLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color);">
-            <div class="modal-header">
-                <h6 class="modal-title fw-bold" id="modalEditManualLabel">Koreksi Presensi Manual</h6>
+            <div class="modal-header border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                <h5 class="modal-title font-heading fw-bold" id="modalEditManualLabel">Koreksi Presensi Manual</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="formEditManual" method="POST">
@@ -782,8 +792,8 @@
                                 <option value="">-- Pilih Status Masuk --</option>
                                 <option value="tepat_waktu">Tepat Waktu</option>
                                 <option value="terlambat">Terlambat</option>
-                                <option value="libur_shift">🌴 Libur Shift DUDI</option>
-                                <option value="alpha">❌ Alpha</option>
+                                <option value="libur_shift">Libur Shift DUDI</option>
+                                <option value="alpha">Alpha</option>
                             </select>
                         </div>
                     </div>
@@ -805,7 +815,7 @@
                         * Isikan salah satu (Jam Masuk saja / Jam Pulang saja) atau isi keduanya.
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer border-top" style="border-top-color: var(--border-color) !important;">
                     <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-sm btn-primary">Simpan Perubahan</button>
                 </div>

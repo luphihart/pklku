@@ -367,7 +367,7 @@
                             <h5 class="fw-bold font-heading m-0 text-dark">Riwayat Bulan Ini</h5>
                             <small class="text-muted" style="font-size: 11px;">{{ \Carbon\Carbon::now()->translatedFormat('F Y') }} &bull; {{ count($history) }} Catatan</small>
                         </div>
-                        <a href="{{ route('laporan.murid_presensi_pdf') }}" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 font-heading" style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px;" aria-label="Unduh Rekap Presensi PDF">
+                        <a href="{{ route('laporan.murid_presensi_pdf') }}" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 font-heading" style="font-size: 12px; padding: 4px 10px; border-radius: 6px;" aria-label="Unduh Rekap Presensi PDF">
                             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
@@ -386,25 +386,25 @@
                         <div class="col-3">
                             <div class="p-2 rounded text-center bg-light border" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
                                 <div class="fw-bold font-heading text-success" style="font-size: 15px; line-height: 1;">{{ $cntHadir }}</div>
-                                <span class="text-muted text-uppercase" style="font-size: 9px; font-weight: 600;">Hadir</span>
+                                <span class="text-muted text-uppercase" style="font-size: 11px; font-weight: 600;">Hadir</span>
                             </div>
                         </div>
                         <div class="col-3">
                             <div class="p-2 rounded text-center bg-light border" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
                                 <div class="fw-bold font-heading text-danger" style="font-size: 15px; line-height: 1;">{{ $cntTerlambat }}</div>
-                                <span class="text-muted text-uppercase" style="font-size: 9px; font-weight: 600;">Telat</span>
+                                <span class="text-muted text-uppercase" style="font-size: 11px; font-weight: 600;">Telat</span>
                             </div>
                         </div>
                         <div class="col-3">
                             <div class="p-2 rounded text-center bg-light border" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
                                 <div class="fw-bold font-heading text-info" style="font-size: 15px; line-height: 1;">{{ $cntIzinSakit }}</div>
-                                <span class="text-muted text-uppercase" style="font-size: 9px; font-weight: 600;">Izin/Skt</span>
+                                <span class="text-muted text-uppercase" style="font-size: 11px; font-weight: 600;">Izin/Skt</span>
                             </div>
                         </div>
                         <div class="col-3">
                             <div class="p-2 rounded text-center bg-light border" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
                                 <div class="fw-bold font-heading text-primary" style="font-size: 15px; line-height: 1;">{{ $cntLiburShift }}</div>
-                                <span class="text-muted text-uppercase" style="font-size: 9px; font-weight: 600;">Off Shift</span>
+                                <span class="text-muted text-uppercase" style="font-size: 11px; font-weight: 600;">Off Shift</span>
                             </div>
                         </div>
                     </div>
@@ -417,9 +417,9 @@
                                 <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
                                     <div class="d-flex align-items-center gap-2">
                                         <div class="text-center px-2 py-1 rounded bg-light border flex-shrink-0" style="min-width: 44px; background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
-                                            <div class="text-uppercase fw-bold text-muted" style="font-size: 8.5px; line-height: 1;">{{ \Carbon\Carbon::parse($h->tanggal)->translatedFormat('D') }}</div>
+                                            <div class="text-uppercase fw-bold text-muted" style="font-size: 10px; line-height: 1;">{{ \Carbon\Carbon::parse($h->tanggal)->translatedFormat('D') }}</div>
                                             <div class="fw-bold text-dark font-heading" style="font-size: 14px; line-height: 1.2;">{{ \Carbon\Carbon::parse($h->tanggal)->format('d') }}</div>
-                                            <div class="text-muted" style="font-size: 8.5px; line-height: 1;">{{ \Carbon\Carbon::parse($h->tanggal)->translatedFormat('M') }}</div>
+                                            <div class="text-muted" style="font-size: 10px; line-height: 1;">{{ \Carbon\Carbon::parse($h->tanggal)->translatedFormat('M') }}</div>
                                         </div>
                                         <div>
                                             <div class="fw-bold font-heading text-dark" style="font-size: 13px;">
@@ -427,10 +427,10 @@
                                             </div>
                                             <div class="d-flex align-items-center gap-1 mt-0.5">
                                                 @if(!empty($h->shift_harian))
-                                                    <span class="badge bg-secondary-light text-secondary" style="font-size: 9.5px; padding: 2px 6px;">{{ ucfirst($h->shift_harian) }}</span>
+                                                    <span class="badge bg-secondary-light text-secondary" style="font-size: 11px; padding: 2px 6px;">{{ ucfirst($h->shift_harian) }}</span>
                                                 @endif
                                                 @if(!empty($h->is_wfa))
-                                                    <span class="badge bg-primary-light text-primary" style="font-size: 9.5px; padding: 2px 6px;">WFA</span>
+                                                    <span class="badge bg-primary-light text-primary" style="font-size: 11px; padding: 2px 6px;">WFA</span>
                                                 @endif
                                             </div>
                                         </div>
@@ -493,11 +493,11 @@
                                         </div>
                                     </div>
                                 @elseif($h->type === 'libur_shift')
-                                    <div class="p-2 rounded bg-light border text-muted" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important; font-size: 11.5px; line-height: 1.4;">
+                                    <div class="p-2 rounded bg-light border text-muted" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important; font-size: 12px; line-height: 1.4;">
                                         Jadwal libur shift mandiri / off day DUDI.
                                     </div>
                                 @elseif($h->type === 'alpha')
-                                    <div class="p-2 rounded bg-light border text-danger fw-medium" style="background-color: rgba(239, 68, 68, 0.05) !important; border-color: rgba(239, 68, 68, 0.2) !important; font-size: 11.5px; line-height: 1.4;">
+                                    <div class="p-2 rounded bg-light border text-danger fw-medium" style="background-color: rgba(239, 68, 68, 0.05) !important; border-color: rgba(239, 68, 68, 0.2) !important; font-size: 12px; line-height: 1.4;">
                                         Tidak melakukan presensi harian (Alpha).
                                     </div>
                                 @else
@@ -527,7 +527,7 @@
                                                         </div>
                                                     @endif
                                                     <div>
-                                                        <span class="text-muted d-block text-uppercase" style="font-size: 9.5px; font-weight: 600;">Masuk</span>
+                                                        <span class="text-muted d-block text-uppercase" style="font-size: 11px; font-weight: 600;">Masuk</span>
                                                         <span class="fw-bold text-success font-heading" style="font-size: 13px;">{{ $h->jam_masuk ? substr($h->jam_masuk, 0, 5) : '-' }}</span>
                                                     </div>
                                                 </div>
@@ -559,7 +559,7 @@
                                                         </div>
                                                     @endif
                                                     <div>
-                                                        <span class="text-muted d-block text-uppercase" style="font-size: 9.5px; font-weight: 600;">Pulang</span>
+                                                        <span class="text-muted d-block text-uppercase" style="font-size: 11px; font-weight: 600;">Pulang</span>
                                                         <span class="fw-bold {{ $h->jam_pulang ? 'text-warning' : 'text-muted' }} font-heading" style="font-size: 13px;">
                                                             {{ $h->jam_pulang ? substr($h->jam_pulang, 0, 5) : 'Belum Out' }}
                                                         </span>
@@ -578,7 +578,7 @@
                                     </svg>
                                 </div>
                                 <h6 class="empty-state-title" style="font-size: 13px;">Belum Ada Presensi</h6>
-                                <p class="empty-state-text" style="font-size: 11.5px;">Riwayat presensi kehadiran Anda bulan ini akan otomatis muncul di sini.</p>
+                                <p class="empty-state-text" style="font-size: 12px;">Riwayat presensi kehadiran Anda bulan ini akan otomatis muncul di sini.</p>
                             </div>
                         @endforelse
                     </div>
@@ -605,9 +605,9 @@
                 </div>
             </div>
             <div class="modal-footer py-2 px-3 border-top d-flex justify-content-between align-items-center" style="border-top-color: var(--border-color) !important;">
-                <span class="text-muted small" id="previewFotoTime" style="font-size: 11.5px;">-</span>
+                <span class="text-muted small" id="previewFotoTime" style="font-size: 12px;">-</span>
                 <div class="d-flex align-items-center gap-2">
-                    <a href="#" id="previewFotoDirectLink" target="_blank" class="btn btn-sm btn-outline-primary font-heading d-inline-flex align-items-center gap-1" style="font-size: 11.5px;">
+                    <a href="#" id="previewFotoDirectLink" target="_blank" class="btn btn-sm btn-outline-primary font-heading d-inline-flex align-items-center gap-1" style="font-size: 12px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                         </svg>

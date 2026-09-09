@@ -115,7 +115,18 @@
                             </td>
                             <td class="text-center pe-4">
                                 <div class="d-flex gap-1 justify-content-center">
-                                    <button class="btn btn-sm btn-outline-warning btn-action" data-bs-toggle="modal" data-bs-target="#editModal_{{ $dudi->id }}" title="Edit DUDI" aria-label="Edit DUDI {{ $dudi->nama }}">
+                                    <button class="btn btn-sm btn-outline-warning btn-action btn-edit-dudi"
+                                        data-id="{{ $dudi->id }}"
+                                        data-nama="{{ $dudi->nama }}"
+                                        data-alamat="{{ $dudi->alamat }}"
+                                        data-latitude="{{ $dudi->latitude }}"
+                                        data-longitude="{{ $dudi->longitude }}"
+                                        data-radius="{{ $dudi->radius_meter }}"
+                                        data-pic-nama="{{ $dudi->pic_nama }}"
+                                        data-pic-phone="{{ $dudi->pic_phone }}"
+                                        data-hari-kerja="{{ $dudi->hari_kerja ?? 'Senin,Selasa,Rabu,Kamis,Jumat' }}"
+                                        data-bs-toggle="modal" data-bs-target="#editDudiModal"
+                                        title="Edit DUDI" aria-label="Edit DUDI {{ $dudi->nama }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                         </svg>
@@ -129,75 +140,6 @@
                                             </svg>
                                         </button>
                                     </form>
-                                </div>
-
-                                <!-- Edit Modal -->
-                                <div class="modal fade text-start" id="editModal_{{ $dudi->id }}" tabindex="-1" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg">
-                                        <div class="modal-content" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color);">
-                                            <div class="modal-header border-bottom" style="border-bottom-color: var(--border-color) !important;">
-                                                <h5 class="modal-title font-heading fw-bold" style="font-size: 15px;">Edit Mitra DUDI</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <form action="{{ route('dudi.update', $dudi->id) }}" method="POST">
-                                                @csrf
-                                                @method('PUT')
-                                                <div class="modal-body">
-                                                    <div class="mb-3">
-                                                        <label class="form-label small fw-semibold">Nama Perusahaan / Instansi</label>
-                                                        <input type="text" name="nama" class="form-control form-control-sm" value="{{ $dudi->nama }}" required>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label small fw-semibold">Alamat Lengkap Kantor</label>
-                                                        <textarea name="alamat" class="form-control form-control-sm" rows="2" required>{{ $dudi->alamat }}</textarea>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-4 mb-3">
-                                                            <label class="form-label small fw-semibold">Latitude</label>
-                                                            <input type="text" name="latitude" class="form-control form-control-sm" value="{{ $dudi->latitude }}" required>
-                                                        </div>
-                                                        <div class="col-md-4 mb-3">
-                                                            <label class="form-label small fw-semibold">Longitude</label>
-                                                            <input type="text" name="longitude" class="form-control form-control-sm" value="{{ $dudi->longitude }}" required>
-                                                        </div>
-                                                        <div class="col-md-4 mb-3">
-                                                            <label class="form-label small fw-semibold">Radius Geofence (Meter)</label>
-                                                            <input type="number" name="radius_meter" class="form-control form-control-sm" value="{{ $dudi->radius_meter }}" required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-6 mb-3">
-                                                            <label class="form-label small fw-semibold">Nama Pembimbing Industri</label>
-                                                            <input type="text" name="pic_nama" class="form-control form-control-sm" value="{{ $dudi->pic_nama }}" required>
-                                                        </div>
-                                                        <div class="col-md-6 mb-3">
-                                                            <label class="form-label small fw-semibold">No. HP / WA Pembimbing Industri</label>
-                                                            <input type="text" name="pic_phone" class="form-control form-control-sm" value="{{ $dudi->pic_phone }}" required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label small fw-semibold d-block">Hari Kerja Efektif</label>
-                                                        @php
-                                                            $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-                                                            $selectedDays = explode(',', $dudi->hari_kerja ?? 'Senin,Selasa,Rabu,Kamis,Jumat');
-                                                        @endphp
-                                                        <div class="d-flex flex-wrap gap-3 mt-1">
-                                                            @foreach($days as $day)
-                                                                <div class="form-check">
-                                                                    <input class="form-check-input" type="checkbox" name="hari_kerja[]" value="{{ $day }}" id="hari_edit_{{ $dudi->id }}_{{ $day }}" {{ in_array($day, $selectedDays) ? 'checked' : '' }}>
-                                                                    <label class="form-check-label small" for="hari_edit_{{ $dudi->id }}_{{ $day }}">{{ $day }}</label>
-                                                                </div>
-                                                            @endforeach
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer border-top" style="border-top-color: var(--border-color) !important;">
-                                                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                                    <button type="submit" class="btn btn-sm btn-primary">Simpan Perubahan</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -228,6 +170,71 @@
     </div>
 </div>
 
+<!-- Modal: Edit DUDI (Shared Single Modal) -->
+<div class="modal fade text-start" id="editDudiModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color);">
+            <div class="modal-header border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                <h5 class="modal-title font-heading fw-bold" id="editDudiModalTitle" style="font-size: 15px;">Edit Mitra DUDI</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editDudiForm" action="" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Nama Perusahaan / Instansi</label>
+                        <input type="text" id="edit_nama" name="nama" class="form-control form-control-sm" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Alamat Lengkap Kantor</label>
+                        <textarea id="edit_alamat" name="alamat" class="form-control form-control-sm" rows="2" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label small fw-semibold">Latitude</label>
+                            <input type="text" id="edit_latitude" name="latitude" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label small fw-semibold">Longitude</label>
+                            <input type="text" id="edit_longitude" name="longitude" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label small fw-semibold">Radius Geofence (Meter)</label>
+                            <input type="number" id="edit_radius" name="radius_meter" class="form-control form-control-sm" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-semibold">Nama Pembimbing Industri</label>
+                            <input type="text" id="edit_pic_nama" name="pic_nama" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-semibold">No. HP / WA Pembimbing Industri</label>
+                            <input type="text" id="edit_pic_phone" name="pic_phone" class="form-control form-control-sm" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold d-block">Hari Kerja Efektif</label>
+                        <div class="d-flex flex-wrap gap-3 mt-1" id="edit_hari_kerja_group">
+                            @foreach(['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'] as $day)
+                                <div class="form-check">
+                                    <input class="form-check-input edit-hari-check" type="checkbox" name="hari_kerja[]" value="{{ $day }}" id="edit_hari_{{ $day }}">
+                                    <label class="form-check-label small" for="edit_hari_{{ $day }}">{{ $day }}</label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top" style="border-top-color: var(--border-color) !important;">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-sm btn-primary font-heading">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Modal: Import Excel -->
 <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -252,7 +259,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="excelFile" class="form-label small fw-semibold">Pilih File Excel (.xlsx / .xls)</label>
-                        <input type="file" name="file" id="excelFile" class="form-control" accept=".xlsx, .xls" required>
+                        <input type="file" name="file" id="excelFile" class="form-control-sm form-control" accept=".xlsx, .xls" required>
                     </div>
                 </div>
                 <div class="modal-footer border-top" style="border-top-color: var(--border-color) !important;">
@@ -334,3 +341,44 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const editModal = document.getElementById('editDudiModal');
+    if (!editModal) return;
+
+    editModal.addEventListener('show.bs.modal', function (event) {
+        const btn = event.relatedTarget;
+        if (!btn || !btn.classList.contains('btn-edit-dudi')) return;
+
+        const id       = btn.dataset.id;
+        const nama     = btn.dataset.nama;
+        const alamat   = btn.dataset.alamat;
+        const lat      = btn.dataset.latitude;
+        const lng      = btn.dataset.longitude;
+        const radius   = btn.dataset.radius;
+        const picNama  = btn.dataset.picNama;
+        const picPhone = btn.dataset.picPhone;
+        const hariKerja = (btn.dataset.hariKerja || '').split(',').map(h => h.trim());
+
+        // Update form action to point to correct route
+        document.getElementById('editDudiForm').action = `/master/dudi/${id}`;
+
+        // Populate fields
+        document.getElementById('edit_nama').value     = nama     || '';
+        document.getElementById('edit_alamat').value   = alamat   || '';
+        document.getElementById('edit_latitude').value = lat      || '';
+        document.getElementById('edit_longitude').value = lng     || '';
+        document.getElementById('edit_radius').value   = radius   || '';
+        document.getElementById('edit_pic_nama').value = picNama  || '';
+        document.getElementById('edit_pic_phone').value = picPhone || '';
+
+        // Reset and set hari kerja checkboxes
+        document.querySelectorAll('.edit-hari-check').forEach(function (cb) {
+            cb.checked = hariKerja.includes(cb.value);
+        });
+    });
+});
+</script>
+@endpush

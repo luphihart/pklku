@@ -22,12 +22,12 @@
                     @endif
                 </div>
                 <div>
-                    <span class="text-muted text-uppercase fw-bold d-block" style="font-size: 10.5px; letter-spacing: 0.5px;">Status Masa Pengisian Nilai PKL</span>
+                    <span class="text-muted text-uppercase fw-bold d-block" style="font-size: 11px; letter-spacing: 0.5px;">Status Masa Pengisian Nilai PKL</span>
                     @if($isMasaPenilaianOpen)
-                        <span class="fw-bold text-success font-heading" style="font-size: 14.5px;">Masa Penilaian Sedang DIBUKA (Aktif)</span>
+                        <span class="fw-bold text-success font-heading" style="font-size: 15px;">Masa Penilaian Sedang DIBUKA (Aktif)</span>
                         <small class="text-muted d-block" style="font-size: 11px;">Siswa dapat menginput nilai DUDI dan Guru Pembimbing dapat mengesahkan nilai.</small>
                     @else
-                        <span class="fw-bold text-danger font-heading" style="font-size: 14.5px;">Masa Penilaian Sedang DITUTUP (Terkunci)</span>
+                        <span class="fw-bold text-danger font-heading" style="font-size: 15px;">Masa Penilaian Sedang DITUTUP (Terkunci)</span>
                         <small class="text-muted d-block" style="font-size: 11px;">Form pengisian nilai murid dinonaktifkan sementara waktu.</small>
                     @endif
                 </div>
@@ -172,24 +172,24 @@
                     <!-- Top: Siswa Name & Status DUDI -->
                     <div class="d-flex justify-content-between align-items-start mb-2 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
                         <div>
-                            <div class="fw-bold text-dark font-heading" style="font-size: 13.5px;">{{ $p->murid?->nama ?? 'Siswa Terhapus' }}</div>
-                            <div class="text-muted" style="font-size: 11.5px;">NIS: {{ $p->murid?->nis ?? '-' }} &bull; {{ $p->murid?->kelas?->nama ?? '-' }}</div>
+                            <div class="fw-bold text-dark font-heading" style="font-size: 13px;">{{ $p->murid?->nama ?? 'Siswa Terhapus' }}</div>
+                            <div class="text-muted" style="font-size: 12px;">NIS: {{ $p->murid?->nis ?? '-' }} &bull; {{ $p->murid?->kelas?->nama ?? '-' }}</div>
                         </div>
                         <div>
                             @if($p->penilaianPkl && $p->penilaianPkl->status_nilai_industri === 'diverifikasi')
-                                <span class="badge bg-success-light text-success" style="font-size: 10.5px;">Disahkan</span>
+                                <span class="badge bg-success-light text-success" style="font-size: 11px;">Disahkan</span>
                             @elseif($p->penilaianPkl && $p->penilaianPkl->status_nilai_industri === 'diajukan')
-                                <span class="badge bg-info-light text-info" style="font-size: 10.5px;">Diajukan Siswa</span>
+                                <span class="badge bg-info-light text-info" style="font-size: 11px;">Diajukan Siswa</span>
                             @elseif($p->penilaianPkl && $p->penilaianPkl->rata_nilai_guru > 0)
-                                <span class="badge bg-warning-light text-warning" style="font-size: 10.5px;">Menunggu DUDI</span>
+                                <span class="badge bg-warning-light text-warning" style="font-size: 11px;">Menunggu DUDI</span>
                             @else
-                                <span class="badge bg-secondary-light text-secondary" style="font-size: 10.5px;">Belum Diisi</span>
+                                <span class="badge bg-secondary-light text-secondary" style="font-size: 11px;">Belum Diisi</span>
                             @endif
                         </div>
                     </div>
 
                     <!-- DUDI -->
-                    <div class="mb-2 text-truncate" style="font-size: 12.5px;">
+                    <div class="mb-2 text-truncate" style="font-size: 13px;">
                         <span class="text-muted">Mitra:</span>
                         <strong class="text-secondary">{{ $p->dudi?->nama ?? 'DUDI Terhapus' }}</strong>
                     </div>
@@ -198,7 +198,7 @@
                     <div class="row g-2 mb-2 text-center" style="font-size: 12px;">
                         <div class="col-4">
                             <div class="p-2 rounded bg-light border" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
-                                <div class="text-muted" style="font-size: 10.5px;">Rata Guru</div>
+                                <div class="text-muted" style="font-size: 11px;">Rata Guru</div>
                                 <div class="fw-bold text-success mt-0.5" style="font-size: 13px;">
                                     {{ $p->penilaianPkl ? number_format($p->penilaianPkl->rata_nilai_guru, 2) : '-' }}
                                 </div>
@@ -206,7 +206,7 @@
                         </div>
                         <div class="col-4">
                             <div class="p-2 rounded bg-light border" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
-                                <div class="text-muted" style="font-size: 10.5px;">Rata DUDI</div>
+                                <div class="text-muted" style="font-size: 11px;">Rata DUDI</div>
                                 <div class="fw-bold text-warning mt-0.5" style="font-size: 13px;">
                                     {{ $p->penilaianPkl ? number_format($p->penilaianPkl->rata_nilai_industri, 2) : '-' }}
                                 </div>
@@ -214,7 +214,7 @@
                         </div>
                         <div class="col-4">
                             <div class="p-2 rounded bg-light border" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
-                                <div class="text-muted" style="font-size: 10.5px;">Nilai Akhir</div>
+                                <div class="text-muted" style="font-size: 11px;">Nilai Akhir</div>
                                 <div class="fw-bold text-primary mt-0.5" style="font-size: 13px;">
                                     {{ $p->penilaianPkl ? number_format($p->penilaianPkl->nilai_akhir, 2) : '-' }}
                                 </div>
@@ -225,7 +225,7 @@
                     <!-- Action Buttons (Mobile) -->
                     @if(auth()->user()->role === 'guru' || auth()->user()->role === 'admin')
                         <div class="pt-2 border-top d-flex align-items-center justify-content-between gap-2" style="border-top-color: var(--border-color) !important;">
-                            <button type="button" class="btn btn-sm btn-primary font-heading flex-grow-1 d-flex align-items-center justify-content-center gap-1 py-1.5" data-bs-toggle="modal" data-bs-target="#gradeModal_{{ $p->id }}" style="font-size: 12.5px;">
+                            <button type="button" class="btn btn-sm btn-primary font-heading flex-grow-1 d-flex align-items-center justify-content-center gap-1 py-1.5" data-bs-toggle="modal" data-bs-target="#gradeModal_{{ $p->id }}" style="font-size: 13px;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 00-2 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
                                 </svg>
@@ -251,6 +251,11 @@
                 </div>
             @empty
                 <div class="empty-state py-4 text-center">
+                    <div class="empty-state-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
                     <h6 class="empty-state-title">Belum Ada Data Penilaian</h6>
                     <p class="empty-state-text">Data penilaian akan tersedia setelah murid ditempatkan pada mitra industri.</p>
                 </div>
@@ -309,8 +314,8 @@
                                             </a>
                                         </div>
                                     @else
-                                        <div class="alert alert-warning border-0 p-2 mb-3 small" style="background-color: rgba(245, 158, 11, 0.1); color: #b45309;">
-                                            ℹ️ <strong>Perhatian:</strong> Siswa belum mengunggah foto lembar bukti fisik nilai dari DUDI. Anda tetap dapat memasukkan nilai sekolah dan melengkapi nilai industri secara manual jika diperlukan.
+                                        <div class="alert alert-warning border-0 p-2 mb-3 small d-flex align-items-start gap-1" style="background-color: rgba(245, 158, 11, 0.1); color: #b45309;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="flex-shrink-0" style="margin-top:1px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> <span><strong>Perhatian:</strong> Siswa belum mengunggah foto lembar bukti fisik nilai dari DUDI. Anda tetap dapat memasukkan nilai sekolah dan melengkapi nilai industri secara manual jika diperlukan.</span>
                                         </div>
                                     @endif
                                     

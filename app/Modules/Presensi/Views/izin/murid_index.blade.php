@@ -191,22 +191,22 @@
                             <div class="card p-3 mb-3 border rounded shadow-xs" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
                                 <!-- Header: Kategori & Status -->
                                 <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
-                                    <span class="badge {{ $h->tipe === 'sakit' ? 'bg-danger-light text-danger' : 'bg-primary-light text-primary' }} text-capitalize px-2 py-1" style="font-size: 11px;">
+                                    <span class="badge {{ $h->tipe === 'sakit' ? 'bg-danger-light text-danger' : 'bg-info-light text-info' }} text-capitalize px-2 py-1" style="font-size: 11px;">
                                         {{ $h->tipe }}
                                     </span>
                                     <div>
                                         @if($h->status_approval === 'disetujui')
-                                            <span class="status-badge bg-success-light text-success" style="font-size: 10.5px;">
+                                            <span class="status-badge bg-success-light text-success" style="font-size: 11px;">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                                                 Disetujui
                                             </span>
                                         @elseif($h->status_approval === 'ditolak')
-                                            <span class="status-badge bg-danger-light text-danger" style="font-size: 10.5px;">
+                                            <span class="status-badge bg-danger-light text-danger" style="font-size: 11px;">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
                                                 Ditolak
                                             </span>
                                         @else
-                                            <span class="status-badge bg-warning-light text-warning" style="font-size: 10.5px;">
+                                            <span class="status-badge bg-secondary-light text-secondary" style="font-size: 11px;">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                                 Pending
                                             </span>
@@ -220,7 +220,7 @@
                                 </div>
 
                                 <!-- Alasan -->
-                                <div class="p-2.5 rounded bg-light border mb-2" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important; font-size: 12.5px; line-height: 1.5; color: var(--text-primary); white-space: pre-line; word-break: break-word;">
+                                <div class="p-2.5 rounded bg-light border mb-2" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important; font-size: 13px; line-height: 1.5; color: var(--text-primary); white-space: pre-line; word-break: break-word;">
                                     {{ $h->alasan }}
                                 </div>
 
@@ -258,6 +258,11 @@
                             </div>
                         @empty
                             <div class="empty-state py-4 text-center">
+                                <div class="empty-state-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                </div>
                                 <h6 class="empty-state-title">Belum Ada Pengajuan Izin</h6>
                                 <p class="empty-state-text">Gunakan form di atas jika Anda berhalangan hadir pada kegiatan PKL.</p>
                             </div>

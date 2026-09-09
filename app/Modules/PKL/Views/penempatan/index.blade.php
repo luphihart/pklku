@@ -252,7 +252,7 @@
                                         @elseif(($p->tipe_shift ?? 'reguler') === 'siang')
                                             <span class="badge bg-warning-light text-warning fw-semibold" title="{{ $shiftInfo['label'] }}">Siang</span>
                                         @elseif(($p->tipe_shift ?? 'reguler') === 'sore')
-                                            <span class="badge bg-orange-light text-orange fw-semibold" style="background-color: #ffedd5; color: #9a3412;" title="{{ $shiftInfo['label'] }}">Sore</span>
+                                            <span class="badge bg-orange-light text-orange fw-semibold" title="{{ $shiftInfo['label'] }}">Sore</span>
                                         @elseif(($p->tipe_shift ?? 'reguler') === 'custom')
                                             <span class="badge bg-indigo-light text-indigo fw-semibold" style="background-color: rgba(79, 70, 229, 0.1); color: #4f46e5;" title="Kustom: {{ $shiftInfo['jam_masuk'] }} - {{ $shiftInfo['jam_pulang'] }}">{{ $shiftInfo['jam_masuk'] }}-{{ $shiftInfo['jam_pulang'] }}</span>
                                         @endif
@@ -527,7 +527,7 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_reguler" value="reguler" checked onchange="toggleMassShiftCustom(this.value)">
                                         <label class="form-check-label small fw-semibold" for="mass_shift_reguler">
-                                            🏢 Reguler
+                                            Reguler
                                         </label>
                                     </div>
                                 </div>
@@ -536,19 +536,19 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_pagi" value="pagi" onchange="toggleMassShiftCustom(this.value)">
                                         <label class="form-check-label small fw-semibold" for="mass_shift_pagi">
-                                            🌅 Shift Pagi
+                                            Shift Pagi
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_siang" value="siang" onchange="toggleMassShiftCustom(this.value)">
                                         <label class="form-check-label small fw-semibold" for="mass_shift_siang">
-                                            🌆 Shift Siang
+                                            Shift Siang
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_sore" value="sore" onchange="toggleMassShiftCustom(this.value)">
                                         <label class="form-check-label small fw-semibold" for="mass_shift_sore">
-                                            🌇 Shift Sore
+                                            Shift Sore
                                         </label>
                                     </div>
                                 </div>
@@ -557,13 +557,13 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_rolling" value="rolling" onchange="toggleMassShiftCustom(this.value)">
                                         <label class="form-check-label small fw-semibold" for="mass_shift_rolling">
-                                            🔄 Rolling (Auto-Detect)
+                                            Rolling (Auto-Detect)
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="mass_shift_custom" value="custom" onchange="toggleMassShiftCustom(this.value)">
                                         <label class="form-check-label small fw-semibold" for="mass_shift_custom">
-                                            ⚙️ Kustom Jam
+                                            Kustom Jam
                                         </label>
                                     </div>
                                 </div>
@@ -720,7 +720,7 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_reguler_{{ $p->id }}" value="reguler" {{ $currentShift === 'reguler' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
                                         <label class="form-check-label small fw-semibold" for="edit_shift_reguler_{{ $p->id }}">
-                                            🏢 Reguler
+                                            Reguler
                                         </label>
                                     </div>
                                 </div>
@@ -729,19 +729,19 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_pagi_{{ $p->id }}" value="pagi" {{ $currentShift === 'pagi' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
                                         <label class="form-check-label small fw-semibold" for="edit_shift_pagi_{{ $p->id }}">
-                                            🌅 Shift Pagi
+                                            Shift Pagi
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_siang_{{ $p->id }}" value="siang" {{ $currentShift === 'siang' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
                                         <label class="form-check-label small fw-semibold" for="edit_shift_siang_{{ $p->id }}">
-                                            🌆 Shift Siang
+                                            Shift Siang
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_sore_{{ $p->id }}" value="sore" {{ $currentShift === 'sore' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
                                         <label class="form-check-label small fw-semibold" for="edit_shift_sore_{{ $p->id }}">
-                                            🌇 Shift Sore
+                                            Shift Sore
                                         </label>
                                     </div>
                                 </div>
@@ -750,13 +750,13 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_rolling_{{ $p->id }}" value="rolling" {{ $currentShift === 'rolling' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
                                         <label class="form-check-label small fw-semibold" for="edit_shift_rolling_{{ $p->id }}">
-                                            🔄 Rolling (Auto-Detect)
+                                            Rolling (Auto-Detect)
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="tipe_shift" id="edit_shift_custom_{{ $p->id }}" value="custom" {{ $currentShift === 'custom' ? 'checked' : '' }} onchange="toggleEditShiftCustom({{ $p->id }}, this.value)">
                                         <label class="form-check-label small fw-semibold" for="edit_shift_custom_{{ $p->id }}">
-                                            ⚙️ Kustom Jam
+                                            Kustom Jam
                                         </label>
                                     </div>
                                 </div>

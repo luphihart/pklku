@@ -101,7 +101,7 @@
                                     <td class="ps-4 fw-semibold">{{ \Carbon\Carbon::parse($k->tanggal)->format('d/m/Y') }}</td>
                                     <td>
                                         <div class="fw-semibold text-primary">{{ $k->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</div>
-                                        <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 10.5px;">{{ $k->jenis_kunjungan ?? 'Monitoring Berkala' }}</span>
+                                        <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 11px;">{{ $k->jenis_kunjungan ?? 'Monitoring Berkala' }}</span>
                                     </td>
                                     <td>
                                         <div class="fw-semibold">{{ $k->penempatanPkl?->guru?->nama ?? 'Guru Terhapus' }}</div>
@@ -173,17 +173,17 @@
                                         {{ \Carbon\Carbon::parse($k->tanggal)->translatedFormat('d M Y') }}
                                     </span>
                                 </div>
-                                <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 10.5px;">{{ $k->jenis_kunjungan ?? 'Monitoring' }}</span>
+                                <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 11px;">{{ $k->jenis_kunjungan ?? 'Monitoring' }}</span>
                             </div>
 
                             <!-- DUDI & Guru -->
                             <div class="mb-2">
-                                <div class="fw-bold text-dark font-heading" style="font-size: 13.5px;">{{ $k->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</div>
+                                <div class="fw-bold text-dark font-heading" style="font-size: 13px;">{{ $k->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</div>
                                 <div class="text-muted small">Pembimbing: <span class="fw-semibold text-secondary">{{ $k->penempatanPkl?->guru?->nama ?? 'Guru Terhapus' }}</span></div>
                             </div>
 
                             <!-- Catatan -->
-                            <div class="p-2.5 rounded bg-light border mb-2" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important; font-size: 12.5px; line-height: 1.5; color: var(--text-primary); white-space: pre-line; word-break: break-word;">
+                            <div class="p-2.5 rounded bg-light border mb-2" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important; font-size: 13px; line-height: 1.5; color: var(--text-primary); white-space: pre-line; word-break: break-word;">
                                 {{ $k->deskripsi_kunjungan }}
                             </div>
 

@@ -187,7 +187,7 @@
                                     </svg>
                                     <span>{{ \Carbon\Carbon::parse($h->tanggal_mulai)->translatedFormat('d M Y') }}</span>
                                     @if($h->tanggal_mulai != $h->tanggal_selesai)
-                                        <span class="text-muted fw-normal" style="font-size: 11.5px;">s/d {{ \Carbon\Carbon::parse($h->tanggal_selesai)->translatedFormat('d M Y') }}</span>
+                                        <span class="text-muted fw-normal" style="font-size: 12px;">s/d {{ \Carbon\Carbon::parse($h->tanggal_selesai)->translatedFormat('d M Y') }}</span>
                                     @endif
                                 </div>
                                 <div>
@@ -205,7 +205,7 @@
 
                             <!-- Nama Libur & Keterangan -->
                             <div class="mb-2">
-                                <h6 class="fw-bold font-heading text-dark mb-1" style="font-size: 13.5px;">{{ $h->nama }}</h6>
+                                <h6 class="fw-bold font-heading text-dark mb-1" style="font-size: 13px;">{{ $h->nama }}</h6>
                                 @if($h->keterangan)
                                     <p class="text-secondary small m-0" style="font-size: 12px; line-height: 1.4;">{{ $h->keterangan }}</p>
                                 @endif

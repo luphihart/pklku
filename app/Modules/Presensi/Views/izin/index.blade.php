@@ -129,22 +129,22 @@
                     <!-- Top: Siswa Name & Status Badge -->
                     <div class="d-flex justify-content-between align-items-start mb-2 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
                         <div>
-                            <div class="fw-bold text-dark font-heading" style="font-size: 13.5px;">{{ $p->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus' }}</div>
-                            <div class="text-muted" style="font-size: 11.5px;">{{ $p->penempatanPkl?->murid?->kelas?->nama ?? '-' }} &bull; <span class="fw-semibold text-secondary">{{ $p->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</span></div>
+                            <div class="fw-bold text-dark font-heading" style="font-size: 13px;">{{ $p->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus' }}</div>
+                            <div class="text-muted" style="font-size: 12px;">{{ $p->penempatanPkl?->murid?->kelas?->nama ?? '-' }} &bull; <span class="fw-semibold text-secondary">{{ $p->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</span></div>
                         </div>
                         <div>
                             @if($p->status_approval === 'disetujui')
-                                <span class="status-badge bg-success-light text-success" style="font-size: 10.5px;">
+                                <span class="status-badge bg-success-light text-success" style="font-size: 11px;">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                                     Disetujui
                                 </span>
                             @elseif($p->status_approval === 'ditolak')
-                                <span class="status-badge bg-danger-light text-danger" style="font-size: 10.5px;">
+                                <span class="status-badge bg-danger-light text-danger" style="font-size: 11px;">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
                                     Ditolak
                                 </span>
                             @else
-                                <span class="status-badge bg-warning-light text-warning" style="font-size: 10.5px;">
+                                <span class="status-badge bg-warning-light text-warning" style="font-size: 11px;">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     Pending
                                 </span>
@@ -163,7 +163,7 @@
                     </div>
 
                     <!-- Alasan -->
-                    <div class="p-2.5 rounded bg-light border mb-2" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important; font-size: 12.5px; line-height: 1.5; color: var(--text-primary); white-space: pre-line; word-break: break-word;">
+                    <div class="p-2.5 rounded bg-light border mb-2" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important; font-size: 13px; line-height: 1.5; color: var(--text-primary); white-space: pre-line; word-break: break-word;">
                         {{ $p->alasan }}
                     </div>
 
@@ -191,7 +191,7 @@
 
                         <div class="d-flex gap-1.5 align-items-center ms-auto">
                             @if($p->status_approval === 'pending' && (auth()->user()->role === 'guru' || auth()->user()->role === 'admin'))
-                                <button class="btn btn-sm btn-primary font-heading d-flex align-items-center gap-1 px-3 py-1.5" data-bs-toggle="modal" data-bs-target="#verifyModal_{{ $p->id }}" style="font-size: 12.5px;">
+                                <button class="btn btn-sm btn-primary font-heading d-flex align-items-center gap-1 px-3 py-1.5" data-bs-toggle="modal" data-bs-target="#verifyModal_{{ $p->id }}" style="font-size: 13px;">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>

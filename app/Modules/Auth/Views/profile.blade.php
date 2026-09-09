@@ -18,7 +18,7 @@
                          style="object-fit: cover;">
                 </div>
                 <h5 class="fw-bold font-heading m-0">{{ $user->name }}</h5>
-                <p class="text-uppercase text-muted mb-3" style="font-size: 11px; font-weight: 700; letter-spacing: 0.5px;">{{ $user->role }}</p>
+                <p class="mb-3"><span class="badge bg-primary-light text-primary fw-semibold text-capitalize" style="font-size: 12px; padding: 4px 10px;">{{ $user->role }}</span></p>
                 <p class="text-muted small mb-0">{{ $user->email }}</p>
                 
                 <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="mt-4">
@@ -43,11 +43,11 @@
                     @csrf
                     <div class="row">
                         <div class="col-sm-6 mb-3">
-                            <label class="form-label text-muted small text-uppercase fw-semibold">Nama Lengkap <span class="text-danger" style="font-size: 10px;">(Terkunci)</span></label>
+                            <label class="form-label text-muted small fw-semibold">Nama Lengkap <span class="text-danger" style="font-size: 10px;">(Terkunci)</span></label>
                             <input type="text" class="form-control form-control-sm" value="{{ $user->name }}" readonly style="background-color: var(--bg-canvas); cursor: not-allowed;" title="Nama lengkap terkunci">
                         </div>
                         <div class="col-sm-6 mb-3">
-                            <label class="form-label text-muted small text-uppercase fw-semibold">Email Pengguna <span class="text-danger" style="font-size: 10px;">(Terkunci)</span></label>
+                            <label class="form-label text-muted small fw-semibold">Email Pengguna <span class="text-danger" style="font-size: 10px;">(Terkunci)</span></label>
                             <input type="text" class="form-control form-control-sm" value="{{ $user->email }}" readonly style="background-color: var(--bg-canvas); cursor: not-allowed;" title="Email terkunci">
                         </div>
                         <div class="col-sm-6 mb-3">
@@ -59,7 +59,7 @@
                             <input type="date" name="tanggal_lahir" id="tanggal_lahir" class="form-control form-control-sm" value="{{ $user->tanggal_lahir ? $user->tanggal_lahir->format('Y-m-d') : '' }}">
                         </div>
                         <div class="col-sm-6 mb-3">
-                            <label class="form-label text-muted small text-uppercase fw-semibold">Hak Akses Role <span class="text-danger" style="font-size: 10px;">(Terkunci)</span></label>
+                            <label class="form-label text-muted small fw-semibold">Hak Akses Role <span class="text-danger" style="font-size: 10px;">(Terkunci)</span></label>
                             <input type="text" class="form-control form-control-sm text-uppercase" value="{{ $user->role }}" readonly style="background-color: var(--bg-canvas); cursor: not-allowed;" title="Hak akses terkunci">
                         </div>
                     </div>
@@ -110,7 +110,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary px-4 mt-2 font-heading">Simpan Password Baru</button>
+                    <button type="submit" class="btn btn-sm btn-primary px-4 mt-2 font-heading">Simpan Password Baru</button>
                 </form>
             </div>
         </div>

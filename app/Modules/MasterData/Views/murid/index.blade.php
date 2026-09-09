@@ -295,7 +295,7 @@
                                 <div class="mb-3" x-data="{ showPass: false }">
                                     <label class="form-label small fw-semibold">Password Login Baru (Opsional)</label>
                                     <div class="input-group input-group-sm">
-                                        <input :type="showPass ? 'text' : 'password'" name="password" class="form-control" placeholder="Biarkan kosong jika tidak diubah">
+                                        <input :type="showPass ? 'text' : 'password'" name="password" class="form-control-sm form-control" placeholder="Biarkan kosong jika tidak diubah">
                                         <button class="btn btn-outline-secondary" type="button" @click="showPass = !showPass">
                                             <span x-text="showPass ? 'Sembunyikan' : 'Tampilkan'"></span>
                                         </button>
@@ -339,7 +339,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="excelFile" class="form-label small fw-semibold">Pilih File Excel (.xlsx / .xls)</label>
-                        <input type="file" name="file" id="excelFile" class="form-control" accept=".xlsx, .xls" required>
+                        <input type="file" name="file" id="excelFile" class="form-control-sm form-control" accept=".xlsx, .xls" required>
                     </div>
                 </div>
                 <div class="modal-footer border-top" style="border-top-color: var(--border-color) !important;">
@@ -394,7 +394,7 @@
                     <div class="mb-3" x-data="{ showPass: false }">
                         <label for="password" class="form-label small fw-semibold">Password Login (Opsional)</label>
                         <div class="input-group input-group-sm">
-                            <input :type="showPass ? 'text' : 'password'" name="password" id="password" class="form-control" placeholder="Default: siswa123">
+                            <input :type="showPass ? 'text' : 'password'" name="password" id="password" class="form-control-sm form-control" placeholder="Default: siswa123">
                             <button class="btn btn-outline-secondary" type="button" @click="showPass = !showPass">
                                 <span x-text="showPass ? 'Sembunyikan' : 'Tampilkan'"></span>
                             </button>

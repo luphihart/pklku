@@ -28,9 +28,14 @@
     }
 }">
     @if(!$placement)
-        <div class="card-premium text-center py-5">
-            <span class="text-muted d-block">Pemberitahuan: Anda belum ditempatkan di DUDI manapun.</span>
-            <small class="text-muted">Rapor nilai PKL hanya akan muncul ketika Anda telah selesai/sedang melaksanakan PKL.</small>
+        <div class="empty-state py-5">
+            <div class="empty-state-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <h6 class="empty-state-title">Penempatan Belum Aktif</h6>
+            <p class="empty-state-text">Akses penilaian hanya aktif jika Anda memiliki penempatan PKL yang aktif.</p>
         </div>
     @elseif(!$isMasaPenilaianOpen && (!$evaluation || !$evaluation->nilai_akhir))
         <!-- Masa Penilaian Ditutup Banner -->

@@ -36,8 +36,8 @@
                             
                             <!-- Panduan Penulisan 5W + 1H (Teks Deskripsi Biasa) -->
                             <div class="p-2.5 px-3 mb-2 rounded border" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important; font-size: 12px; line-height: 1.55;">
-                                <div class="fw-bold text-dark mb-1 d-flex align-items-center gap-1">
-                                    <span>💡</span>
+                                <div class="fw-bold text-dark mb-1 d-flex align-items-center gap-1.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="flex-shrink-0" style="margin-top:1px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     <span>Panduan Penulisan (5W + 1H):</span>
                                 </div>
                                 <div class="text-secondary">
@@ -293,7 +293,7 @@
                                             @endphp
                                             <a href="{{ asset('storage/jurnal/' . $j->foto_kegiatan) }}" target="_blank" class="badge bg-light text-dark border d-flex align-items-center gap-1.5 text-decoration-none py-1.5 px-2.5" style="border-color: var(--border-color) !important;">
                                                 @if($isPdf)
-                                                    <span class="badge bg-danger text-white p-0.5" style="font-size: 9px;">PDF</span>
+                                                    <span class="badge bg-danger text-white p-0.5" style="font-size: 11px;">PDF</span>
                                                     <span class="fw-semibold" style="font-size: 11px;">Buka Dokumen PDF ↗</span>
                                                 @else
                                                     <img src="{{ asset('storage/jurnal/' . $j->foto_kegiatan) }}" class="rounded border" width="18" height="18" style="object-fit: cover;" alt="Bukti Kegiatan">

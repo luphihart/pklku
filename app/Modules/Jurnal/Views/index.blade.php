@@ -12,7 +12,7 @@
         gap: 0.45rem;
         padding: 0.35rem 0.8rem;
         border-radius: 9999px;
-        font-size: 0.82rem;
+        font-size: 12px;
         font-weight: 500;
         text-decoration: none;
         color: var(--text-secondary, #64748b);
@@ -240,7 +240,7 @@
                 </a>
             </div>
 
-            <span class="badge bg-primary-light text-primary font-heading px-2.5 py-1.5" style="font-size: 11.5px; border-radius: 6px;">
+            <span class="badge bg-primary-light text-primary font-heading px-2.5 py-1.5" style="font-size: 12px; border-radius: 6px;">
                 Ditampilkan: {{ $journals->total() }} Jurnal
             </span>
         </div>
@@ -303,7 +303,12 @@
     </div>
 
     <!-- Desktop Table View (lg and up) -->
-    <div class="card-premium p-0 overflow-hidden d-none d-lg-block mb-4">
+    <div class="card-premium p-0 overflow-hidden d-none d-md-block mb-4">
+        <div class="p-3 border-bottom" style="border-bottom-color: var(--border-color) !important;">
+            <div class="d-flex align-items-center justify-content-between gap-2">
+                <h6 class="fw-bold m-0 text-dark">Verifikasi Jurnal Harian</h6>
+            </div>
+        </div>
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0" style="min-width: 1000px; color: var(--text-primary); font-size: 13px;">
                 <thead class="table-light">
@@ -324,7 +329,7 @@
                                 {{ $j->tanggal ? \Carbon\Carbon::parse($j->tanggal)->locale('id')->translatedFormat('l, j F Y') : '-' }}
                             </td>
                             <td>
-                                <div class="fw-bold text-dark dark-text-light font-heading" style="font-size: 13.5px; line-height: 1.3;">{{ $j->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus' }}</div>
+                                <div class="fw-bold text-dark dark-text-light font-heading" style="font-size: 13px; line-height: 1.3;">{{ $j->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus' }}</div>
                                 <div class="text-muted small" style="font-size: 12px; margin-top: 2px;">{{ $j->penempatanPkl?->murid?->kelas?->nama ?? '-' }}</div>
                             </td>
                             <td>
@@ -377,7 +382,7 @@
                                         Disetujui
                                     </span>
                                 @elseif($j->status_verifikasi === 'revisi')
-                                    <span class="status-badge" style="background-color: rgba(249, 115, 22, 0.1) !important; color: #c2410c !important;">
+                                    <span class="status-badge bg-warning-light text-warning">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                         Revisi
                                     </span>
@@ -455,7 +460,7 @@
     </div>
 
     <!-- Mobile Card Feed View (Visible on smartphone / tablet < lg) -->
-    <div class="d-lg-none mb-4">
+    <div class="d-md-none mb-4">
         @forelse($journals as $j)
             <div class="card-premium mb-3 p-3 position-relative" style="background-color: var(--bg-card); border-left: 4px solid {{ $j->status_verifikasi === 'disetujui' ? '#10b981' : ($j->status_verifikasi === 'revisi' ? '#f59e0b' : ($j->status_verifikasi === 'ditolak' ? '#ef4444' : '#64748b')) }} !important;">
                 <!-- Header: Siswa & Status -->
@@ -475,7 +480,7 @@
                                 Disetujui
                             </span>
                         @elseif($j->status_verifikasi === 'revisi')
-                            <span class="status-badge" style="background-color: rgba(249, 115, 22, 0.1) !important; color: #c2410c !important; font-size: 11px;">
+                            <span class="status-badge bg-warning-light text-warning" style="font-size: 11px;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                 Revisi
                             </span>
@@ -558,14 +563,14 @@
                 <div class="pt-2.5 border-top d-flex flex-column gap-2" style="border-top-color: var(--border-color) !important;">
                     <!-- Row 1: Bukti Kegiatan Info / Link -->
                     <div class="d-flex align-items-center justify-content-between">
-                        <span class="text-muted small" style="font-size: 11.5px;">Bukti Lampiran:</span>
+                        <span class="text-muted small" style="font-size: 12px;">Bukti Lampiran:</span>
                         @if($j->foto_kegiatan)
                             @php
                                 $isPdf = Str::endsWith(strtolower($j->foto_kegiatan), '.pdf');
                             @endphp
                             <a href="{{ asset('storage/jurnal/' . $j->foto_kegiatan) }}" target="_blank" class="badge bg-light text-dark border d-flex align-items-center gap-1.5 text-decoration-none py-1.5 px-2.5" style="border-color: var(--border-color) !important;">
                                 @if($isPdf)
-                                    <span class="badge bg-danger text-white p-0.5" style="font-size: 9px;">PDF</span>
+                                    <span class="badge bg-danger text-white p-0.5" style="font-size: 11px;">PDF</span>
                                     <span class="fw-semibold" style="font-size: 11px;">Buka Dokumen PDF ↗</span>
                                 @else
                                     <img src="{{ asset('storage/jurnal/' . $j->foto_kegiatan) }}" class="rounded border" width="18" height="18" style="object-fit: cover;" alt="Bukti Foto">
