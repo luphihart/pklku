@@ -270,170 +270,6 @@
                     @endforelse
                 </div>
 
-                <!-- Edit Modals -->
-                @foreach($kunjungans as $k)
-                    <div class="modal fade text-start" id="editModal_{{ $k->id }}" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color);">
-                                <div class="modal-header border-bottom" style="border-bottom-color: var(--border-color) !important;">
-                                    <h5 class="modal-title font-heading fw-bold" style="font-size: 15px;">Edit Catatan Kunjungan</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <form action="{{ route('kunjungan.update', $k->id) }}" method="POST" enctype="multipart/form-data">
-                                    @csrf
-                                    @method('PUT')
-                                    <div class="modal-body text-start">
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-semibold">Mitra DUDI Bimbingan</label>
-                                            <select name="penempatan_pkl_id" class="form-select form-select-sm" required>
-                                                @foreach($dudiPlacements as $p)
-                                                    <option value="{{ $p->id }}" {{ $p->id == $k->penempatan_pkl_id ? 'selected' : '' }}>
-                                                        {{ $p->dudi->nama }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-semibold">Tanggal Kunjungan</label>
-                                            <input type="date" name="tanggal" class="form-control form-control-sm" value="{{ $k->tanggal }}" required>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-semibold">Jenis Kunjungan</label>
-                                            <select name="jenis_kunjungan" class="form-select form-select-sm" required>
-                                                <option value="Penjajakan Kerja Sama" {{ $k->jenis_kunjungan === 'Penjajakan Kerja Sama' ? 'selected' : '' }}>Penjajakan Kerja Sama</option>
-                                                <option value="Penyerahan Murid" {{ $k->jenis_kunjungan === 'Penyerahan Murid' ? 'selected' : '' }}>Penyerahan Murid</option>
-                                                <option value="Monitoring Berkala" {{ $k->jenis_kunjungan === 'Monitoring Berkala' ? 'selected' : '' }}>Monitoring Berkala</option>
-                                                <option value="Penarikan PKL" {{ $k->jenis_kunjungan === 'Penarikan PKL' ? 'selected' : '' }}>Penarikan PKL</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-semibold">Catatan Kunjungan</label>
-                                            <textarea name="deskripsi_kunjungan" class="form-control form-control-sm" rows="4" required>{{ $k->deskripsi_kunjungan }}</textarea>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-semibold">Foto Bukti Kunjungan (Pilih baru jika ingin mengubah)</label>
-                                            <input type="file" name="foto" class="form-control form-control-sm" accept="image/*">
-                                            @if($k->foto_kunjungan)
-                                                 <div class="mt-2">
-                                                    <small class="text-muted d-block mb-1">Foto saat ini:</small>
-                                                    <img src="{{ asset('storage/kunjungan/' . $k->foto_kunjungan) }}" class="rounded border" width="80" height="80" style="object-fit: cover;" alt="Foto Kunjungan">
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer border-top" style="border-top-color: var(--border-color) !important;">
-                                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                        <button type="submit" class="btn btn-sm btn-primary" data-loading-text="Menyimpan...">Simpan Perubahan</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-
-                <!-- SPPD Modals -->
-                @foreach($kunjungans as $k)
-                    <div class="modal fade text-start" id="sppdModal_{{ $k->id }}" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered modal-lg">
-                            <div class="modal-content" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color);">
-                                <div class="modal-header border-bottom" style="border-bottom-color: var(--border-color) !important;">
-                                    <div>
-                                        <h5 class="modal-title font-heading fw-bold m-0" style="font-size: 15px;">Cetak Laporan Perjalanan Dinas (Format SPPD)</h5>
-                                        <small class="text-muted" style="font-size: 12px;">Lengkapi atau sesuaikan rincian tugas untuk mengunduh lembar SPPD resmi.</small>
-                                    </div>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <form action="{{ route('kunjungan.export_sppd', $k->id) }}" method="POST" target="_blank">
-                                    @csrf
-                                    <div class="modal-body text-start">
-                                        <div class="row g-3">
-                                            <!-- Nama Pelaksana -->
-                                            <div class="col-md-6">
-                                                <label class="form-label small fw-semibold">Nama Pegawai / Guru (Pelaksana Tugas)</label>
-                                                <input type="text" name="nama" class="form-control form-control-sm sppd-nama" value="{{ old('nama', $k->penempatanPkl?->guru?->nama ?? auth()->user()->name) }}" required>
-                                            </div>
-
-                                            <!-- NIP Pelaksana -->
-                                            <div class="col-md-6">
-                                                <label class="form-label small fw-semibold">NIP Pegawai / Guru</label>
-                                                <input type="text" name="nip" class="form-control form-control-sm sppd-nip" value="{{ old('nip', $k->penempatanPkl?->guru?->nip ?? '-') }}" required>
-                                            </div>
-
-                                            <!-- Pangkat / Golongan -->
-                                            <div class="col-md-6">
-                                                <label class="form-label small fw-semibold">Pangkat / Golongan</label>
-                                                <input type="text" name="pangkat_golongan" class="form-control form-control-sm sppd-pangkat" placeholder="Contoh: Penata Muda / III/a atau Pembina / IV/a" value="{{ old('pangkat_golongan', '') }}">
-                                                <small class="text-muted" style="font-size: 11px;">Otomatis diingat oleh sistem untuk unduhan berikutnya.</small>
-                                            </div>
-
-                                            <!-- Lama Perjalanan -->
-                                            <div class="col-md-6">
-                                                <label class="form-label small fw-semibold">Lama Perjalanan Dinas</label>
-                                                <input type="text" name="lama_perjalanan" class="form-control form-control-sm" value="1 (satu) Hari" required>
-                                            </div>
-
-                                            <!-- Tempat / Tujuan -->
-                                            <div class="col-12">
-                                                <label class="form-label small fw-semibold">Tempat / Tujuan</label>
-                                                @php
-                                                    $defaultTujuan = ($k->penempatanPkl?->dudi?->nama ?? 'Mitra DUDI');
-                                                    if ($k->penempatanPkl?->dudi?->alamat) {
-                                                        $defaultTujuan .= ', ' . $k->penempatanPkl->dudi->alamat;
-                                                    }
-                                                @endphp
-                                                <input type="text" name="tempat_tujuan" class="form-control form-control-sm" value="{{ $defaultTujuan }}" required>
-                                            </div>
-
-                                            <!-- Kota dan Tanggal Laporan -->
-                                            <div class="col-md-6">
-                                                <label class="form-label small fw-semibold">Kota Penandatanganan</label>
-                                                <input type="text" name="kota" class="form-control form-control-sm sppd-kota" value="{{ $branding['kota_sekolah'] ?? 'Pati' }}" required>
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <label class="form-label small fw-semibold">Tanggal Pelaksanaan / Laporan</label>
-                                                <input type="date" name="tanggal" class="form-control form-control-sm" value="{{ $k->tanggal }}" required>
-                                            </div>
-
-                                            <!-- Laporan Pelaksanaan Kegiatan -->
-                                            <div class="col-12">
-                                                <label class="form-label small fw-semibold">Laporan Pelaksanaan Kegiatan</label>
-                                                <textarea name="laporan_kegiatan" class="form-control form-control-sm" rows="4" placeholder="Uraian hasil kunjungan atau agenda pembimbingan..." required>{{ $k->deskripsi_kunjungan }}</textarea>
-                                            </div>
-
-                                            <!-- Checkbox Lampirkan Foto Bukti -->
-                                            <div class="col-12">
-                                                <div class="form-check form-switch p-2 px-4 rounded border" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;">
-                                                    <input class="form-check-input" type="checkbox" name="lampirkan_foto" value="1" id="foto_sppd_{{ $k->id }}" {{ $k->foto_kunjungan ? 'checked' : 'disabled' }}>
-                                                    <label class="form-check-label small fw-semibold" for="foto_sppd_{{ $k->id }}">
-                                                        Sertakan Lembar Dokumentasi Foto Kunjungan di Halaman Kedua (Lampiran SPPD)
-                                                    </label>
-                                                    @if(!$k->foto_kunjungan)
-                                                        <small class="text-danger d-block mt-0.5" style="font-size: 11px;">* Kunjungan ini belum memiliki foto bukti yang diunggah.</small>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer border-top" style="border-top-color: var(--border-color) !important;">
-                                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                        <button type="submit" class="btn btn-sm btn-danger d-flex align-items-center gap-1 font-heading fw-semibold">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                            </svg>
-                                            <span>Unduh PDF SPPD</span>
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-
                 @if($kunjungans->hasPages())
                 <div class="px-4 py-3 border-top d-flex justify-content-end" style="border-top-color: var(--border-color) !important;">
                     {{ $kunjungans->links() }}
@@ -443,6 +279,210 @@
         </div>
     </div>
 </div>
+
+<!-- ================= MODALS SECTION (Outside Card/Container to prevent backdrop trap) ================= -->
+
+<!-- Edit Modals -->
+@foreach($kunjungans as $k)
+    <div class="modal fade text-start" id="editModal_{{ $k->id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 12px;">
+                <div class="modal-header border-bottom py-3 px-4" style="border-bottom-color: var(--border-color) !important;">
+                    <div class="d-flex align-items-center gap-2.5">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px; background-color: rgba(245, 158, 11, 0.1); color: var(--warning);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h5 class="modal-title font-heading fw-bold m-0 text-dark" style="font-size: 15px;">Edit Catatan Kunjungan</h5>
+                            <small class="text-muted d-block" style="font-size: 12px;">Perbarui data atau foto bukti kunjungan pembimbing.</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('kunjungan.update', $k->id) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body p-4 text-start">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-secondary mb-1">Mitra DUDI Bimbingan</label>
+                            <select name="penempatan_pkl_id" class="form-select form-select-sm" required>
+                                @foreach($dudiPlacements as $p)
+                                    <option value="{{ $p->id }}" {{ $p->id == $k->penempatan_pkl_id ? 'selected' : '' }}>
+                                        {{ $p->dudi->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-secondary mb-1">Tanggal Kunjungan</label>
+                                <input type="date" name="tanggal" class="form-control form-control-sm" value="{{ $k->tanggal }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-secondary mb-1">Jenis Kunjungan</label>
+                                <select name="jenis_kunjungan" class="form-select form-select-sm" required>
+                                    <option value="Penjajakan Kerja Sama" {{ $k->jenis_kunjungan === 'Penjajakan Kerja Sama' ? 'selected' : '' }}>Penjajakan Kerja Sama</option>
+                                    <option value="Penyerahan Murid" {{ $k->jenis_kunjungan === 'Penyerahan Murid' ? 'selected' : '' }}>Penyerahan Murid</option>
+                                    <option value="Monitoring Berkala" {{ $k->jenis_kunjungan === 'Monitoring Berkala' ? 'selected' : '' }}>Monitoring Berkala</option>
+                                    <option value="Penarikan PKL" {{ $k->jenis_kunjungan === 'Penarikan PKL' ? 'selected' : '' }}>Penarikan PKL</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-secondary mb-1">Catatan Kunjungan</label>
+                            <textarea name="deskripsi_kunjungan" class="form-control form-control-sm" rows="4" placeholder="Tulis rincian catatan kunjungan..." required>{{ $k->deskripsi_kunjungan }}</textarea>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label small fw-semibold text-secondary mb-1">Foto Bukti Kunjungan (Opsional ubah)</label>
+                            <input type="file" name="foto" class="form-control form-control-sm" accept="image/*">
+                            @if($k->foto_kunjungan)
+                                <div class="mt-2.5 p-2 rounded border d-flex align-items-center gap-2.5" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;">
+                                    <img src="{{ asset('storage/kunjungan/' . $k->foto_kunjungan) }}" class="rounded border" width="48" height="48" style="object-fit: cover;" alt="Foto Kunjungan">
+                                    <div>
+                                        <span class="d-block fw-semibold text-dark" style="font-size: 12px;">Foto saat ini terlampir</span>
+                                        <small class="text-muted" style="font-size: 11px;">Pilih file baru di atas jika ingin mengganti foto bukti ini.</small>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top py-3 px-4" style="border-top-color: var(--border-color) !important;">
+                        <button type="button" class="btn btn-sm btn-secondary px-3" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-sm btn-primary px-3 py-1.5 font-heading fw-semibold" data-loading-text="Menyimpan...">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endforeach
+
+<!-- SPPD Modals (Redesigned Layout) -->
+@foreach($kunjungans as $k)
+    <div class="modal fade text-start" id="sppdModal_{{ $k->id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow-lg" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 12px;">
+                <div class="modal-header border-bottom py-3 px-4" style="border-bottom-color: var(--border-color) !important;">
+                    <div class="d-flex align-items-center gap-2.5">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px; background-color: rgba(225, 29, 72, 0.1); color: var(--danger);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h5 class="modal-title font-heading fw-bold m-0 text-dark" style="font-size: 15px;">Cetak Laporan Perjalanan Dinas (Format SPPD)</h5>
+                            <small class="text-muted d-block" style="font-size: 12px;">Lengkapi atau sesuaikan rincian tugas untuk mengunduh lembar SPPD resmi.</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('kunjungan.export_sppd', $k->id) }}" method="POST" target="_blank">
+                    @csrf
+                    <div class="modal-body p-4 text-start">
+                        <!-- Bagian 1: Data Pegawai / Guru Pelaksana -->
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center gap-2 mb-3 pb-1 border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                                <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 10.5px; padding: 2.5px 8px;">Bagian 1</span>
+                                <span class="fw-bold font-heading text-dark" style="font-size: 13px;">Data Pegawai / Guru Pelaksana Tugas</span>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold text-secondary mb-1">Nama Pegawai / Guru (Pelaksana Tugas)</label>
+                                    <input type="text" name="nama" class="form-control form-control-sm sppd-nama" value="{{ old('nama', $k->penempatanPkl?->guru?->nama ?? auth()->user()->name) }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold text-secondary mb-1">NIP Pegawai / Guru</label>
+                                    <input type="text" name="nip" class="form-control form-control-sm sppd-nip" value="{{ old('nip', $k->penempatanPkl?->guru?->nip ?? '-') }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold text-secondary mb-1">Pangkat / Golongan</label>
+                                    <input type="text" name="pangkat_golongan" class="form-control form-control-sm sppd-pangkat" placeholder="Contoh: Penata Muda / III/a atau Pembina / IV/a" value="{{ old('pangkat_golongan', '') }}">
+                                    <div class="text-muted mt-1" style="font-size: 11px;">*Tersimpan otomatis untuk unduhan berikutnya</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold text-secondary mb-1">Lama Perjalanan Dinas</label>
+                                    <input type="text" name="lama_perjalanan" class="form-control form-control-sm" value="1 (satu) Hari" required>
+                                    <div class="text-muted mt-1" style="font-size: 11px;">Contoh: 1 (satu) Hari / 2 (dua) Hari</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bagian 2: Tempat & Uraian Kegiatan -->
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center gap-2 mb-3 pb-1 border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                                <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 10.5px; padding: 2.5px 8px;">Bagian 2</span>
+                                <span class="fw-bold font-heading text-dark" style="font-size: 13px;">Tempat Tujuan & Uraian Laporan Kunjungan</span>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label small fw-semibold text-secondary mb-1">Tempat / Mitra DUDI Tujuan</label>
+                                    @php
+                                        $defaultTujuan = ($k->penempatanPkl?->dudi?->nama ?? 'Mitra DUDI');
+                                        if ($k->penempatanPkl?->dudi?->alamat) {
+                                            $defaultTujuan .= ', ' . $k->penempatanPkl->dudi->alamat;
+                                        }
+                                    @endphp
+                                    <textarea name="tempat_tujuan" class="form-control form-control-sm" rows="2" placeholder="Nama mitra DUDI dan alamat lengkap..." required>{{ $defaultTujuan }}</textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold text-secondary mb-1">Kota Penandatanganan</label>
+                                    <input type="text" name="kota" class="form-control form-control-sm sppd-kota" value="{{ $branding['kota_sekolah'] ?? 'Pati' }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold text-secondary mb-1">Tanggal Pelaksanaan / Laporan</label>
+                                    <input type="date" name="tanggal" class="form-control form-control-sm" value="{{ $k->tanggal }}" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-semibold text-secondary mb-1">Laporan Pelaksanaan Kegiatan</label>
+                                    <textarea name="laporan_kegiatan" class="form-control form-control-sm" rows="3" placeholder="Uraian hasil kunjungan atau agenda pembimbingan..." required>{{ $k->deskripsi_kunjungan }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bagian 3: Lampiran Foto Switch -->
+                        <div class="p-3 rounded border" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;">
+                            <div class="d-flex align-items-center justify-content-between gap-3">
+                                <div class="d-flex align-items-center gap-2.5">
+                                    <div class="rounded p-2 bg-white border d-flex align-items-center justify-content-center text-muted flex-shrink-0" style="width: 36px; height: 36px; border-color: var(--border-color) !important;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <label class="form-check-label fw-bold font-heading text-dark d-block" for="foto_sppd_{{ $k->id }}" style="font-size: 13px; cursor: pointer;">
+                                            Sertakan Lembar Dokumentasi Foto Kunjungan
+                                        </label>
+                                        <small class="text-muted d-block" style="font-size: 11.5px;">Menyertakan lembar dokumentasi foto kunjungan di halaman kedua (Lampiran SPPD)</small>
+                                        @if(!$k->foto_kunjungan)
+                                            <small class="text-danger d-block mt-0.5 fw-semibold" style="font-size: 11px;">* Kunjungan ini belum memiliki foto bukti yang diunggah.</small>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="form-check form-switch m-0 flex-shrink-0">
+                                    <input class="form-check-input" type="checkbox" name="lampirkan_foto" value="1" id="foto_sppd_{{ $k->id }}" style="width: 2.5em; height: 1.35em; cursor: pointer;" {{ $k->foto_kunjungan ? 'checked' : 'disabled' }}>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top py-3 px-4" style="border-top-color: var(--border-color) !important;">
+                        <button type="button" class="btn btn-sm btn-secondary px-3" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-sm btn-danger d-flex align-items-center gap-1.5 font-heading fw-semibold px-3 py-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span>Unduh PDF SPPD</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endforeach
+
 
 @push('scripts')
 <script>
