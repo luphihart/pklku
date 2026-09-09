@@ -13,6 +13,157 @@
         color: var(--accent-primary, #4f46e5) !important;
         font-weight: 600;
     }
+
+    /* Student avatar circle */
+    .avatar-circle-sm {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 100%);
+        color: #4338ca;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 13.5px;
+        border: 1px solid #c7d2fe;
+        flex-shrink: 0;
+    }
+
+    /* Shift Badges with Bulletproof Contrast & Legibility */
+    .badge-shift {
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        padding: 3px 8px !important;
+        border-radius: 6px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        line-height: 1.3 !important;
+        text-decoration: none !important;
+    }
+    .badge-shift-pagi {
+        background-color: #ecfdf5 !important;
+        color: #047857 !important;
+        border: 1px solid #a7f3d0 !important;
+    }
+    .badge-shift-siang {
+        background-color: #fef3c7 !important;
+        color: #b45309 !important;
+        border: 1px solid #fde68a !important;
+    }
+    .badge-shift-sore {
+        background-color: #ffedd5 !important;
+        color: #9a3412 !important;
+        border: 1px solid #fed7aa !important;
+    }
+    .badge-shift-other {
+        background-color: #f3e8ff !important;
+        color: #7e22ce !important;
+        border: 1px solid #e9d5ff !important;
+    }
+
+    /* Work Mode Badges */
+    .badge-mode-wfo {
+        background-color: #f1f5f9 !important;
+        color: #475569 !important;
+        border: 1px solid #cbd5e1 !important;
+        font-size: 10.5px !important;
+        font-weight: 600 !important;
+        padding: 2.5px 7px !important;
+        border-radius: 5px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 3px !important;
+    }
+    .badge-mode-wfa {
+        background-color: #e0e7ff !important;
+        color: #4338ca !important;
+        border: 1px solid #c7d2fe !important;
+        font-size: 10.5px !important;
+        font-weight: 600 !important;
+        padding: 2.5px 7px !important;
+        border-radius: 5px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 3px !important;
+    }
+
+    /* Status Badges */
+    .badge-status {
+        font-size: 10.5px !important;
+        font-weight: 600 !important;
+        padding: 2px 7px !important;
+        border-radius: 5px !important;
+        display: inline-block !important;
+        line-height: 1.3 !important;
+    }
+    .badge-status-success {
+        background-color: #dcfce7 !important;
+        color: #15803d !important;
+        border: 1px solid #bbf7d0 !important;
+    }
+    .badge-status-danger {
+        background-color: #fee2e2 !important;
+        color: #991b1b !important;
+        border: 1px solid #fecaca !important;
+    }
+    .badge-status-warning {
+        background-color: #fef3c7 !important;
+        color: #b45309 !important;
+        border: 1px solid #fde68a !important;
+    }
+    .badge-status-info {
+        background-color: #e0f2fe !important;
+        color: #0369a1 !important;
+        border: 1px solid #bae6fd !important;
+    }
+
+    /* Attendance Photo Thumbnails */
+    .attendance-thumb-wrapper {
+        position: relative;
+        display: inline-block;
+        flex-shrink: 0;
+        transition: transform 0.15s ease;
+    }
+    .attendance-thumb-wrapper:hover {
+        transform: scale(1.08);
+    }
+    .attendance-thumb {
+        width: 38px;
+        height: 38px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .attendance-thumb-placeholder {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        background-color: #f8fafc;
+        border: 1px dashed #cbd5e1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        flex-shrink: 0;
+    }
+
+    /* Action Buttons */
+    .btn-action-icon {
+        width: 32px;
+        height: 32px;
+        padding: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 7px !important;
+        transition: all 0.15s ease;
+    }
+    .btn-action-icon:hover {
+        transform: translateY(-1px);
+    }
 </style>
 @endsection
 
@@ -91,93 +242,146 @@
 
         <!-- Desktop Table View (md and up) -->
         <div class="table-responsive d-none d-md-block">
-            <table class="table table-hover align-middle mb-0" style="min-width: 820px; color: var(--text-primary); font-size: 13px;">
+            <table class="table table-hover align-middle mb-0" style="min-width: 860px; color: var(--text-primary); font-size: 13px;">
                 <thead class="table-light">
                     <tr class="font-heading text-nowrap" style="font-size: 13px; font-weight: 600;">
-                        <th class="ps-4" style="width: 220px;">Murid (Kelas)</th>
-                        <th>DUDI Tempat PKL</th>
-                        <th class="text-center" style="width: 100px;">Check In</th>
-                        <th class="text-center" style="width: 70px;">Foto In</th>
-                        <th class="text-center" style="width: 100px;">Check Out</th>
-                        <th class="text-center" style="width: 70px;">Foto Out</th>
-                        <th class="text-center pe-4" style="width: 160px;">Status @if(auth()->user()->role === 'admin') / Aksi @endif</th>
+                        <th class="ps-4" style="width: 25%; min-width: 210px;">Murid (Kelas)</th>
+                        <th style="width: 26%; min-width: 210px;">DUDI Tempat PKL</th>
+                        <th style="width: 20%; min-width: 175px;">Check In (Masuk)</th>
+                        <th style="width: 20%; min-width: 175px;">Check Out (Pulang)</th>
+                        <th class="text-center pe-4" style="width: 9%; min-width: 85px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($presensis as $p)
                         <tr>
+                            <!-- Murid (Kelas) -->
                             <td class="ps-4">
-                                <div class="fw-semibold">{{ $p->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus' }}</div>
-                                <small class="text-muted">{{ $p->penempatanPkl?->murid?->kelas?->nama ?? '-' }}</small>
+                                @php
+                                    $namaMurid = $p->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus';
+                                    $initial = strtoupper(mb_substr($namaMurid, 0, 1));
+                                @endphp
+                                <div class="d-flex align-items-center gap-2.5">
+                                    <div class="avatar-circle-sm">
+                                        {{ $initial }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark font-heading" style="font-size: 13.5px; line-height: 1.25;">
+                                            {{ $namaMurid }}
+                                        </div>
+                                        <div class="d-flex align-items-center gap-1.5 mt-1">
+                                            <span class="badge bg-light text-secondary border px-1.5 py-0.5" style="font-size: 10px; font-weight: 600;">
+                                                {{ $p->penempatanPkl?->murid?->kelas?->nama ?? '-' }}
+                                            </span>
+                                            @if(!empty($p->penempatanPkl?->murid?->nis))
+                                                <span class="text-muted" style="font-size: 11px;">{{ $p->penempatanPkl->murid->nis }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
+
+                            <!-- DUDI Tempat PKL & Shift -->
                             <td>
-                                <div class="fw-semibold">{{ $p->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}</div>
-                                <div class="d-flex align-items-center gap-1 flex-wrap mt-1">
+                                <div class="fw-semibold text-dark font-heading" style="font-size: 13px; line-height: 1.3;">
+                                    {{ $p->penempatanPkl?->dudi?->nama ?? 'DUDI Terhapus' }}
+                                </div>
+                                <div class="d-flex align-items-center gap-1.5 flex-wrap mt-1.5">
                                     @if($p->is_wfa)
-                                        <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 10.5px;">WFA</span>
+                                        <span class="badge badge-mode-wfa">💻 WFA</span>
                                     @else
-                                        <span class="badge bg-secondary-light text-secondary fw-semibold" style="font-size: 10.5px;">WFO</span>
+                                        <span class="badge badge-mode-wfo">🏢 WFO</span>
                                     @endif
 
                                     @if($p->shift_harian === 'pagi')
-                                        <span class="badge bg-success-light text-success fw-semibold" style="font-size: 10.5px;">Shift Pagi</span>
+                                        <span class="badge badge-shift badge-shift-pagi" style="background-color: #ecfdf5 !important; color: #047857 !important; border: 1px solid #a7f3d0 !important;">🌅 Shift Pagi</span>
                                     @elseif($p->shift_harian === 'siang')
-                                        <span class="badge bg-warning-light text-warning fw-semibold" style="font-size: 10.5px;">Shift Siang</span>
+                                        <span class="badge badge-shift badge-shift-siang" style="background-color: #fef3c7 !important; color: #b45309 !important; border: 1px solid #fde68a !important;">☀️ Shift Siang</span>
                                     @elseif($p->shift_harian === 'sore')
-                                        <span class="badge bg-orange-light text-orange fw-semibold" style="font-size: 10.5px;">Shift Sore</span>
+                                        <span class="badge badge-shift badge-shift-sore" style="background-color: #ffedd5 !important; color: #9a3412 !important; border: 1px solid #fed7aa !important;">🌇 Shift Sore</span>
+                                    @elseif(!empty($p->shift_harian))
+                                        <span class="badge badge-shift badge-shift-other" style="background-color: #f3e8ff !important; color: #7e22ce !important; border: 1px solid #e9d5ff !important;">🔄 {{ ucfirst($p->shift_harian) }}</span>
                                     @endif
                                 </div>
                             </td>
-                            <td class="text-center fw-semibold text-success">
-                                {{ $p->jam_masuk ? substr($p->jam_masuk, 0, 5) : '-' }}
-                            </td>
-                            <td class="text-center">
-                                @if($p->foto_masuk)
-                                    <a href="{{ asset('storage/attendance/' . $p->foto_masuk) }}" target="_blank" aria-label="Foto Check In">
-                                        <img src="{{ asset('storage/attendance/' . $p->foto_masuk) }}" class="rounded border" width="36" height="36" style="object-fit: cover;" alt="Foto Masuk">
-                                    </a>
-                                @else
-                                    <span class="text-muted small">-</span>
-                                @endif
-                            </td>
-                            <td class="text-center fw-semibold text-warning">
-                                {{ $p->jam_pulang ? substr($p->jam_pulang, 0, 5) : '-' }}
-                            </td>
-                            <td class="text-center">
-                                @if($p->foto_pulang)
-                                    <a href="{{ asset('storage/attendance/' . $p->foto_pulang) }}" target="_blank" aria-label="Foto Check Out">
-                                        <img src="{{ asset('storage/attendance/' . $p->foto_pulang) }}" class="rounded border" width="36" height="36" style="object-fit: cover;" alt="Foto Pulang">
-                                    </a>
-                                @else
-                                    <span class="text-muted small">-</span>
-                                @endif
-                            </td>
-                            <td class="text-center pe-4">
-                                <div class="mb-1">
-                                    @if($p->status_masuk === 'libur_shift')
-                                        <span class="badge bg-info-light text-info fw-semibold">Libur Shift</span>
-                                    @elseif($p->status_masuk === 'alpha')
-                                        <span class="badge bg-danger-light text-danger fw-semibold">Alpha</span>
-                                    @elseif($p->status_masuk === 'tepat_waktu')
-                                        <span class="badge bg-success-light text-success fw-semibold">Tepat Waktu</span>
-                                    @elseif($p->status_masuk === 'terlambat')
-                                        <span class="badge bg-danger-light text-danger fw-semibold">Terlambat</span>
+
+                            <!-- Check In (Masuk) -->
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    @if($p->foto_masuk)
+                                        <a href="{{ asset('storage/attendance/' . $p->foto_masuk) }}" target="_blank" class="attendance-thumb-wrapper" title="Buka Foto Check In">
+                                            <img src="{{ asset('storage/attendance/' . $p->foto_masuk) }}" class="attendance-thumb" alt="Foto Masuk">
+                                        </a>
                                     @else
-                                        <span class="badge bg-secondary-light text-secondary">-</span>
+                                        <div class="attendance-thumb-placeholder" title="Tidak ada foto">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                        </div>
                                     @endif
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-bold font-heading text-success" style="font-size: 13.5px; letter-spacing: 0.3px;">
+                                            {{ $p->jam_masuk ? substr($p->jam_masuk, 0, 5) : '—' }}
+                                        </span>
+                                        <div class="mt-0.5">
+                                            @if($p->status_masuk === 'libur_shift')
+                                                <span class="badge badge-status badge-status-info" style="background-color: #e0f2fe !important; color: #0369a1 !important; border: 1px solid #bae6fd !important;">Libur Shift</span>
+                                            @elseif($p->status_masuk === 'alpha')
+                                                <span class="badge badge-status badge-status-danger" style="background-color: #fee2e2 !important; color: #991b1b !important; border: 1px solid #fecaca !important;">Alpha</span>
+                                            @elseif($p->status_masuk === 'tepat_waktu')
+                                                <span class="badge badge-status badge-status-success" style="background-color: #dcfce7 !important; color: #15803d !important; border: 1px solid #bbf7d0 !important;">Tepat Waktu</span>
+                                            @elseif($p->status_masuk === 'terlambat')
+                                                <span class="badge badge-status badge-status-danger" style="background-color: #fee2e2 !important; color: #991b1b !important; border: 1px solid #fecaca !important;">Terlambat</span>
+                                            @elseif($p->jam_masuk)
+                                                <span class="badge bg-secondary-light text-secondary" style="font-size: 10px;">Tercatat</span>
+                                            @else
+                                                <span class="text-muted fst-italic" style="font-size: 11px;">Belum Presensi</span>
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
-                                @if($p->status_pulang === 'pulang_cepat')
-                                    <div class="mb-1">
-                                        <span class="badge bg-warning-light text-warning fw-semibold">Pulang Cepat</span>
+                            </td>
+
+                            <!-- Check Out (Pulang) -->
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    @if($p->foto_pulang)
+                                        <a href="{{ asset('storage/attendance/' . $p->foto_pulang) }}" target="_blank" class="attendance-thumb-wrapper" title="Buka Foto Check Out">
+                                            <img src="{{ asset('storage/attendance/' . $p->foto_pulang) }}" class="attendance-thumb" alt="Foto Pulang">
+                                        </a>
+                                    @elseif($p->jam_pulang)
+                                        <div class="attendance-thumb-placeholder" title="Tidak ada foto">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                        </div>
+                                    @endif
+                                    <div class="d-flex flex-column">
+                                        @if($p->jam_pulang)
+                                            <span class="fw-bold font-heading" style="font-size: 13.5px; letter-spacing: 0.3px; color: #d97706 !important;">
+                                                {{ substr($p->jam_pulang, 0, 5) }}
+                                            </span>
+                                            <div class="mt-0.5">
+                                                @if($p->status_pulang === 'pulang_cepat')
+                                                    <span class="badge badge-status badge-status-warning" style="background-color: #fef3c7 !important; color: #b45309 !important; border: 1px solid #fde68a !important;">Pulang Cepat</span>
+                                                @elseif($p->status_pulang === 'tepat_waktu')
+                                                    <span class="badge badge-status badge-status-success" style="background-color: #dcfce7 !important; color: #15803d !important; border: 1px solid #bbf7d0 !important;">Pulang Tepat</span>
+                                                @else
+                                                    <span class="badge bg-secondary-light text-secondary" style="font-size: 10px;">Selesai</span>
+                                                @endif
+                                            </div>
+                                        @else
+                                            <span class="badge bg-light text-muted border px-2 py-1" style="font-size: 11px; font-weight: 500;">Belum Pulang</span>
+                                        @endif
                                     </div>
-                                @elseif($p->status_pulang === 'tepat_waktu')
-                                    <div class="mb-1">
-                                        <span class="badge bg-success-light text-success fw-semibold">Pulang Tepat Waktu</span>
-                                    </div>
-                                @endif
+                                </div>
+                            </td>
+
+                            <!-- Aksi -->
+                            <td class="text-center pe-4">
                                 @if(auth()->user()->role === 'admin')
-                                    <div class="mt-1 d-flex justify-content-center gap-1">
-                                        <button type="button" class="btn btn-sm btn-outline-warning btn-action" title="Koreksi Presensi" data-bs-toggle="modal" data-bs-target="#modalEditManual" onclick="editPresensi({{ json_encode([
+                                    <div class="d-flex justify-content-center gap-1.5">
+                                        <button type="button" class="btn btn-sm btn-outline-warning btn-action-icon" title="Koreksi Presensi" data-bs-toggle="modal" data-bs-target="#modalEditManual" onclick="editPresensi({{ json_encode([
                                             'id' => $p->id,
                                             'tanggal' => $p->tanggal,
                                             'jam_masuk' => $p->jam_masuk,
@@ -188,26 +392,28 @@
                                                 'murid' => ['nama' => $p->penempatanPkl->murid->nama]
                                             ]
                                         ]) }})">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                             </svg>
                                         </button>
                                         <form action="{{ route('presensi.destroy', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data presensi ini?');" style="display: inline-block;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger btn-action" title="Hapus Presensi">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger btn-action-icon" title="Hapus Presensi">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                 </svg>
                                             </button>
                                         </form>
                                     </div>
+                                @else
+                                    <span class="text-muted small">—</span>
                                 @endif
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-4">
+                            <td colspan="5" class="text-center py-4">
                                 <div class="empty-state py-4">
                                     <h6 class="empty-state-title">Tidak ada data presensi</h6>
                                     <p class="empty-state-text">Belum ada murid yang melakukan presensi pada tanggal ini.</p>
@@ -231,13 +437,13 @@
                         </div>
                         <div class="text-end">
                             @if($p->status_masuk === 'libur_shift')
-                                <span class="badge bg-info-light text-info fw-semibold" style="font-size: 10.5px;">Libur Shift</span>
+                                <span class="badge badge-status badge-status-info" style="background-color: #e0f2fe !important; color: #0369a1 !important; border: 1px solid #bae6fd !important;">Libur Shift</span>
                             @elseif($p->status_masuk === 'alpha')
-                                <span class="badge bg-danger-light text-danger fw-semibold" style="font-size: 10.5px;">Alpha</span>
+                                <span class="badge badge-status badge-status-danger" style="background-color: #fee2e2 !important; color: #991b1b !important; border: 1px solid #fecaca !important;">Alpha</span>
                             @elseif($p->status_masuk === 'tepat_waktu')
-                                <span class="badge bg-success-light text-success fw-semibold" style="font-size: 10.5px;">Tepat Waktu</span>
+                                <span class="badge badge-status badge-status-success" style="background-color: #dcfce7 !important; color: #15803d !important; border: 1px solid #bbf7d0 !important;">Tepat Waktu</span>
                             @elseif($p->status_masuk === 'terlambat')
-                                <span class="badge bg-danger-light text-danger fw-semibold" style="font-size: 10.5px;">Terlambat</span>
+                                <span class="badge badge-status badge-status-danger" style="background-color: #fee2e2 !important; color: #991b1b !important; border: 1px solid #fecaca !important;">Terlambat</span>
                             @else
                                 <span class="badge bg-secondary-light text-secondary" style="font-size: 10.5px;">-</span>
                             @endif
@@ -245,25 +451,27 @@
                     </div>
 
                     <!-- Work Mode & Shift -->
-                    <div class="d-flex align-items-center gap-1.5 mb-2 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                    <div class="d-flex align-items-center gap-1.5 mb-2 pb-2 border-bottom flex-wrap" style="border-bottom-color: var(--border-color) !important;">
                         @if($p->is_wfa)
-                            <span class="badge bg-primary-light text-primary fw-semibold" style="font-size: 10.5px;">WFA</span>
+                            <span class="badge badge-mode-wfa">💻 WFA</span>
                         @else
-                            <span class="badge bg-secondary-light text-secondary fw-semibold" style="font-size: 10.5px;">WFO</span>
+                            <span class="badge badge-mode-wfo">🏢 WFO</span>
                         @endif
 
                         @if($p->shift_harian === 'pagi')
-                            <span class="badge bg-success-light text-success fw-semibold" style="font-size: 10.5px;">Shift Pagi</span>
+                            <span class="badge badge-shift badge-shift-pagi" style="background-color: #ecfdf5 !important; color: #047857 !important; border: 1px solid #a7f3d0 !important;">🌅 Shift Pagi</span>
                         @elseif($p->shift_harian === 'siang')
-                            <span class="badge bg-warning-light text-warning fw-semibold" style="font-size: 10.5px;">Shift Siang</span>
+                            <span class="badge badge-shift badge-shift-siang" style="background-color: #fef3c7 !important; color: #b45309 !important; border: 1px solid #fde68a !important;">☀️ Shift Siang</span>
                         @elseif($p->shift_harian === 'sore')
-                            <span class="badge bg-orange-light text-orange fw-semibold" style="font-size: 10.5px;">Shift Sore</span>
+                            <span class="badge badge-shift badge-shift-sore" style="background-color: #ffedd5 !important; color: #9a3412 !important; border: 1px solid #fed7aa !important;">🌇 Shift Sore</span>
+                        @elseif(!empty($p->shift_harian))
+                            <span class="badge badge-shift badge-shift-other" style="background-color: #f3e8ff !important; color: #7e22ce !important; border: 1px solid #e9d5ff !important;">🔄 {{ ucfirst($p->shift_harian) }}</span>
                         @endif
 
                         @if($p->status_pulang === 'pulang_cepat')
-                            <span class="badge bg-warning-light text-warning fw-semibold ms-auto" style="font-size: 10.5px;">Pulang Cepat</span>
+                            <span class="badge badge-status badge-status-warning ms-auto" style="background-color: #fef3c7 !important; color: #b45309 !important; border: 1px solid #fde68a !important;">Pulang Cepat</span>
                         @elseif($p->status_pulang === 'tepat_waktu')
-                            <span class="badge bg-success-light text-success fw-semibold ms-auto" style="font-size: 10.5px;">Pulang Tepat</span>
+                            <span class="badge badge-status badge-status-success ms-auto" style="background-color: #dcfce7 !important; color: #15803d !important; border: 1px solid #bbf7d0 !important;">Pulang Tepat</span>
                         @endif
                     </div>
 
