@@ -206,6 +206,7 @@
                                     <span class="fw-bold font-heading text-dark" style="font-size: 13px;">
                                         {{ \Carbon\Carbon::parse($k->tanggal)->translatedFormat('d M Y') }}
                                     </span>
+                                </div>
                                 @php $badge = $getJenisKunjunganBadge($k->jenis_kunjungan); @endphp
                                 <span class="badge rounded-pill {{ $badge['class'] }} fw-semibold d-inline-flex align-items-center" style="font-size: 11px; padding: 3px 8px; border: 1px solid {{ $badge['border'] }};">
                                     {!! $badge['icon'] !!}{{ $k->jenis_kunjungan ?? 'Monitoring' }}
@@ -224,7 +225,7 @@
                             </div>
 
                             <!-- Footer: Bukti & Tombol Aksi -->
-                            <div class="pt-2 border-top d-flex align-items-center justify-content-between gap-2" style="border-top-color: var(--border-color) !important;">
+                            <div class="pt-2 border-top d-flex flex-wrap align-items-center justify-content-between gap-2" style="border-top-color: var(--border-color) !important;">
                                 <div>
                                     @if($k->foto_kunjungan)
                                         <a href="{{ asset('storage/kunjungan/' . $k->foto_kunjungan) }}" target="_blank" class="badge bg-light text-dark border d-flex align-items-center gap-1.5 text-decoration-none py-1.5 px-2.5" style="border-color: var(--border-color) !important;">

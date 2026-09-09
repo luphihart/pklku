@@ -11,9 +11,17 @@
     </div>
 
     @if(auth()->user()->role === 'admin')
+        <style>
+            @media (min-width: 768px) {
+                .btn-toggle-masa { width: auto !important; }
+            }
+            @media (max-width: 767.98px) {
+                .btn-toggle-masa { width: 100% !important; }
+            }
+        </style>
         <!-- Admin Assessment Switch -->
         <div class="card-premium mb-4 p-3 d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3" style="background-color: var(--bg-card); border-left: 4px solid {{ $isMasaPenilaianOpen ? 'var(--success)' : 'var(--danger)' }} !important;">
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-start align-items-sm-center gap-3">
                 <div class="p-2 rounded-circle {{ $isMasaPenilaianOpen ? 'bg-success-light text-success' : 'bg-danger-light text-danger' }} d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px;">
                     @if($isMasaPenilaianOpen)
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
@@ -24,26 +32,26 @@
                 <div>
                     <span class="text-muted text-uppercase fw-bold d-block" style="font-size: 11px; letter-spacing: 0.5px;">Status Masa Pengisian Nilai PKL</span>
                     @if($isMasaPenilaianOpen)
-                        <span class="fw-bold text-success font-heading" style="font-size: 15px;">Masa Penilaian Sedang DIBUKA (Aktif)</span>
-                        <small class="text-muted d-block" style="font-size: 11px;">Siswa dapat menginput nilai DUDI dan Guru Pembimbing dapat mengesahkan nilai.</small>
+                        <div class="fw-bold text-success font-heading" style="font-size: 15px;">Masa Penilaian Sedang DIBUKA (Aktif)</div>
+                        <small class="text-muted d-block mt-0.5" style="font-size: 11px; line-height: 1.4;">Siswa dapat menginput nilai DUDI dan Guru Pembimbing dapat mengesahkan nilai.</small>
                     @else
-                        <span class="fw-bold text-danger font-heading" style="font-size: 15px;">Masa Penilaian Sedang DITUTUP (Terkunci)</span>
-                        <small class="text-muted d-block" style="font-size: 11px;">Form pengisian nilai murid dinonaktifkan sementara waktu.</small>
+                        <div class="fw-bold text-danger font-heading" style="font-size: 15px;">Masa Penilaian Sedang DITUTUP (Terkunci)</div>
+                        <small class="text-muted d-block mt-0.5" style="font-size: 11px; line-height: 1.4;">Form pengisian nilai murid dinonaktifkan sementara waktu.</small>
                     @endif
                 </div>
             </div>
-            <div class="w-100 w-md-auto">
+            <div class="btn-toggle-masa flex-shrink-0">
                 <form action="{{ route('penilaian.toggle_status') }}" method="POST">
                     @csrf
                     @if($isMasaPenilaianOpen)
-                        <button type="submit" class="btn btn-sm btn-outline-danger font-heading fw-semibold d-flex align-items-center justify-content-center gap-1 w-100 w-md-auto py-1.5 px-3">
+                        <button type="submit" class="btn btn-sm btn-outline-danger font-heading fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5 btn-toggle-masa py-2 px-3.5">
                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                            Kunci / Tutup Penilaian
+                            <span>Kunci / Tutup Penilaian</span>
                         </button>
                     @else
-                        <button type="submit" class="btn btn-sm btn-success font-heading fw-semibold d-flex align-items-center justify-content-center gap-1 w-100 w-md-auto py-1.5 px-3">
+                        <button type="submit" class="btn btn-sm btn-success font-heading fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5 btn-toggle-masa py-2 px-3.5">
                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
-                            Buka Masa Penilaian
+                            <span>Buka Masa Penilaian</span>
                         </button>
                     @endif
                 </form>
