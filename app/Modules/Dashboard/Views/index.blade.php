@@ -456,7 +456,7 @@
                             {{-- Guru Pembimbing --}}
                             <div class="flex-grow-1 rounded-3 p-3" style="background:var(--bg-canvas);min-width:0;">
                                 <div style="font-size:9.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--text-muted,#94a3b8);margin-bottom:4px;">Guru Pembimbing</div>
-                                <div class="fw-bold text-dark font-heading text-truncate" style="font-size:13.5px;line-height:1.3;" title="{{ $penempatan->guru?->nama }}">
+                                <div class="fw-bold text-dark font-heading" style="font-size:13.5px;line-height:1.35;word-break:break-word;" title="{{ $penempatan->guru?->nama }}">
                                     {{ $penempatan->guru?->nama ?? '–' }}
                                 </div>
                             </div>
@@ -465,7 +465,7 @@
                             {{-- Pembimbing DUDI --}}
                             <div class="flex-grow-1 rounded-3 p-3" style="background:var(--bg-canvas);min-width:0;">
                                 <div style="font-size:9.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--text-muted,#94a3b8);margin-bottom:4px;">Pembimbing DUDI</div>
-                                <div class="fw-bold text-dark font-heading text-truncate" style="font-size:13.5px;line-height:1.3;">
+                                <div class="fw-bold text-dark font-heading" style="font-size:13.5px;line-height:1.35;word-break:break-word;">
                                     @if($pembimbingIndustriNama)
                                         {{ $pembimbingIndustriNama }}
                                     @else
@@ -476,25 +476,18 @@
                         </div>
 
                         {{-- ── Periode Footer ───────────────────────────── --}}
-                        <div class="d-flex align-items-center justify-content-between gap-2">
-                            <div class="d-flex align-items-center gap-2.5 min-w-0">
-                                <div class="rounded-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width:30px;height:30px;background:rgba(99,102,241,.1);">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#4f46e5" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                    </svg>
-                                </div>
-                                <div class="min-w-0">
-                                    <div style="font-size:9.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-muted,#94a3b8);line-height:1.1;">Periode Pelaksanaan</div>
-                                    <div class="fw-semibold text-dark text-truncate" style="font-size:13px;line-height:1.35;margin-top:1px;">
-                                        {{ $start->locale('id')->translatedFormat('d F Y') }} &ndash; {{ $end->locale('id')->translatedFormat('d F Y') }}
-                                    </div>
+                        <div class="d-flex align-items-center gap-2.5 min-w-0">
+                            <div class="rounded-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width:30px;height:30px;background:rgba(99,102,241,.1);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#4f46e5" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <div class="min-w-0">
+                                <div style="font-size:9.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-muted,#94a3b8);line-height:1.1;">Periode Pelaksanaan</div>
+                                <div class="fw-semibold text-dark" style="font-size:13px;line-height:1.35;margin-top:1px;word-break:break-word;">
+                                    {{ $start->locale('id')->translatedFormat('d F Y') }} &ndash; {{ $end->locale('id')->translatedFormat('d F Y') }}
                                 </div>
                             </div>
-                            @if($diffMonths > 0)
-                                <span class="flex-shrink-0 rounded-pill fw-semibold" style="font-size:11px;padding:4px 12px;background:rgba(99,102,241,.1);color:#4338ca;border:1px solid rgba(99,102,241,.2);">
-                                    {{ $diffMonths }} Bulan
-                                </span>
-                            @endif
                         </div>
                     @else
                         <div class="empty-state my-auto">
