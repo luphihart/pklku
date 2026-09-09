@@ -369,130 +369,129 @@
             <div class="card-premium h-100 d-flex flex-column justify-content-between">
                 <div>
                     @php
-                        $murid = auth()->user()->murid;
-                        $penempatan = $murid ? $murid->penempatanAktif : null;
-                    @endphp
+                        $muridObj  = auth()->user()->murid;
+                        $penempatan = $muridObj ? $muridObj->penempatanAktif : null;
 
-                    <!-- Card Header -->
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold font-heading m-0 text-dark dark-text-light" style="font-size: 15.5px;">Status Penempatan PKL</h5>
-                        @if($penempatan)
-                            @php
-                                $rawShift = $penempatan->tipe_shift ?? $penempatan->shift_harian;
-                                $shiftBadge = match(strtolower($rawShift ?? '')) {
-                                    'rolling' => 'Rolling',
-                                    'pagi' => 'Shift Pagi',
-                                    'siang' => 'Shift Siang',
-                                    'sore' => 'Shift Sore',
-                                    'custom' => 'Custom',
-                                    default => null
-                                };
-                            @endphp
-                            <div class="d-flex align-items-center gap-1.5 flex-wrap justify-content-end">
-                                @if($penempatan->tipe_kerja)
-                                    <span class="badge rounded-pill fw-semibold px-2.5 py-1" style="font-size: 11px; background-color: rgba(99, 102, 241, 0.08); color: #4f46e5; border: 1px solid rgba(99, 102, 241, 0.2);">
-                                        {{ strtoupper($penempatan->tipe_kerja) }}
-                                    </span>
-                                @endif
-                                @if($shiftBadge)
-                                    <span class="badge rounded-pill fw-semibold px-2.5 py-1" style="font-size: 11px; background-color: rgba(245, 158, 11, 0.08); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.25);">
-                                        {{ $shiftBadge }}
-                                    </span>
-                                @endif
-                                <span class="badge rounded-pill fw-semibold px-2.5 py-1 d-inline-flex align-items-center gap-1" style="font-size: 11px; background-color: rgba(16, 185, 129, 0.08); color: #059669; border: 1px solid rgba(16, 185, 129, 0.25);">
-                                    <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #10b981; display: inline-block;"></span>
-                                    Aktif
-                                </span>
-                            </div>
-                        @endif
-                    </div>
+                        $rawShift = $penempatan?->tipe_shift ?? $penempatan?->shift_harian;
+                        $shiftBadge = match(strtolower($rawShift ?? '')) {
+                            'rolling'  => 'Rolling',
+                            'pagi'     => 'Shift Pagi',
+                            'siang'    => 'Shift Siang',
+                            'sore'     => 'Shift Sore',
+                            'custom'   => 'Custom',
+                            default    => null
+                        };
 
-                    @if($penempatan)
-                        @php
-                            // Handle Pembimbing Industri name cleanly
-                            $pembimbingIndustriNama = null;
+                        $pembimbingIndustriNama = null;
+                        if ($penempatan) {
                             if ($penempatan->pembimbingIndustri && trim($penempatan->pembimbingIndustri->nama) !== '-' && !empty($penempatan->pembimbingIndustri->nama)) {
                                 $pembimbingIndustriNama = $penempatan->pembimbingIndustri->nama;
                             } elseif ($penempatan->dudi?->pic_nama && trim($penempatan->dudi->pic_nama) !== '-') {
                                 $pembimbingIndustriNama = $penempatan->dudi->pic_nama;
                                 if ($penempatan->dudi->pic_phone && trim($penempatan->dudi->pic_phone) !== '-') {
-                                    $pembimbingIndustriNama .= ' (' . $penempatan->dudi->pic_phone . ')';
+                                    $pembimbingIndustriNama .= ' · ' . $penempatan->dudi->pic_phone;
                                 }
                             }
+                        }
+                    @endphp
+
+                    @if($penempatan)
+                        @php
+                            $start = \Carbon\Carbon::parse($penempatan->tanggal_mulai);
+                            $end   = \Carbon\Carbon::parse($penempatan->tanggal_selesai);
+                            $diffMonths = round($start->diffInMonths($end));
                         @endphp
 
-                        <!-- Mitra DUDI Hero Block -->
-                        <div class="d-flex align-items-start gap-3 mb-3">
-                            <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 text-white shadow-xs" style="width: 44px; height: 44px; background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                                </svg>
-                            </div>
-                            <div class="min-w-0 flex-grow-1">
-                                <h6 class="fw-bold text-dark font-heading mb-1" style="font-size: 16.5px; line-height: 1.3;" title="{{ $penempatan->dudi?->nama }}">
-                                    {{ $penempatan->dudi?->nama ?? 'DUDI Terhapus' }}
-                                </h6>
-                                @if($penempatan->dudi?->alamat && trim($penempatan->dudi->alamat) !== '-')
-                                    <div class="text-muted small d-flex align-items-start gap-1.5" style="font-size: 12px; line-height: 1.45;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-muted flex-shrink-0" style="margin-top: 2px;">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        </svg>
-                                        <span style="word-break: break-word; white-space: normal;">{{ $penempatan->dudi->alamat }}</span>
-                                    </div>
+                        {{-- ── Card Top Bar ─────────────────────────────── --}}
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="fw-bold text-dark font-heading" style="font-size: 15px; letter-spacing: -0.2px;">Status Penempatan PKL</span>
+                            <div class="d-flex align-items-center gap-1.5">
+                                @if($penempatan->tipe_kerja)
+                                    <span class="badge rounded-pill fw-semibold" style="font-size: 10.5px; padding: 4px 10px; background: rgba(99,102,241,.1); color: #4338ca; border: 1px solid rgba(99,102,241,.2);">
+                                        {{ strtoupper($penempatan->tipe_kerja) }}
+                                    </span>
                                 @endif
+                                @if($shiftBadge)
+                                    <span class="badge rounded-pill fw-semibold" style="font-size: 10.5px; padding: 4px 10px; background: rgba(245,158,11,.1); color: #b45309; border: 1px solid rgba(245,158,11,.2);">
+                                        {{ $shiftBadge }}
+                                    </span>
+                                @endif
+                                <span class="badge rounded-pill fw-semibold d-inline-flex align-items-center gap-1" style="font-size: 10.5px; padding: 4px 10px; background: rgba(16,185,129,.1); color: #047857; border: 1px solid rgba(16,185,129,.2);">
+                                    <span style="width:6px;height:6px;border-radius:50%;background:#10b981;display:inline-block;flex-shrink:0;"></span>
+                                    Aktif
+                                </span>
                             </div>
                         </div>
 
-                        <!-- 2-Column Mentors Section -->
-                        <div class="rounded-3 py-2.5 px-3 mb-3" style="background-color: var(--bg-canvas);">
-                            <div class="row g-3">
-                                <!-- Guru Pembimbing -->
-                                <div class="col-6">
-                                    <div class="text-muted fw-bold text-uppercase mb-1" style="font-size: 10px; letter-spacing: 0.5px;">Guru Pembimbing</div>
-                                    <div class="fw-bold text-dark font-heading text-truncate" style="font-size: 13.5px; line-height: 1.3;" title="{{ $penempatan->guru?->nama }}">
-                                        {{ $penempatan->guru?->nama ?? 'Guru Terhapus' }}
-                                    </div>
-                                    <div class="text-muted small mt-0.5" style="font-size: 11px;">Pembimbing Sekolah</div>
+                        {{-- ── DUDI Banner ──────────────────────────────── --}}
+                        <div class="rounded-4 overflow-hidden mb-3" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); position: relative;">
+                            {{-- subtle pattern --}}
+                            <div style="position:absolute;inset:0;opacity:.07;background-image:radial-gradient(circle, #fff 1px, transparent 1px);background-size:16px 16px;pointer-events:none;"></div>
+                            <div class="d-flex align-items-center gap-3 p-3" style="position:relative;">
+                                <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width:48px;height:48px;background:rgba(255,255,255,.18);backdrop-filter:blur(4px);">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="1.8">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                    </svg>
                                 </div>
-
-                                <!-- Pembimbing Industri -->
-                                <div class="col-6">
-                                    <div class="text-muted fw-bold text-uppercase mb-1" style="font-size: 10px; letter-spacing: 0.5px;">Pembimbing DUDI</div>
-                                    <div class="fw-bold text-dark font-heading text-truncate" style="font-size: 13.5px; line-height: 1.3;">
-                                        @if($pembimbingIndustriNama)
-                                            {{ $pembimbingIndustriNama }}
-                                        @else
-                                            <span class="text-muted fw-normal fst-italic" style="font-size: 12px;">Belum ditentukan</span>
-                                        @endif
+                                <div class="min-w-0 flex-grow-1">
+                                    <div style="font-size:10px;letter-spacing:.6px;color:rgba(255,255,255,.7);font-weight:600;text-transform:uppercase;margin-bottom:2px;">Mitra PKL</div>
+                                    <div class="fw-bold font-heading" style="font-size:17px;color:#fff;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="{{ $penempatan->dudi?->nama }}">
+                                        {{ $penempatan->dudi?->nama ?? 'DUDI Terhapus' }}
                                     </div>
-                                    <div class="text-muted small mt-0.5" style="font-size: 11px;">Instruktur Industri</div>
+                                    @if($penempatan->dudi?->alamat && trim($penempatan->dudi->alamat) !== '-')
+                                        <div class="d-flex align-items-start gap-1 mt-1" style="color:rgba(255,255,255,.75);font-size:11.5px;line-height:1.4;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="margin-top:2px;flex-shrink:0;" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                            <span style="word-break:break-word;white-space:normal;">{{ $penempatan->dudi->alamat }}</span>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Periode PKL Section -->
-                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        {{-- ── Pembimbing Row ───────────────────────────── --}}
+                        <div class="d-flex gap-3 mb-3">
+                            {{-- Guru Pembimbing --}}
+                            <div class="flex-grow-1 rounded-3 p-3" style="background:var(--bg-canvas);min-width:0;">
+                                <div style="font-size:9.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--text-muted,#94a3b8);margin-bottom:4px;">Guru Pembimbing</div>
+                                <div class="fw-bold text-dark font-heading text-truncate" style="font-size:13.5px;line-height:1.3;" title="{{ $penempatan->guru?->nama }}">
+                                    {{ $penempatan->guru?->nama ?? '–' }}
+                                </div>
+                            </div>
+                            {{-- Divider --}}
+                            <div style="width:1px;background:var(--border-color,#e2e8f0);flex-shrink:0;border-radius:4px;"></div>
+                            {{-- Pembimbing DUDI --}}
+                            <div class="flex-grow-1 rounded-3 p-3" style="background:var(--bg-canvas);min-width:0;">
+                                <div style="font-size:9.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--text-muted,#94a3b8);margin-bottom:4px;">Pembimbing DUDI</div>
+                                <div class="fw-bold text-dark font-heading text-truncate" style="font-size:13.5px;line-height:1.3;">
+                                    @if($pembimbingIndustriNama)
+                                        {{ $pembimbingIndustriNama }}
+                                    @else
+                                        <span class="fw-normal fst-italic text-muted" style="font-size:12.5px;">Belum ditentukan</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- ── Periode Footer ───────────────────────────── --}}
+                        <div class="d-flex align-items-center justify-content-between gap-2">
                             <div class="d-flex align-items-center gap-2.5 min-w-0">
-                                <div class="rounded-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px; background-color: rgba(99, 102, 241, 0.1); color: #4f46e5;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                <div class="rounded-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width:30px;height:30px;background:rgba(99,102,241,.1);">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#4f46e5" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
                                 </div>
                                 <div class="min-w-0">
-                                    <div class="text-muted fw-bold text-uppercase" style="font-size: 10px; letter-spacing: 0.5px; line-height: 1.2;">Periode Pelaksanaan</div>
-                                    <div class="fw-bold text-dark font-heading text-truncate" style="font-size: 13px; line-height: 1.3;">
-                                        {{ \Carbon\Carbon::parse($penempatan->tanggal_mulai)->locale('id')->translatedFormat('d F Y') }} &ndash; {{ \Carbon\Carbon::parse($penempatan->tanggal_selesai)->locale('id')->translatedFormat('d F Y') }}
+                                    <div style="font-size:9.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-muted,#94a3b8);line-height:1.1;">Periode Pelaksanaan</div>
+                                    <div class="fw-semibold text-dark text-truncate" style="font-size:13px;line-height:1.35;margin-top:1px;">
+                                        {{ $start->locale('id')->translatedFormat('d F Y') }} &ndash; {{ $end->locale('id')->translatedFormat('d F Y') }}
                                     </div>
                                 </div>
                             </div>
-                            @php
-                                $start = \Carbon\Carbon::parse($penempatan->tanggal_mulai);
-                                $end = \Carbon\Carbon::parse($penempatan->tanggal_selesai);
-                                $diffMonths = round($start->diffInMonths($end));
-                            @endphp
                             @if($diffMonths > 0)
-                                <span class="badge rounded-pill fw-semibold px-2.5 py-1 flex-shrink-0" style="font-size: 11px; background-color: rgba(99, 102, 241, 0.08); color: #4f46e5; border: 1px solid rgba(99, 102, 241, 0.2);">
+                                <span class="flex-shrink-0 rounded-pill fw-semibold" style="font-size:11px;padding:4px 12px;background:rgba(99,102,241,.1);color:#4338ca;border:1px solid rgba(99,102,241,.2);">
                                     {{ $diffMonths }} Bulan
                                 </span>
                             @endif
