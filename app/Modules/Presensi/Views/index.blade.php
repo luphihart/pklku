@@ -41,51 +41,130 @@
         color: #7e22ce !important;
     }
 
-    /* Modern Status Indicator with Dot (Clean, No Boxiness) */
-    .status-indicator {
-        font-size: 11.5px !important;
-        font-weight: 500 !important;
+    /* Modern Status Pill with Dot (Clean, Soft, Borderless) */
+    .attendance-pill {
         display: inline-flex !important;
         align-items: center !important;
         gap: 5px !important;
+        padding: 2.5px 8.5px !important;
+        border-radius: 20px !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
         line-height: 1.2 !important;
         white-space: nowrap !important;
+        margin-top: 2px;
+        width: fit-content;
+        border: none !important;
     }
-    .status-dot {
-        width: 6px !important;
-        height: 6px !important;
+    .attendance-pill .pill-dot {
+        width: 5px !important;
+        height: 5px !important;
         border-radius: 50% !important;
         display: inline-block !important;
         flex-shrink: 0 !important;
     }
+    .attendance-pill.pill-success {
+        background-color: #ecfdf5 !important;
+        color: #047857 !important;
+    }
+    .attendance-pill.pill-success .pill-dot {
+        background-color: #10b981 !important;
+    }
+    .attendance-pill.pill-warning {
+        background-color: #fef3c7 !important;
+        color: #b45309 !important;
+    }
+    .attendance-pill.pill-warning .pill-dot {
+        background-color: #f59e0b !important;
+    }
+    .attendance-pill.pill-danger {
+        background-color: #fee2e2 !important;
+        color: #b91c1c !important;
+    }
+    .attendance-pill.pill-danger .pill-dot {
+        background-color: #ef4444 !important;
+    }
+    .attendance-pill.pill-info {
+        background-color: #e0f2fe !important;
+        color: #0369a1 !important;
+    }
+    .attendance-pill.pill-info .pill-dot {
+        background-color: #0284c7 !important;
+    }
+    .attendance-pill.pill-muted {
+        background-color: #f1f5f9 !important;
+        color: #64748b !important;
+        font-weight: 500 !important;
+    }
+    .attendance-pill.pill-muted .pill-dot {
+        background-color: #94a3b8 !important;
+    }
 
-    /* Attendance Photo Thumbnail */
-    .attendance-thumb-wrapper {
-        display: inline-block;
+    /* Attendance Cell - Modern Compact Layout */
+    .attendance-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Attendance Avatar - Sleek Round with Subtle Ring Shadow */
+    .attendance-avatar-wrapper {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         flex-shrink: 0;
-        transition: transform 0.15s ease;
+        text-decoration: none;
+        cursor: pointer;
     }
-    .attendance-thumb-wrapper:hover {
-        transform: scale(1.06);
-    }
-    .attendance-thumb {
-        width: 38px;
-        height: 38px;
+    .attendance-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50% !important;
         object-fit: cover;
-        border-radius: 8px;
-        border: 1px solid rgba(0, 0, 0, 0.08);
+        border: 2px solid #ffffff;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.06);
+        transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        display: block;
     }
-    .attendance-thumb-placeholder {
-        width: 38px;
-        height: 38px;
-        border-radius: 8px;
+    .attendance-avatar-wrapper:hover .attendance-avatar {
+        transform: scale(1.12);
+        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(15, 23, 42, 0.08);
+    }
+    .attendance-avatar-placeholder {
+        width: 36px;
+        height: 36px;
+        border-radius: 50% !important;
         background-color: #f8fafc;
-        border: 1px dashed #cbd5e1;
+        border: 1.5px dashed #cbd5e1;
         display: flex;
         align-items: center;
         justify-content: center;
         color: #94a3b8;
         flex-shrink: 0;
+    }
+
+    /* Attendance Meta & Time */
+    .attendance-meta {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-width: 0;
+        line-height: 1.2;
+    }
+    .attendance-time {
+        font-size: 13.5px !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+        font-variant-numeric: tabular-nums !important;
+        letter-spacing: -0.2px;
+        line-height: 1.25 !important;
+    }
+    .attendance-time-empty {
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        color: #94a3b8 !important;
+        letter-spacing: 1px;
+        line-height: 1.25 !important;
     }
 
     /* Ghost Action Buttons (Clean, Borderless, Subtle Hover) */
@@ -198,8 +277,22 @@
                     <tr class="font-heading text-nowrap" style="font-size: 13px; font-weight: 600;">
                         <th class="ps-4" style="width: 25%; min-width: 210px;">Murid (Kelas)</th>
                         <th style="width: 26%; min-width: 210px;">DUDI Tempat PKL</th>
-                        <th style="width: 20%; min-width: 175px;">Check In (Masuk)</th>
-                        <th style="width: 20%; min-width: 175px;">Check Out (Pulang)</th>
+                        <th style="width: 20%; min-width: 175px;">
+                            <span class="d-inline-flex align-items-center gap-1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-success">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                                </svg>
+                                Check In (Masuk)
+                            </span>
+                        </th>
+                        <th style="width: 20%; min-width: 175px;">
+                            <span class="d-inline-flex align-items-center gap-1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-primary">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                </svg>
+                                Check Out (Pulang)
+                            </span>
+                        </th>
                         <th class="text-center pe-4" style="width: 9%; min-width: 85px;">Aksi</th>
                     </tr>
                 </thead>
@@ -248,83 +341,99 @@
 
                             <!-- Check In (Masuk) -->
                             <td class="py-3">
-                                <div class="d-flex align-items-center gap-2.5">
+                                <div class="attendance-cell">
                                     @if($p->foto_masuk)
-                                        <a href="{{ asset('storage/attendance/' . $p->foto_masuk) }}" target="_blank" class="attendance-thumb-wrapper" title="Buka Foto Check In">
-                                            <img src="{{ asset('storage/attendance/' . $p->foto_masuk) }}" class="attendance-thumb" alt="Foto Masuk">
+                                        <a href="{{ asset('storage/attendance/' . $p->foto_masuk) }}" target="_blank" class="attendance-avatar-wrapper" title="Buka Foto Check In">
+                                            <img src="{{ asset('storage/attendance/' . $p->foto_masuk) }}" class="attendance-avatar" alt="Foto Masuk">
                                         </a>
                                     @else
-                                        <div class="attendance-thumb-placeholder" title="Tidak ada foto">
+                                        <div class="attendance-avatar-placeholder" title="Tidak ada foto">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
                                             </svg>
                                         </div>
                                     @endif
-                                    <div>
-                                        <div class="fw-bold font-heading text-dark" style="font-size: 13.5px; line-height: 1.2;">
-                                            {{ $p->jam_masuk ? substr($p->jam_masuk, 0, 5) : '—' }}
-                                        </div>
-                                        <div class="mt-1">
-                                            @if($p->status_masuk === 'libur_shift')
-                                                <span class="status-indicator" style="color: #0284c7 !important;">
-                                                    <span class="status-dot" style="background-color: #0284c7;"></span> Libur Shift
-                                                </span>
-                                            @elseif($p->status_masuk === 'alpha')
-                                                <span class="status-indicator" style="color: #dc2626 !important;">
-                                                    <span class="status-dot" style="background-color: #dc2626;"></span> Alpha
-                                                </span>
-                                            @elseif($p->status_masuk === 'tepat_waktu')
-                                                <span class="status-indicator" style="color: #059669 !important;">
-                                                    <span class="status-dot" style="background-color: #10b981;"></span> Tepat Waktu
-                                                </span>
-                                            @elseif($p->status_masuk === 'terlambat')
-                                                <span class="status-indicator" style="color: #dc2626 !important;">
-                                                    <span class="status-dot" style="background-color: #ef4444;"></span> Terlambat
-                                                </span>
-                                            @elseif($p->jam_masuk)
-                                                <span class="text-muted small">Tercatat</span>
-                                            @else
-                                                <span class="text-muted small fst-italic">Belum Presensi</span>
-                                            @endif
-                                        </div>
+                                    <div class="attendance-meta">
+                                        @if($p->jam_masuk)
+                                            <div class="attendance-time">{{ substr($p->jam_masuk, 0, 5) }}</div>
+                                        @else
+                                            <div class="attendance-time-empty">—:—</div>
+                                        @endif
+
+                                        @if($p->status_masuk === 'libur_shift')
+                                            <div class="attendance-pill pill-info">
+                                                <span class="pill-dot"></span>
+                                                <span>Libur Shift</span>
+                                            </div>
+                                        @elseif($p->status_masuk === 'alpha')
+                                            <div class="attendance-pill pill-danger">
+                                                <span class="pill-dot"></span>
+                                                <span>Alpha</span>
+                                            </div>
+                                        @elseif($p->status_masuk === 'tepat_waktu')
+                                            <div class="attendance-pill pill-success">
+                                                <span class="pill-dot"></span>
+                                                <span>Tepat Waktu</span>
+                                            </div>
+                                        @elseif($p->status_masuk === 'terlambat')
+                                            <div class="attendance-pill pill-danger">
+                                                <span class="pill-dot"></span>
+                                                <span>Terlambat</span>
+                                            </div>
+                                        @elseif($p->jam_masuk)
+                                            <div class="attendance-pill pill-muted">
+                                                <span class="pill-dot"></span>
+                                                <span>Tercatat</span>
+                                            </div>
+                                        @else
+                                            <div class="attendance-pill pill-muted">
+                                                <span class="pill-dot"></span>
+                                                <span>Belum Presensi</span>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </td>
 
                             <!-- Check Out (Pulang) -->
                             <td class="py-3">
-                                <div class="d-flex align-items-center gap-2.5">
+                                <div class="attendance-cell">
                                     @if($p->foto_pulang)
-                                        <a href="{{ asset('storage/attendance/' . $p->foto_pulang) }}" target="_blank" class="attendance-thumb-wrapper" title="Buka Foto Check Out">
-                                            <img src="{{ asset('storage/attendance/' . $p->foto_pulang) }}" class="attendance-thumb" alt="Foto Pulang">
+                                        <a href="{{ asset('storage/attendance/' . $p->foto_pulang) }}" target="_blank" class="attendance-avatar-wrapper" title="Buka Foto Check Out">
+                                            <img src="{{ asset('storage/attendance/' . $p->foto_pulang) }}" class="attendance-avatar" alt="Foto Pulang">
                                         </a>
-                                    @elseif($p->jam_pulang)
-                                        <div class="attendance-thumb-placeholder" title="Tidak ada foto">
+                                    @else
+                                        <div class="attendance-avatar-placeholder" title="{{ $p->jam_pulang ? 'Tidak ada foto' : 'Belum presensi pulang' }}">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                                             </svg>
                                         </div>
                                     @endif
-                                    <div>
+                                    <div class="attendance-meta">
                                         @if($p->jam_pulang)
-                                            <div class="fw-bold font-heading text-dark" style="font-size: 13.5px; line-height: 1.2;">
-                                                {{ substr($p->jam_pulang, 0, 5) }}
-                                            </div>
-                                            <div class="mt-1">
-                                                @if($p->status_pulang === 'pulang_cepat')
-                                                    <span class="status-indicator" style="color: #d97706 !important;">
-                                                        <span class="status-dot" style="background-color: #f59e0b;"></span> Pulang Cepat
-                                                    </span>
-                                                @elseif($p->status_pulang === 'tepat_waktu')
-                                                    <span class="status-indicator" style="color: #059669 !important;">
-                                                        <span class="status-dot" style="background-color: #10b981;"></span> Pulang Tepat
-                                                    </span>
-                                                @else
-                                                    <span class="text-muted small">Selesai</span>
-                                                @endif
-                                            </div>
+                                            <div class="attendance-time">{{ substr($p->jam_pulang, 0, 5) }}</div>
+                                            @if($p->status_pulang === 'pulang_cepat')
+                                                <div class="attendance-pill pill-warning">
+                                                    <span class="pill-dot"></span>
+                                                    <span>Pulang Cepat</span>
+                                                </div>
+                                            @elseif($p->status_pulang === 'tepat_waktu')
+                                                <div class="attendance-pill pill-success">
+                                                    <span class="pill-dot"></span>
+                                                    <span>Pulang Tepat</span>
+                                                </div>
+                                            @else
+                                                <div class="attendance-pill pill-muted">
+                                                    <span class="pill-dot"></span>
+                                                    <span>Selesai</span>
+                                                </div>
+                                            @endif
                                         @else
-                                            <span class="text-muted small fst-italic">Belum Presensi Pulang</span>
+                                            <div class="attendance-time-empty">—:—</div>
+                                            <div class="attendance-pill pill-muted">
+                                                <span class="pill-dot"></span>
+                                                <span>Belum Presensi Pulang</span>
+                                            </div>
                                         @endif
                                     </div>
                                 </div>
@@ -390,20 +499,20 @@
                         </div>
                         <div class="text-end">
                             @if($p->status_masuk === 'libur_shift')
-                                <span class="status-indicator" style="color: #0284c7 !important;">
-                                    <span class="status-dot" style="background-color: #0284c7;"></span> Libur Shift
+                                <span class="attendance-pill pill-info">
+                                    <span class="pill-dot"></span> Libur Shift
                                 </span>
                             @elseif($p->status_masuk === 'alpha')
-                                <span class="status-indicator" style="color: #dc2626 !important;">
-                                    <span class="status-dot" style="background-color: #dc2626;"></span> Alpha
+                                <span class="attendance-pill pill-danger">
+                                    <span class="pill-dot"></span> Alpha
                                 </span>
                             @elseif($p->status_masuk === 'tepat_waktu')
-                                <span class="status-indicator" style="color: #059669 !important;">
-                                    <span class="status-dot" style="background-color: #10b981;"></span> Tepat Waktu
+                                <span class="attendance-pill pill-success">
+                                    <span class="pill-dot"></span> Tepat Waktu
                                 </span>
                             @elseif($p->status_masuk === 'terlambat')
-                                <span class="status-indicator" style="color: #dc2626 !important;">
-                                    <span class="status-dot" style="background-color: #ef4444;"></span> Terlambat
+                                <span class="attendance-pill pill-danger">
+                                    <span class="pill-dot"></span> Terlambat
                                 </span>
                             @else
                                 <span class="text-muted small">—</span>
@@ -434,12 +543,12 @@
                         @endif
 
                         @if($p->status_pulang === 'pulang_cepat')
-                            <span class="status-indicator ms-auto" style="color: #d97706 !important;">
-                                <span class="status-dot" style="background-color: #f59e0b;"></span> Pulang Cepat
+                            <span class="attendance-pill pill-warning ms-auto">
+                                <span class="pill-dot"></span> Pulang Cepat
                             </span>
                         @elseif($p->status_pulang === 'tepat_waktu')
-                            <span class="status-indicator ms-auto" style="color: #059669 !important;">
-                                <span class="status-dot" style="background-color: #10b981;"></span> Pulang Tepat
+                            <span class="attendance-pill pill-success ms-auto">
+                                <span class="pill-dot"></span> Pulang Tepat
                             </span>
                         @endif
                     </div>
@@ -448,13 +557,18 @@
                     <div class="row g-2 mb-2" style="font-size: 12px;">
                         <!-- Check In Column -->
                         <div class="col-6">
-                            <div class="p-2 rounded bg-light border" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
-                                <div class="text-muted small fw-semibold">Check In</div>
-                                <div class="d-flex align-items-center justify-content-between mt-1">
-                                    <span class="fw-bold text-success" style="font-size: 13px;">{{ $p->jam_masuk ? substr($p->jam_masuk, 0, 5) : '—' }}</span>
+                            <div class="p-2.5 rounded-3 bg-light border" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
+                                <div class="text-muted small fw-semibold mb-1.5 d-flex align-items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-success">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                                    </svg>
+                                    Check In
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="attendance-time" style="font-size: 13px;">{{ $p->jam_masuk ? substr($p->jam_masuk, 0, 5) : '—' }}</span>
                                     @if($p->foto_masuk)
-                                        <a href="{{ asset('storage/attendance/' . $p->foto_masuk) }}" target="_blank">
-                                            <img src="{{ asset('storage/attendance/' . $p->foto_masuk) }}" class="rounded border" width="28" height="28" style="object-fit: cover;" alt="Foto Masuk">
+                                        <a href="{{ asset('storage/attendance/' . $p->foto_masuk) }}" target="_blank" class="attendance-avatar-wrapper">
+                                            <img src="{{ asset('storage/attendance/' . $p->foto_masuk) }}" class="attendance-avatar" style="width: 28px; height: 28px;" alt="Foto Masuk">
                                         </a>
                                     @endif
                                 </div>
@@ -463,20 +577,27 @@
 
                         <!-- Check Out Column -->
                         <div class="col-6">
-                            <div class="p-2 rounded bg-light border" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
-                                <div class="text-muted small fw-semibold">Check Out</div>
-                                @if($p->jam_pulang)
-                                    <div class="d-flex align-items-center justify-content-between mt-1">
-                                        <span class="fw-bold text-warning" style="font-size: 13px; color: #d97706 !important;">{{ substr($p->jam_pulang, 0, 5) }}</span>
+                            <div class="p-2.5 rounded-3 bg-light border" style="background-color: var(--bg-canvas) !important; border-color: var(--border-color) !important;">
+                                <div class="text-muted small fw-semibold mb-1.5 d-flex align-items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-primary">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                    </svg>
+                                    Check Out
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    @if($p->jam_pulang)
+                                        <span class="attendance-time" style="font-size: 13px;">{{ substr($p->jam_pulang, 0, 5) }}</span>
                                         @if($p->foto_pulang)
-                                            <a href="{{ asset('storage/attendance/' . $p->foto_pulang) }}" target="_blank">
-                                                <img src="{{ asset('storage/attendance/' . $p->foto_pulang) }}" class="rounded border" width="28" height="28" style="object-fit: cover;" alt="Foto Pulang">
+                                            <a href="{{ asset('storage/attendance/' . $p->foto_pulang) }}" target="_blank" class="attendance-avatar-wrapper">
+                                                <img src="{{ asset('storage/attendance/' . $p->foto_pulang) }}" class="attendance-avatar" style="width: 28px; height: 28px;" alt="Foto Pulang">
                                             </a>
                                         @endif
-                                    </div>
-                                @else
-                                    <div class="text-muted small fst-italic mt-1" style="font-size: 11px;">Belum Presensi Pulang</div>
-                                @endif
+                                    @else
+                                        <span class="attendance-pill pill-muted" style="font-size: 10px; padding: 2px 6px !important;">
+                                            <span class="pill-dot" style="width: 4px; height: 4px;"></span> Belum Presensi Pulang
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
