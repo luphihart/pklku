@@ -366,82 +366,164 @@
     <div class="row">
         <!-- Murid PKL Info -->
         <div class="col-md-6 mb-4">
-            <div class="card-premium h-100">
-                <h5 class="fw-bold font-heading mb-3 text-dark dark-text-light">Status Penempatan PKL</h5>
-                @php
-                    $murid = auth()->user()->murid;
-                    $penempatan = $murid ? $murid->penempatanAktif : null;
-                @endphp
+            <div class="card-premium h-100 d-flex flex-column justify-content-between">
+                <div>
+                    @php
+                        $murid = auth()->user()->murid;
+                        $penempatan = $murid ? $murid->penempatanAktif : null;
+                    @endphp
 
-                @if($penempatan)
-                    <div class="d-flex flex-column gap-3 mt-3">
-                        <!-- Tempat DUDI -->
-                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background-color: var(--bg-canvas); border: 1px solid var(--border-color);">
-                            <div class="p-2 rounded bg-primary-light text-primary d-flex align-items-center justify-content-center flex-shrink-0" style="width: 42px; height: 42px;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <span class="text-muted d-block small mb-1 text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Tempat DUDI</span>
-                                <span class="font-heading fw-bold text-dark" style="font-size: 15px; line-height: 1.4;">{{ $penempatan->dudi?->nama ?? 'DUDI Terhapus' }}</span>
-                            </div>
-                        </div>
-
-                        <!-- Guru Pembimbing -->
-                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background-color: var(--bg-canvas); border: 1px solid var(--border-color);">
-                            <div class="p-2 rounded bg-success-light text-success d-flex align-items-center justify-content-center flex-shrink-0" style="width: 42px; height: 42px;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6m-6 4h6"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <span class="text-muted d-block small mb-1 text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Guru Pembimbing</span>
-                                <span class="fw-semibold text-dark font-heading" style="font-size: 14px; line-height: 1.4;">{{ $penempatan->guru?->nama ?? 'Guru Terhapus' }}</span>
-                            </div>
-                        </div>
-
-                        <!-- Pembimbing Industri -->
-                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background-color: var(--bg-canvas); border: 1px solid var(--border-color);">
-                            <div class="p-2 rounded bg-warning-light text-warning d-flex align-items-center justify-content-center flex-shrink-0" style="width: 42px; height: 42px;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <span class="text-muted d-block small mb-1 text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Pembimbing Industri</span>
-                                <span class="fw-semibold text-dark font-heading" style="font-size: 14px; line-height: 1.4;">
-                                    {{ $penempatan->pembimbingIndustri ? $penempatan->pembimbingIndustri->nama : ($penempatan->dudi?->pic_nama ? $penempatan->dudi->pic_nama . ' (' . $penempatan->dudi->pic_phone . ')' : 'Belum di-assign') }}
+                    <!-- Card Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold font-heading m-0 text-dark dark-text-light" style="font-size: 15.5px;">Status Penempatan PKL</h5>
+                        @if($penempatan)
+                            <div class="d-flex align-items-center gap-1.5">
+                                @if($penempatan->tipe_kerja === 'hybrid')
+                                    <span class="badge bg-info-light text-info fw-semibold px-2 py-1" style="font-size: 11px; border-radius: 6px;">Hybrid</span>
+                                @elseif($penempatan->tipe_kerja === 'wfa')
+                                    <span class="badge bg-primary-light text-primary fw-semibold px-2 py-1" style="font-size: 11px; border-radius: 6px;">WFA</span>
+                                @else
+                                    <span class="badge bg-secondary-light text-secondary fw-semibold px-2 py-1" style="font-size: 11px; border-radius: 6px;">WFO</span>
+                                @endif
+                                <span class="badge bg-success-light text-success fw-semibold px-2 py-1 d-inline-flex align-items-center gap-1" style="font-size: 11px; border-radius: 6px;">
+                                    <span style="width: 5px; height: 5px; border-radius: 50%; background-color: #10b981; display: inline-block;"></span>
+                                    Aktif
                                 </span>
                             </div>
+                        @endif
+                    </div>
+
+                    @if($penempatan)
+                        @php
+                            // Handle Pembimbing Industri name cleanly
+                            $pembimbingIndustriNama = null;
+                            if ($penempatan->pembimbingIndustri && trim($penempatan->pembimbingIndustri->nama) !== '-' && !empty($penempatan->pembimbingIndustri->nama)) {
+                                $pembimbingIndustriNama = $penempatan->pembimbingIndustri->nama;
+                            } elseif ($penempatan->dudi?->pic_nama && trim($penempatan->dudi->pic_nama) !== '-') {
+                                $pembimbingIndustriNama = $penempatan->dudi->pic_nama;
+                                if ($penempatan->dudi->pic_phone && trim($penempatan->dudi->pic_phone) !== '-') {
+                                    $pembimbingIndustriNama .= ' (' . $penempatan->dudi->pic_phone . ')';
+                                }
+                            }
+                        @endphp
+
+                        <!-- Featured DUDI Hero Card -->
+                        <div class="p-3 rounded-3 mb-3 position-relative overflow-hidden" style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.06) 0%, rgba(99, 102, 241, 0.02) 100%); border: 1px solid rgba(79, 70, 229, 0.14);">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 text-white shadow-xs" style="width: 44px; height: 44px; background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                    </svg>
+                                </div>
+                                <div class="min-w-0 flex-grow-1">
+                                    <span class="text-primary fw-bold text-uppercase d-block" style="font-size: 10px; letter-spacing: 0.8px;">Mitra Tempat PKL</span>
+                                    <h6 class="fw-bold text-dark font-heading mb-0 text-truncate" style="font-size: 15.5px; line-height: 1.3;" title="{{ $penempatan->dudi?->nama }}">
+                                        {{ $penempatan->dudi?->nama ?? 'DUDI Terhapus' }}
+                                    </h6>
+                                    @if($penempatan->dudi?->alamat && trim($penempatan->dudi->alamat) !== '-')
+                                        <small class="text-muted d-block text-truncate mt-0.5" style="font-size: 11.5px;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="me-0.5 align-text-top text-muted">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                            </svg>
+                                            {{ $penempatan->dudi->alamat }}
+                                        </small>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Tanggal Pelaksanaan -->
-                        <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background-color: var(--bg-canvas); border: 1px solid var(--border-color);">
-                            <div class="p-2 rounded bg-indigo-light text-indigo d-flex align-items-center justify-content-center flex-shrink-0" style="width: 42px; height: 42px;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        <!-- 2-Column Mentors Grid (Guru & Pembimbing DUDI) -->
+                        <div class="row g-2 mb-3">
+                            <!-- Guru Pembimbing -->
+                            <div class="col-sm-6">
+                                <div class="p-2.5 rounded-3 h-100" style="background-color: var(--bg-canvas); border: 1px solid var(--border-color);">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <span class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 26px; height: 26px; background-color: rgba(16, 185, 129, 0.12); color: #059669;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+                                            </svg>
+                                        </span>
+                                        <span class="text-muted fw-bold text-uppercase" style="font-size: 10px; letter-spacing: 0.5px;">Guru Pembimbing</span>
+                                    </div>
+                                    <div class="fw-bold text-dark font-heading ps-0.5 text-truncate" style="font-size: 13px; line-height: 1.3;" title="{{ $penempatan->guru?->nama }}">
+                                        {{ $penempatan->guru?->nama ?? 'Guru Terhapus' }}
+                                    </div>
+                                    <div class="text-muted small ps-0.5 mt-0.5" style="font-size: 11px;">Pembimbing Sekolah</div>
+                                </div>
+                            </div>
+
+                            <!-- Pembimbing Industri -->
+                            <div class="col-sm-6">
+                                <div class="p-2.5 rounded-3 h-100" style="background-color: var(--bg-canvas); border: 1px solid var(--border-color);">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <span class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 26px; height: 26px; background-color: rgba(245, 158, 11, 0.12); color: #d97706;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                            </svg>
+                                        </span>
+                                        <span class="text-muted fw-bold text-uppercase" style="font-size: 10px; letter-spacing: 0.5px;">Pembimbing DUDI</span>
+                                    </div>
+                                    <div class="fw-bold text-dark font-heading ps-0.5 text-truncate" style="font-size: 13px; line-height: 1.3;">
+                                        @if($pembimbingIndustriNama)
+                                            {{ $pembimbingIndustriNama }}
+                                        @else
+                                            <span class="text-muted fw-normal fst-italic" style="font-size: 11.5px;">Belum ditentukan</span>
+                                        @endif
+                                    </div>
+                                    <div class="text-muted small ps-0.5 mt-0.5" style="font-size: 11px;">Instruktur Industri</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Periode PKL Footer Capsule -->
+                        <div class="p-2.5 px-3 rounded-3 d-flex align-items-center justify-content-between gap-2" style="background-color: var(--bg-canvas); border: 1px solid var(--border-color);">
+                            <div class="d-flex align-items-center gap-2.5 min-w-0">
+                                <span class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 28px; height: 28px; background-color: rgba(99, 102, 241, 0.12); color: #4f46e5;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                </span>
+                                <div class="min-w-0">
+                                    <span class="text-muted fw-bold text-uppercase d-block" style="font-size: 10px; letter-spacing: 0.4px;">Periode PKL</span>
+                                    <span class="fw-semibold text-dark font-heading text-truncate d-block" style="font-size: 12.5px;">
+                                        {{ \Carbon\Carbon::parse($penempatan->tanggal_mulai)->locale('id')->translatedFormat('d F Y') }} &ndash; {{ \Carbon\Carbon::parse($penempatan->tanggal_selesai)->locale('id')->translatedFormat('d F Y') }}
+                                    </span>
+                                </div>
+                            </div>
+                            @if($penempatan->shift_harian || $penempatan->tipe_shift)
+                                @php
+                                    $curShift = $penempatan->shift_harian ?? $penempatan->tipe_shift;
+                                    $shiftLabel = match($curShift) {
+                                        'pagi' => 'Shift Pagi',
+                                        'siang' => 'Shift Siang',
+                                        'sore' => 'Shift Sore',
+                                        default => ucfirst($curShift)
+                                    };
+                                    $shiftStyle = match($curShift) {
+                                        'pagi' => 'background-color: #ecfdf5 !important; color: #047857 !important;',
+                                        'siang' => 'background-color: #fef3c7 !important; color: #b45309 !important;',
+                                        'sore' => 'background-color: #ffedd5 !important; color: #9a3412 !important;',
+                                        default => 'background-color: #f3e8ff !important; color: #7e22ce !important;'
+                                    };
+                                @endphp
+                                <span class="badge rounded-pill fw-semibold px-2 py-1 flex-shrink-0" style="font-size: 10.5px; border: none; {{ $shiftStyle }}">
+                                    {{ $shiftLabel }}
+                                </span>
+                            @endif
+                        </div>
+                    @else
+                        <div class="empty-state my-auto">
+                            <div class="empty-state-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
-                            <div>
-                                <span class="text-muted d-block small mb-1 text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Periode PKL</span>
-                                <span class="fw-semibold text-dark font-heading" style="font-size: 14px; line-height: 1.4;">
-                                    {{ \Carbon\Carbon::parse($penempatan->tanggal_mulai)->translatedFormat('d F Y') }} s/d {{ \Carbon\Carbon::parse($penempatan->tanggal_selesai)->translatedFormat('d F Y') }}
-                                </span>
-                            </div>
+                            <h6 class="empty-state-title">Belum Ada Penempatan</h6>
+                            <p class="empty-state-text">Anda belum di-plotting ke mitra DUDI manapun. Hubungi Tim Hubungan Industri untuk informasi lebih lanjut.</p>
                         </div>
-                    </div>
-                @else
-                    <div class="empty-state my-auto">
-                        <div class="empty-state-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                            </svg>
-                        </div>
-                        <h6 class="empty-state-title">Belum Ada Penempatan</h6>
-                        <p class="empty-state-text">Anda belum di-plotting ke mitra DUDI manapun. Hubungi Tim Hubungan Industri untuk informasi lebih lanjut.</p>
-                    </div>
-                @endif
+                    @endif
+                </div>
             </div>
         </div>
 
