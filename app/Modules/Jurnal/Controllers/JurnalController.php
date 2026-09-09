@@ -43,9 +43,21 @@ class JurnalController extends Controller
         $journals = $this->service->getTeacherReviews($guruId, $filters);
         $journals->withQueryString();
 
+        try {
+            $statusCounts = $this->service->getStatusCounts($guruId, $filters);
+        } catch (\Throwable $e) {
+            $statusCounts = [
+                'all' => $journals->total(),
+                'pending' => 0,
+                'disetujui' => 0,
+                'revisi' => 0,
+                'ditolak' => 0,
+            ];
+        }
+
         $kelasList = Kelas::orderBy('nama')->get();
 
-        return view('jurnal::index', compact('journals', 'filters', 'kelasList'));
+        return view('jurnal::index', compact('journals', 'filters', 'kelasList', 'statusCounts'));
     }
 
     /**

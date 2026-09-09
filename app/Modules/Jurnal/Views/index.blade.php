@@ -4,6 +4,163 @@
 @section('page_title', 'Verifikasi Jurnal Bimbingan')
 
 @section('content')
+<style>
+    /* Modern Status Filter Chips */
+    .status-filter-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.35rem 0.8rem;
+        border-radius: 9999px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        text-decoration: none;
+        color: var(--text-secondary, #64748b);
+        background-color: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-color, #e2e8f0);
+        transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+    }
+    .status-filter-chip:hover {
+        background-color: var(--bg-canvas, #f8fafc);
+        border-color: #cbd5e1;
+        color: var(--text-primary, #0f172a);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(15, 23, 42, 0.06);
+    }
+    .status-filter-chip:active {
+        transform: translateY(0);
+    }
+    .status-filter-chip .chip-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+    .status-filter-chip .chip-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 19px;
+        height: 19px;
+        padding: 0 5px;
+        border-radius: 9999px;
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1;
+        background-color: #f1f5f9;
+        color: #475569;
+        transition: all 0.18s ease;
+    }
+
+    /* Active States */
+    .status-filter-chip.active {
+        font-weight: 600;
+        box-shadow: 0 2px 5px rgba(15, 23, 42, 0.08);
+    }
+    
+    /* Active: Semua */
+    .status-filter-chip.chip-all.active {
+        background-color: var(--accent-primary, #4f46e5) !important;
+        border-color: var(--accent-primary, #4f46e5) !important;
+        color: #ffffff !important;
+    }
+    .status-filter-chip.chip-all.active .chip-badge {
+        background-color: rgba(255, 255, 255, 0.25) !important;
+        color: #ffffff !important;
+    }
+
+    /* Active: Menunggu */
+    .status-filter-chip.chip-pending.active {
+        background-color: #fef3c7 !important;
+        border-color: #f59e0b !important;
+        color: #92400e !important;
+    }
+    .status-filter-chip.chip-pending.active .chip-badge {
+        background-color: #f59e0b !important;
+        color: #ffffff !important;
+    }
+    .status-filter-chip.chip-pending:not(.active) .chip-badge {
+        background-color: rgba(245, 158, 11, 0.12);
+        color: #b45309;
+    }
+
+    /* Active: Disetujui */
+    .status-filter-chip.chip-disetujui.active {
+        background-color: #d1fae5 !important;
+        border-color: #10b981 !important;
+        color: #065f46 !important;
+    }
+    .status-filter-chip.chip-disetujui.active .chip-badge {
+        background-color: #10b981 !important;
+        color: #ffffff !important;
+    }
+    .status-filter-chip.chip-disetujui:not(.active) .chip-badge {
+        background-color: rgba(16, 185, 129, 0.12);
+        color: #047857;
+    }
+
+    /* Active: Revisi */
+    .status-filter-chip.chip-revisi.active {
+        background-color: #ffedd5 !important;
+        border-color: #f97316 !important;
+        color: #9a3412 !important;
+    }
+    .status-filter-chip.chip-revisi.active .chip-badge {
+        background-color: #f97316 !important;
+        color: #ffffff !important;
+    }
+    .status-filter-chip.chip-revisi:not(.active) .chip-badge {
+        background-color: rgba(249, 115, 22, 0.12);
+        color: #c2410c;
+    }
+
+    /* Active: Ditolak */
+    .status-filter-chip.chip-ditolak.active {
+        background-color: #fee2e2 !important;
+        border-color: #ef4444 !important;
+        color: #991b1b !important;
+    }
+    .status-filter-chip.chip-ditolak.active .chip-badge {
+        background-color: #ef4444 !important;
+        color: #ffffff !important;
+    }
+    .status-filter-chip.chip-ditolak:not(.active) .chip-badge {
+        background-color: rgba(239, 68, 68, 0.12);
+        color: #b91c1c;
+    }
+
+    /* Dark Mode */
+    [data-bs-theme="dark"] .status-filter-chip {
+        background-color: var(--bg-card);
+        border-color: var(--border-color);
+        color: #cbd5e1;
+    }
+    [data-bs-theme="dark"] .status-filter-chip:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: #475569;
+        color: #f8fafc;
+    }
+    [data-bs-theme="dark"] .status-filter-chip.chip-pending.active {
+        background-color: rgba(245, 158, 11, 0.25) !important;
+        color: #fde68a !important;
+    }
+    [data-bs-theme="dark"] .status-filter-chip.chip-disetujui.active {
+        background-color: rgba(16, 185, 129, 0.25) !important;
+        color: #a7f3d0 !important;
+    }
+    [data-bs-theme="dark"] .status-filter-chip.chip-revisi.active {
+        background-color: rgba(249, 115, 22, 0.25) !important;
+        color: #fed7aa !important;
+    }
+    [data-bs-theme="dark"] .status-filter-chip.chip-ditolak.active {
+        background-color: rgba(239, 68, 68, 0.25) !important;
+        color: #fecaca !important;
+    }
+</style>
+
 <div class="container-fluid p-0">
     <!-- Action Header -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
@@ -12,28 +169,79 @@
 
     <!-- Filter & Search Card -->
     <div class="card-premium mb-4">
-        <!-- Quick Status Pills (Wrap naturally so none are cut off on mobile) -->
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
-            <div class="d-flex flex-wrap align-items-center gap-1.5">
-                <span class="small fw-bold text-muted font-heading me-1">Status:</span>
-                <a href="{{ route('jurnal.index', request()->except('status')) }}" class="btn btn-xs font-heading {{ !request('status') ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 10px;">
-                    Semua
+        <!-- Quick Status Filter (Neat, Intuitive, with Icons & Real-Time Counters) -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3 pb-3 border-bottom" style="border-bottom-color: var(--border-color) !important;">
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <span class="small fw-bold text-muted font-heading d-inline-flex align-items-center gap-1 me-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                    </svg>
+                    Status:
+                </span>
+
+                @php
+                    $curStatus = request('status');
+                    $counts = $statusCounts ?? [
+                        'all' => $journals->total(),
+                        'pending' => 0,
+                        'disetujui' => 0,
+                        'revisi' => 0,
+                        'ditolak' => 0
+                    ];
+                @endphp
+
+                <!-- Semua -->
+                <a href="{{ route('jurnal.index', request()->except('status')) }}" class="status-filter-chip chip-all {{ !$curStatus ? 'active' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                    <span>Semua</span>
+                    <span class="chip-badge">{{ $counts['all'] ?? $journals->total() }}</span>
                 </a>
-                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'pending'])) }}" class="btn btn-xs font-heading {{ request('status') === 'pending' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 10px;">
-                    Menunggu (Pending)
+
+                <!-- Menunggu (Pending) -->
+                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'pending'])) }}" class="status-filter-chip chip-pending {{ $curStatus === 'pending' ? 'active' : '' }}" title="Jurnal menunggu verifikasi guru">
+                    <span class="chip-dot" style="background-color: #f59e0b;"></span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>Menunggu</span>
+                    <span class="chip-badge">{{ $counts['pending'] ?? 0 }}</span>
                 </a>
-                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'disetujui'])) }}" class="btn btn-xs font-heading {{ request('status') === 'disetujui' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 10px;">
-                    Disetujui
+
+                <!-- Disetujui -->
+                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'disetujui'])) }}" class="status-filter-chip chip-disetujui {{ $curStatus === 'disetujui' ? 'active' : '' }}" title="Jurnal telah disetujui">
+                    <span class="chip-dot" style="background-color: #10b981;"></span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    <span>Disetujui</span>
+                    <span class="chip-badge">{{ $counts['disetujui'] ?? 0 }}</span>
                 </a>
-                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'revisi'])) }}" class="btn btn-xs font-heading {{ request('status') === 'revisi' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 10px;">
-                    Revisi
+
+                <!-- Revisi -->
+                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'revisi'])) }}" class="status-filter-chip chip-revisi {{ $curStatus === 'revisi' ? 'active' : '' }}" title="Jurnal memerlukan revisi dari murid">
+                    <span class="chip-dot" style="background-color: #f97316;"></span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    <span>Revisi</span>
+                    <span class="chip-badge">{{ $counts['revisi'] ?? 0 }}</span>
                 </a>
-                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'ditolak'])) }}" class="btn btn-xs font-heading {{ request('status') === 'ditolak' ? 'btn-primary' : 'btn-outline-secondary' }}" style="border-radius: 9999px; padding: 4px 10px;">
-                    Ditolak
+
+                <!-- Ditolak -->
+                <a href="{{ route('jurnal.index', array_merge(request()->query(), ['status' => 'ditolak'])) }}" class="status-filter-chip chip-ditolak {{ $curStatus === 'ditolak' ? 'active' : '' }}" title="Jurnal ditolak guru">
+                    <span class="chip-dot" style="background-color: #ef4444;"></span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    <span>Ditolak</span>
+                    <span class="chip-badge">{{ $counts['ditolak'] ?? 0 }}</span>
                 </a>
             </div>
-            <span class="badge bg-primary-light text-primary font-heading px-2.5 py-1" style="font-size: 11px;">
-                Total: {{ $journals->total() }} Jurnal
+
+            <span class="badge bg-primary-light text-primary font-heading px-2.5 py-1.5" style="font-size: 11.5px; border-radius: 6px;">
+                Ditampilkan: {{ $journals->total() }} Jurnal
             </span>
         </div>
 
@@ -173,8 +381,8 @@
                                         Disetujui
                                     </span>
                                 @elseif($j->status_verifikasi === 'revisi')
-                                    <span class="status-badge bg-warning-light text-warning">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                    <span class="status-badge" style="background-color: rgba(249, 115, 22, 0.1) !important; color: #c2410c !important;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                         Revisi
                                     </span>
                                 @elseif($j->status_verifikasi === 'ditolak')
@@ -183,9 +391,9 @@
                                         Ditolak
                                     </span>
                                 @else
-                                    <span class="status-badge bg-secondary-light text-secondary">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                        Pending
+                                    <span class="status-badge" style="background-color: rgba(245, 158, 11, 0.12) !important; color: #b45309 !important;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        Menunggu
                                     </span>
                                 @endif
                             </td>
@@ -272,8 +480,8 @@
                                 Disetujui
                             </span>
                         @elseif($j->status_verifikasi === 'revisi')
-                            <span class="status-badge bg-warning-light text-warning" style="font-size: 11px;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                            <span class="status-badge" style="background-color: rgba(249, 115, 22, 0.1) !important; color: #c2410c !important; font-size: 11px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                 Revisi
                             </span>
                         @elseif($j->status_verifikasi === 'ditolak')
@@ -282,9 +490,9 @@
                                 Ditolak
                             </span>
                         @else
-                            <span class="status-badge bg-secondary-light text-secondary" style="font-size: 11px;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                Pending
+                            <span class="status-badge" style="background-color: rgba(245, 158, 11, 0.12) !important; color: #b45309 !important; font-size: 11px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Menunggu
                             </span>
                         @endif
                     </div>

@@ -6,6 +6,7 @@ interface JournalRepositoryInterface
 {
     public function getStudentJournals(int $placementId);
     public function getTeacherJournals(?int $guruId, $statusOrFilters = null, int $perPage = 15);
+    public function getStatusCounts(?int $guruId, $filters = []);
     public function findById(int $id);
     public function createJournal(array $data);
     public function updateJournal(int $id, array $data);
