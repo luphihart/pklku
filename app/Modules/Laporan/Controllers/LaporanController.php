@@ -400,58 +400,128 @@ class LaporanController extends Controller
         }
 
         $presensiList = \App\Modules\Presensi\Models\Presensi::where('penempatan_pkl_id', $placement->id)
-            ->select(['id', 'penempatan_pkl_id', 'tanggal', 'jam_masuk', 'jam_pulang', 'status_masuk', 'status_pulang'])
+            ->select(['id', 'penempatan_pkl_id', 'tanggal', 'jam_masuk', 'jam_pulang', 'status_masuk', 'status_pulang', 'keterangan'])
             ->get();
 
         $leaves = \App\Modules\Presensi\Models\IzinSakit::where('penempatan_pkl_id', $placement->id)
-            ->where('status_approval', 'disetujui')
+            ->whereIn('status_approval', ['disetujui', 'approved'])
             ->get();
 
-        $attendanceRecords = collect();
+        $presensiByDate = $presensiList->keyBy(function ($p) {
+            return \Carbon\Carbon::parse($p->tanggal)->toDateString();
+        });
 
-        foreach ($presensiList as $p) {
-            $status = $p->status_masuk === 'tepat_waktu' ? 'Hadir (Tepat Waktu)' : 'Terlambat';
-            $type = $p->status_masuk === 'tepat_waktu' ? 'hadir' : 'terlambat';
-            $keterangan = '-';
-
-            if ($p->status_masuk === 'libur_shift') {
-                $status = 'Libur Shift DUDI';
-                $type = 'libur_shift';
-                $keterangan = 'Libur Shift / Off Day';
-            } elseif ($p->status_masuk === 'alpha') {
-                $status = 'Alpha (Tidak Hadir)';
-                $type = 'alpha';
-                $keterangan = 'Tidak Hadir Tanpa Keterangan';
-            }
-
-            $attendanceRecords->push((object)[
-                'tanggal' => $p->tanggal,
-                'jam_masuk' => $p->jam_masuk,
-                'jam_pulang' => $p->jam_pulang,
-                'status' => $status,
-                'type' => $type,
-                'keterangan' => $keterangan,
-            ]);
-        }
-
+        $leavesByDate = [];
         foreach ($leaves as $l) {
             $start = \Carbon\Carbon::parse($l->tanggal_mulai);
             $end = \Carbon\Carbon::parse($l->tanggal_selesai);
             $curr = $start->copy();
             while ($curr->lessThanOrEqualTo($end)) {
-                $dateStr = $curr->toDateString();
-                if (!$attendanceRecords->firstWhere('tanggal', $dateStr)) {
+                $leavesByDate[$curr->toDateString()] = $l;
+                $curr->addDay();
+            }
+        }
+
+        // Tentukan batas tanggal awal
+        $startDate = $placement->tanggal_mulai ? \Carbon\Carbon::parse($placement->tanggal_mulai) : null;
+        $earliestPresensi = $presensiList->min('tanggal');
+        if ($earliestPresensi) {
+            $earliestDate = \Carbon\Carbon::parse($earliestPresensi);
+            if (!$startDate || $earliestDate->lessThan($startDate)) {
+                $startDate = $earliestDate;
+            }
+        }
+        if (!$startDate) {
+            $startDate = \Carbon\Carbon::today();
+        }
+
+        // Tentukan batas tanggal akhir
+        $today = \Carbon\Carbon::today();
+        $placementEnd = $placement->tanggal_selesai ? \Carbon\Carbon::parse($placement->tanggal_selesai) : null;
+
+        if ($placement->status === 'selesai' && $placementEnd) {
+            $endDate = $placementEnd->greaterThan($today) ? $today : $placementEnd;
+        } else {
+            $endDate = ($placementEnd && $placementEnd->lessThan($today)) ? $placementEnd : $today;
+        }
+
+        $latestPresensi = $presensiList->max('tanggal');
+        if ($latestPresensi) {
+            $latestDate = \Carbon\Carbon::parse($latestPresensi);
+            if ($latestDate->greaterThan($endDate)) {
+                $endDate = $latestDate;
+            }
+        }
+
+        if ($request->filled('tanggal_mulai')) {
+            $startDate = \Carbon\Carbon::parse($request->tanggal_mulai);
+        }
+        if ($request->filled('tanggal_selesai')) {
+            $endDate = \Carbon\Carbon::parse($request->tanggal_selesai);
+        }
+
+        $attendanceRecords = collect();
+        $currDate = $startDate->copy();
+
+        // Penempatan rolling shift atau penempatan dengan hari libur none
+        $isRollingShift = ($placement->tipe_shift === 'rolling' || $placement->hari_libur === 'none');
+
+        while ($currDate->lessThanOrEqualTo($endDate)) {
+            $dateStr = $currDate->toDateString();
+
+            if ($presensiByDate->has($dateStr)) {
+                $p = $presensiByDate->get($dateStr);
+                $status = $p->status_masuk === 'tepat_waktu' ? 'Hadir (Tepat Waktu)' : 'Terlambat';
+                $type = $p->status_masuk === 'tepat_waktu' ? 'hadir' : 'terlambat';
+                $keterangan = $p->keterangan ?: '-';
+
+                if ($p->status_masuk === 'libur_shift') {
+                    $status = 'Libur Shift DUDI';
+                    $type = 'libur_shift';
+                    $keterangan = $p->keterangan ?: 'Libur Shift / Off Day';
+                } elseif ($p->status_masuk === 'alpha') {
+                    $status = 'Alpha (Tidak Hadir)';
+                    $type = 'alpha';
+                    $keterangan = $p->keterangan ?: 'Tidak Hadir Tanpa Keterangan';
+                }
+
+                $attendanceRecords->push((object)[
+                    'tanggal' => $dateStr,
+                    'jam_masuk' => $p->jam_masuk,
+                    'jam_pulang' => $p->jam_pulang,
+                    'status' => $status,
+                    'type' => $type,
+                    'keterangan' => $keterangan,
+                ]);
+            } elseif (isset($leavesByDate[$dateStr])) {
+                $l = $leavesByDate[$dateStr];
+                $attendanceRecords->push((object)[
+                    'tanggal' => $dateStr,
+                    'jam_masuk' => null,
+                    'jam_pulang' => null,
+                    'status' => ucfirst($l->tipe) . ' (Disetujui)',
+                    'type' => $l->tipe,
+                    'keterangan' => ucfirst($l->tipe) . ': ' . ($l->alasan ?: '-'),
+                ]);
+            } else {
+                // Tidak ada presensi dan tidak ada izin/sakit
+                // Periksa hari libur nasional dan hari libur penempatan (kecuali rolling shift)
+                $isHoliday = \App\Modules\MasterData\Models\HariLibur::getHoliday($dateStr);
+                $isPlacementHoliday = !$isRollingShift && $placement->isPlacementHoliday($dateStr);
+
+                if (!$isHoliday && !$isPlacementHoliday) {
                     $attendanceRecords->push((object)[
                         'tanggal' => $dateStr,
                         'jam_masuk' => null,
                         'jam_pulang' => null,
-                        'status' => ucfirst($l->tipe) . ' (Disetujui)',
-                        'type' => $l->tipe,
-                        'keterangan' => ucfirst($l->tipe) . ': ' . $l->alasan,
+                        'status' => 'Alpha (Tidak Hadir)',
+                        'type' => 'alpha',
+                        'keterangan' => 'Tidak Hadir Tanpa Keterangan',
                     ]);
                 }
-                $curr->addDay();
             }
+
+            $currDate->addDay();
         }
 
         $presensis = $attendanceRecords->sortBy('tanggal')->values();

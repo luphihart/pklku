@@ -106,6 +106,14 @@
             color: #721c24;
             font-weight: bold;
         }
+        .badge-libur-shift {
+            color: #0284c7;
+            font-weight: bold;
+        }
+        .badge-alpha {
+            color: #dc3545;
+            font-weight: bold;
+        }
         .summary-box {
             width: 100%;
             border-collapse: collapse;
@@ -199,6 +207,10 @@
                             <span class="badge-izin">Izin (Disetujui)</span>
                         @elseif($p->type === 'sakit')
                             <span class="badge-sakit">Sakit (Disetujui)</span>
+                        @elseif($p->type === 'libur_shift')
+                            <span class="badge-libur-shift">Libur Shift DUDI</span>
+                        @elseif($p->type === 'alpha')
+                            <span class="badge-alpha">Alpha (Tidak Hadir)</span>
                         @else
                             <span>{{ $p->status }}</span>
                         @endif
@@ -216,16 +228,20 @@
     <!-- Ringkasan Rekapitulasi -->
     <table class="summary-box">
         <tr style="background-color: #f2f2f2; font-weight: bold;">
-            <td style="width: 25%;">Hadir Tepat Waktu</td>
-            <td style="width: 25%;">Terlambat</td>
-            <td style="width: 25%;">Izin Disetujui</td>
-            <td style="width: 25%;">Sakit Disetujui</td>
+            <td style="width: 17%;">Hadir Tepat Waktu</td>
+            <td style="width: 16%;">Terlambat</td>
+            <td style="width: 16%;">Izin Disetujui</td>
+            <td style="width: 16%;">Sakit Disetujui</td>
+            <td style="width: 17%;">Libur Shift DUDI</td>
+            <td style="width: 18%;">Tanpa Keterangan (Alpa)</td>
         </tr>
         <tr>
             <td style="font-weight: bold; color: #155724;">{{ $summary['total_hadir'] ?? 0 }} Hari</td>
             <td style="font-weight: bold; color: #856404;">{{ $summary['total_terlambat'] ?? 0 }} Hari</td>
             <td style="font-weight: bold; color: #0c5460;">{{ $summary['total_izin'] ?? 0 }} Hari</td>
             <td style="font-weight: bold; color: #721c24;">{{ $summary['total_sakit'] ?? 0 }} Hari</td>
+            <td style="font-weight: bold; color: #0284c7;">{{ $summary['total_libur_shift'] ?? 0 }} Hari</td>
+            <td style="font-weight: bold; color: #dc3545;">{{ $summary['total_alpha'] ?? 0 }} Hari</td>
         </tr>
     </table>
 
