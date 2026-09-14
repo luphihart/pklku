@@ -159,6 +159,73 @@
         background-color: rgba(239, 68, 68, 0.25) !important;
         color: #fecaca !important;
     }
+
+    /* ===== Bulk Action Bar (Inline – Non-Floating) ===== */
+    #bulkActionBar {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 10px;
+        padding: 10px 14px;
+        animation: slideDownFade 0.22s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+        overflow: hidden;
+    }
+    [data-bs-theme="dark"] #bulkActionBar {
+        background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%);
+    }
+    @keyframes slideDownFade {
+        from { opacity: 0; transform: translateY(-8px); max-height: 0; }
+        to   { opacity: 1; transform: translateY(0);   max-height: 100px; }
+    }
+    .bulk-action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        border-radius: 7px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+        font-family: inherit;
+    }
+    .bulk-action-btn:hover {
+        filter: brightness(0.93);
+        transform: translateY(-1px);
+    }
+    .bulk-action-btn:active {
+        transform: translateY(0);
+    }
+    .bulk-action-btn.btn-approve  { background-color: #10b981; color: #fff; }
+    .bulk-action-btn.btn-revisi   { background-color: #f59e0b; color: #fff; }
+    .bulk-action-btn.btn-tolak    { background-color: #ef4444; color: #fff; }
+    .bulk-action-btn.btn-pending  { background-color: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+    [data-bs-theme="dark"] .bulk-action-btn.btn-pending { background-color: rgba(255,255,255,0.07); color: #94a3b8; border-color: rgba(255,255,255,0.12); }
+    .bulk-action-btn.btn-deselect { background-color: transparent; color: #94a3b8; padding: 5px 7px; border: 1px solid transparent; }
+    .bulk-action-btn.btn-deselect:hover { background-color: rgba(0,0,0,0.05); color: #64748b; }
+    .bulk-sel-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 24px;
+        height: 24px;
+        padding: 0 6px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        background-color: var(--accent-primary, #4f46e5);
+        color: #fff;
+        line-height: 1;
+    }
+    /* Mobile bulk bar */
+    #bulkActionBarMob {
+        border-radius: 10px;
+        border: 1.5px solid var(--border-color, #e2e8f0);
+        background-color: var(--bg-canvas, #f8fafc);
+        padding: 10px 12px;
+        animation: slideDownFade 0.22s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+    }
 </style>
 
 <div class="container-fluid p-0">
@@ -302,13 +369,62 @@
         </form>
     </div>
 
-    <!-- Desktop Table View (lg and up) -->
     <div class="card-premium p-0 overflow-hidden d-none d-md-block mb-4">
+        {{-- Card Header: Default state (title) + Bulk Action Bar state --}}
         <div class="p-3 border-bottom" style="border-bottom-color: var(--border-color) !important;">
-            <div class="d-flex align-items-center justify-content-between gap-2">
-                <h6 class="fw-bold m-0 text-dark">Verifikasi Jurnal Harian</h6>
+
+            {{-- Default Header (tampil ketika tidak ada yang dicentang) --}}
+            <div class="d-flex align-items-center justify-content-between gap-2" id="cardHeaderDefault">
+                <div class="d-flex align-items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-muted">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <h6 class="fw-bold m-0 text-dark dark-text-light font-heading">Verifikasi Jurnal Harian</h6>
+                </div>
+                @if(auth()->user()->role === 'guru' || auth()->user()->role === 'admin')
+                <span class="text-muted small font-heading" style="font-size: 12px;">Centang baris untuk verifikasi massal</span>
+                @endif
             </div>
+
+            {{-- Bulk Action Bar (tampil ketika ≥1 jurnal dicentang) --}}
+            @if(auth()->user()->role === 'guru' || auth()->user()->role === 'admin')
+            <div id="bulkActionBar" class="d-none">
+                <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                    {{-- Kiri: Jumlah terpilih --}}
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="bulk-sel-badge" id="bulkSelectedCount">0</span>
+                        <span class="fw-semibold font-heading text-dark dark-text-light" style="font-size: 13px;">Jurnal dipilih</span>
+                        <span class="text-muted" style="font-size: 12px;">— Pilih aksi verifikasi:</span>
+                    </div>
+
+                    {{-- Kanan: Tombol aksi --}}
+                    <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                        <button type="button" class="bulk-action-btn btn-approve font-heading" onclick="openBulkVerifyModal('disetujui')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            Setujui
+                        </button>
+                        <button type="button" class="bulk-action-btn btn-revisi font-heading" onclick="openBulkVerifyModal('revisi')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                            Revisi
+                        </button>
+                        <button type="button" class="bulk-action-btn btn-tolak font-heading" onclick="openBulkVerifyModal('ditolak')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                            Tolak
+                        </button>
+                        <button type="button" class="bulk-action-btn btn-pending font-heading" onclick="openBulkVerifyModal('pending')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                            Pending
+                        </button>
+                        <span class="mx-1" style="width:1px; height:20px; background: var(--border-color); display:inline-block; vertical-align:middle;"></span>
+                        <button type="button" class="bulk-action-btn btn-deselect" onclick="deselectAllJournals()" title="Batalkan pilihan">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            @endif
         </div>
+
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0" style="min-width: 1000px; color: var(--text-primary); font-size: 13px;">
                 <thead class="table-light">
@@ -471,17 +587,53 @@
         </div>
     </div>
 
-    <!-- Mobile Card Feed View (Visible on smartphone / tablet < lg) -->
+    <!-- Mobile Card Feed View (Visible on smartphone / tablet < md) -->
     <div class="d-md-none mb-4">
         @if((auth()->user()->role === 'guru' || auth()->user()->role === 'admin') && $journals->count() > 0)
-            <div class="d-flex align-items-center justify-content-between p-2.5 mb-2.5 rounded-3 bg-light border" style="background-color: var(--bg-card) !important; border-color: var(--border-color) !important;">
-                <div class="form-check m-0 d-flex align-items-center gap-2">
-                    <input type="checkbox" class="form-check-input m-0" id="selectAllJournalsMob" style="cursor: pointer; width: 1.15em; height: 1.15em;">
-                    <label class="form-check-label small fw-semibold font-heading text-dark" for="selectAllJournalsMob" style="cursor: pointer; font-size: 12px;">
-                        Pilih Semua di Halaman Ini
-                    </label>
+            {{-- Mobile Control Bar --}}
+            <div class="mb-3">
+                {{-- Default state: Pilih Semua --}}
+                <div class="d-flex align-items-center justify-content-between px-3 py-2 rounded-3 border" id="mobControlDefault" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                    <div class="form-check m-0 d-flex align-items-center gap-2">
+                        <input type="checkbox" class="form-check-input m-0" id="selectAllJournalsMob" style="cursor: pointer; width: 1.1em; height: 1.1em;">
+                        <label class="form-check-label fw-semibold font-heading text-dark" for="selectAllJournalsMob" style="cursor: pointer; font-size: 13px;">Pilih Semua</label>
+                    </div>
+                    <span class="text-muted font-heading" id="selectedCountMobText" style="font-size: 12px;">0 dipilih</span>
                 </div>
-                <span class="text-muted small font-heading" id="selectedCountMobText" style="font-size: 11px;">0 dipilih</span>
+
+                {{-- Bulk action state: muncul saat ada yang dicentang --}}
+                <div id="bulkActionBarMob" class="d-none mt-2">
+                    {{-- Baris 1: Jumlah & Batal --}}
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="bulk-sel-badge" id="bulkSelectedCountMob">0</span>
+                            <span class="fw-semibold font-heading text-dark" style="font-size: 13px;">jurnal dipilih</span>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-light border text-muted font-heading d-flex align-items-center gap-1 py-1" onclick="deselectAllJournals()" style="font-size: 12px; border-color: var(--border-color) !important;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                            Batalkan
+                        </button>
+                    </div>
+                    {{-- Baris 2: Tombol Aksi --}}
+                    <div class="d-grid gap-2" style="grid-template-columns: 1fr 1fr; display: grid;">
+                        <button type="button" class="bulk-action-btn btn-approve font-heading justify-content-center" onclick="openBulkVerifyModal('disetujui')" style="border-radius: 8px; padding: 8px 12px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            Setujui
+                        </button>
+                        <button type="button" class="bulk-action-btn btn-revisi font-heading justify-content-center" onclick="openBulkVerifyModal('revisi')" style="border-radius: 8px; padding: 8px 12px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                            Revisi
+                        </button>
+                        <button type="button" class="bulk-action-btn btn-tolak font-heading justify-content-center" onclick="openBulkVerifyModal('ditolak')" style="border-radius: 8px; padding: 8px 12px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                            Tolak
+                        </button>
+                        <button type="button" class="bulk-action-btn btn-pending font-heading justify-content-center" onclick="openBulkVerifyModal('pending')" style="border-radius: 8px; padding: 8px 12px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                            Pending
+                        </button>
+                    </div>
+                </div>
             </div>
         @endif
 
@@ -731,60 +883,7 @@
     @endif
 
     @if(auth()->user()->role === 'guru' || auth()->user()->role === 'admin')
-        <!-- Floating Bulk Action Toolbar (Muncul ketika ada jurnal yang dicentang) -->
-        <div id="bulkActionBar" class="position-fixed bottom-0 start-50 translate-middle-x mb-4 p-2.5 rounded-4 shadow-lg border d-none" style="z-index: 1040; background-color: var(--bg-card); border-color: var(--border-color) !important; min-width: 320px; max-width: 95vw; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.15) !important;">
-            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2.5">
-                <!-- Info Terpilih -->
-                <div class="d-flex align-items-center gap-2 ps-2">
-                    <span class="badge bg-primary text-white font-heading fw-bold px-2.5 py-1.5" id="bulkSelectedCount" style="font-size: 12px; border-radius: 6px;">0</span>
-                    <span class="fw-semibold text-dark font-heading" style="font-size: 13px;">Jurnal Dipilih</span>
-                </div>
-
-                <!-- Tombol Aksi Massal -->
-                <div class="d-flex flex-wrap align-items-center gap-1.5">
-                    <!-- 1. Setujui Sekaligus -->
-                    <button type="button" class="btn btn-sm btn-success font-heading fw-semibold d-inline-flex align-items-center gap-1 px-2.5 py-1.5" onclick="openBulkVerifyModal('disetujui')" style="font-size: 12px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                        </svg>
-                        <span>Setujui</span>
-                    </button>
-
-                    <!-- 2. Minta Revisi -->
-                    <button type="button" class="btn btn-sm btn-warning font-heading fw-semibold d-inline-flex align-items-center gap-1 px-2.5 py-1.5 text-white" onclick="openBulkVerifyModal('revisi')" style="background-color: #f59e0b; border-color: #f59e0b; font-size: 12px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                        </svg>
-                        <span>Revisi</span>
-                    </button>
-
-                    <!-- 3. Tolak -->
-                    <button type="button" class="btn btn-sm btn-danger font-heading fw-semibold d-inline-flex align-items-center gap-1 px-2.5 py-1.5" onclick="openBulkVerifyModal('ditolak')" style="font-size: 12px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                        <span>Tolak</span>
-                    </button>
-
-                    <!-- 4. Kembalikan ke Menunggu -->
-                    <button type="button" class="btn btn-sm btn-outline-secondary font-heading fw-semibold d-inline-flex align-items-center gap-1 px-2.5 py-1.5" onclick="openBulkVerifyModal('pending')" style="font-size: 12px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
-                        </svg>
-                        <span>Menunggu</span>
-                    </button>
-
-                    <!-- Batal / Reset Pilihan -->
-                    <button type="button" class="btn btn-sm btn-light border text-muted px-2 py-1.5 ms-1" onclick="deselectAllJournals()" title="Batal Pilih Semua">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal Verifikasi Massal Terpadu -->
+        {{-- Modal Verifikasi Massal Terpadu (ditaruh di luar card agar tidak kena overflow/backdrop trap) --}}
         <div class="modal fade text-start" id="bulkVerifyModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-md modal-dialog-centered">
                 <div class="modal-content" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 12px;">
@@ -796,7 +895,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <h5 class="modal-title font-heading fw-bold m-0 text-dark" id="bulkModalTitle" style="font-size: 15px;">Verifikasi Sekaligus</h5>
+                                <h5 class="modal-title font-heading fw-bold m-0 text-dark dark-text-light" id="bulkModalTitle" style="font-size: 15px;">Verifikasi Sekaligus</h5>
                                 <small class="text-muted d-block" id="bulkModalSubtitle" style="font-size: 12px;">Penerapan keputusan pada jurnal terpilih</small>
                             </div>
                         </div>
@@ -809,33 +908,33 @@
                         <div id="bulkJournalIdsContainer"></div>
 
                         <div class="modal-body p-4">
-                            <!-- Info Box -->
-                            <div class="p-3 rounded border mb-3" id="bulkInfoBox" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;">
+                            {{-- Info Box --}}
+                            <div class="p-3 rounded-3 border mb-3" id="bulkInfoBox" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;">
                                 <div class="d-flex align-items-center gap-2">
-                                    <span class="badge bg-primary text-white font-heading fw-bold px-2 py-1" id="bulkModalItemCount" style="font-size: 12px;">0</span>
-                                    <span class="fw-semibold text-dark font-heading" id="bulkModalActionNotice" style="font-size: 13px;">
+                                    <span class="bulk-sel-badge" id="bulkModalItemCount" style="min-width:28px;">0</span>
+                                    <span class="fw-semibold text-dark dark-text-light font-heading" id="bulkModalActionNotice" style="font-size: 13px;">
                                         Jurnal kegiatan akan diproses.
                                     </span>
                                 </div>
-                                <div class="text-muted small mt-1" id="bulkModalDetailedNotice" style="font-size: 11.5px;">
+                                <div class="text-muted mt-1.5" id="bulkModalDetailedNotice" style="font-size: 12px; line-height: 1.5;">
                                     Tindakan ini akan memperbarui status seluruh jurnal terpilih secara bersamaan.
                                 </div>
                             </div>
 
-                            <!-- Catatan Field -->
+                            {{-- Catatan Field --}}
                             <div class="mb-2" id="bulkCatatanGroup">
                                 <label for="bulkCatatanVerifikasi" class="form-label small fw-semibold d-flex justify-content-between align-items-center mb-1" id="bulkCatatanLabel">
                                     <span class="text-secondary">Catatan / Komentar Guru</span>
-                                    <span class="badge bg-secondary-light text-secondary fw-normal" id="bulkCatatanBadge" style="font-size: 10.5px;">Opsional</span>
+                                    <span class="badge bg-secondary-light text-secondary fw-normal" id="bulkCatatanBadge" style="font-size: 11px;">Opsional</span>
                                 </label>
                                 <textarea name="catatan_verifikasi" id="bulkCatatanVerifikasi" class="form-control form-control-sm" rows="3" placeholder="Tulis instruksi revisi, apresiasi, atau alasan penolakan..."></textarea>
-                                <div class="form-text text-muted small mt-1" id="bulkCatatanHelp" style="font-size: 11px;">Catatan ini akan dikirimkan dan tampil pada riwayat jurnal seluruh siswa yang dipilih.</div>
+                                <div class="form-text text-muted mt-1" style="font-size: 11px;">Catatan ini akan tampil pada riwayat jurnal seluruh siswa yang dipilih.</div>
                             </div>
                         </div>
 
                         <div class="modal-footer border-top py-3 px-4" style="border-top-color: var(--border-color) !important;">
-                            <button type="button" class="btn btn-sm btn-secondary px-3" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-sm btn-success px-3.5 py-1.5 font-heading fw-semibold" id="bulkModalSubmitBtn" data-loading-text="Memproses...">
+                            <button type="button" class="btn btn-sm btn-light border font-heading px-3" data-bs-dismiss="modal" style="border-color: var(--border-color) !important;">Batal</button>
+                            <button type="submit" class="btn btn-sm btn-success px-4 py-1.5 font-heading fw-semibold" id="bulkModalSubmitBtn" data-loading-text="Memproses...">
                                 Simpan Keputusan
                             </button>
                         </div>
@@ -874,12 +973,22 @@
         }
     }
 
-    // Logika Seleksi dan Verifikasi Massal (Bulk Verification)
+    // =====================================================
+    // Bulk Verification — Inline Action Bar (Non-Floating)
+    // =====================================================
     document.addEventListener('DOMContentLoaded', function () {
-        const selectAllDesktop = document.getElementById('selectAllJournals');
-        const selectAllMobile = document.getElementById('selectAllJournalsMob');
-        const bulkActionBar = document.getElementById('bulkActionBar');
-        const bulkCountBadge = document.getElementById('bulkSelectedCount');
+        const selectAllDesktop  = document.getElementById('selectAllJournals');
+        const selectAllMobile   = document.getElementById('selectAllJournalsMob');
+
+        // Desktop inline bar elements
+        const bulkActionBar     = document.getElementById('bulkActionBar');
+        const cardHeaderDefault = document.getElementById('cardHeaderDefault');
+        const bulkCountBadge    = document.getElementById('bulkSelectedCount');
+
+        // Mobile bar elements
+        const bulkActionBarMob  = document.getElementById('bulkActionBarMob');
+        const mobControlDefault = document.getElementById('mobControlDefault');
+        const bulkCountBadgeMob = document.getElementById('bulkSelectedCountMob');
         const selectedCountMobText = document.getElementById('selectedCountMobText');
 
         function getCheckboxes() {
@@ -900,28 +1009,42 @@
             const checkedIds = getCheckedIds();
             const count = checkedIds.length;
 
-            if (bulkCountBadge) bulkCountBadge.textContent = count;
+            // Update counters
+            if (bulkCountBadge)    bulkCountBadge.textContent    = count;
+            if (bulkCountBadgeMob) bulkCountBadgeMob.textContent = count;
             if (selectedCountMobText) selectedCountMobText.textContent = count + ' dipilih';
 
-            if (count > 0) {
-                if (bulkActionBar) bulkActionBar.classList.remove('d-none');
-            } else {
-                if (bulkActionBar) bulkActionBar.classList.add('d-none');
+            // Desktop: toggle between default header and bulk bar
+            if (bulkActionBar && cardHeaderDefault) {
+                if (count > 0) {
+                    cardHeaderDefault.classList.add('d-none');
+                    bulkActionBar.classList.remove('d-none');
+                } else {
+                    bulkActionBar.classList.add('d-none');
+                    cardHeaderDefault.classList.remove('d-none');
+                }
             }
 
-            // Sync status select-all
-            const allBoxes = getCheckboxes();
+            // Mobile: toggle between default control and bulk bar
+            if (bulkActionBarMob && mobControlDefault) {
+                if (count > 0) {
+                    bulkActionBarMob.classList.remove('d-none');
+                } else {
+                    bulkActionBarMob.classList.add('d-none');
+                }
+            }
+
+            // Sync select-all state
+            const allBoxes   = getCheckboxes();
             const uniqueTotal = Array.from(new Set(allBoxes.map(c => c.value))).length;
             const isAll = uniqueTotal > 0 && count === uniqueTotal;
 
             if (selectAllDesktop) selectAllDesktop.checked = isAll;
-            if (selectAllMobile) selectAllMobile.checked = isAll;
+            if (selectAllMobile)  selectAllMobile.checked  = isAll;
         }
 
         function toggleSelectAll(checked) {
-            getCheckboxes().forEach(chk => {
-                chk.checked = checked;
-            });
+            getCheckboxes().forEach(chk => { chk.checked = checked; });
             updateSelectionUI();
         }
 
@@ -941,7 +1064,7 @@
             if (e.target && e.target.classList.contains('journal-item-checkbox')) {
                 const val = e.target.value;
                 const isChecked = e.target.checked;
-                // Sinkronkan checkbox dengan ID yang sama di desktop dan mobile
+                // Sinkronkan checkbox desktop & mobile yang memiliki value sama
                 document.querySelectorAll(`.journal-item-checkbox[value="${val}"]`).forEach(c => {
                     c.checked = isChecked;
                 });
@@ -964,98 +1087,120 @@
                 return;
             }
 
-            // Masukkan ID yang dicentang ke form modal
+            // Masukkan ID yang dicentang ke dalam form hidden inputs
             const container = document.getElementById('bulkJournalIdsContainer');
             container.innerHTML = '';
             checkedIds.forEach(id => {
                 const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'journal_ids[]';
+                input.type  = 'hidden';
+                input.name  = 'journal_ids[]';
                 input.value = id;
                 container.appendChild(input);
             });
 
-            document.getElementById('bulkStatusInput').value = status;
-            document.getElementById('bulkModalItemCount').textContent = checkedIds.length + ' Jurnal';
+            document.getElementById('bulkStatusInput').value       = status;
+            document.getElementById('bulkModalItemCount').textContent = checkedIds.length;
 
-            const modalTitle = document.getElementById('bulkModalTitle');
-            const modalSubtitle = document.getElementById('bulkModalSubtitle');
-            const iconWrapper = document.getElementById('bulkModalIconWrapper');
-            const actionNotice = document.getElementById('bulkModalActionNotice');
-            const detailedNotice = document.getElementById('bulkModalDetailedNotice');
-            const catatanGroup = document.getElementById('bulkCatatanGroup');
-            const catatanLabel = document.getElementById('bulkCatatanLabel');
-            const catatanBadge = document.getElementById('bulkCatatanBadge');
-            const catatanInput = document.getElementById('bulkCatatanVerifikasi');
-            const submitBtn = document.getElementById('bulkModalSubmitBtn');
+            const modalTitle      = document.getElementById('bulkModalTitle');
+            const modalSubtitle   = document.getElementById('bulkModalSubtitle');
+            const iconWrapper     = document.getElementById('bulkModalIconWrapper');
+            const actionNotice    = document.getElementById('bulkModalActionNotice');
+            const detailedNotice  = document.getElementById('bulkModalDetailedNotice');
+            const catatanGroup    = document.getElementById('bulkCatatanGroup');
+            const catatanLabel    = document.getElementById('bulkCatatanLabel');
+            const catatanBadge    = document.getElementById('bulkCatatanBadge');
+            const catatanInput    = document.getElementById('bulkCatatanVerifikasi');
+            const submitBtn       = document.getElementById('bulkModalSubmitBtn');
 
             catatanInput.value = '';
 
-            // Pengaturan dinamis berdasarkan 4 opsi aksi
-            if (status === 'disetujui') {
-                modalTitle.textContent = 'Setujui Jurnal Sekaligus';
-                modalSubtitle.textContent = 'Menyetujui semua jurnal yang telah dipilih';
-                iconWrapper.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
-                iconWrapper.style.color = '#10b981';
-                actionNotice.textContent = 'Seluruh jurnal yang dipilih akan disetujui.';
-                detailedNotice.textContent = 'Siswa akan melihat status jurnal mereka telah disetujui oleh Guru Pembimbing.';
-                catatanGroup.style.display = 'block';
-                catatanLabel.querySelector('span:first-child').textContent = 'Catatan / Apresiasi Guru';
-                catatanBadge.className = 'badge bg-secondary-light text-secondary fw-normal';
-                catatanBadge.textContent = 'Opsional';
-                catatanInput.placeholder = 'Tulis pesan apresiasi atau umpan balik positif (opsional)...';
-                catatanInput.required = false;
-                submitBtn.className = 'btn btn-sm btn-success px-3.5 py-1.5 font-heading fw-semibold';
-                submitBtn.style.backgroundColor = '';
-                submitBtn.style.borderColor = '';
-                submitBtn.textContent = 'Ya, Setujui Semua (' + checkedIds.length + ')';
-            } else if (status === 'revisi') {
-                modalTitle.textContent = 'Minta Revisi Jurnal Sekaligus';
-                modalSubtitle.textContent = 'Menginstruksikan perbaikan pada jurnal yang dipilih';
-                iconWrapper.style.backgroundColor = 'rgba(245, 158, 11, 0.1)';
-                iconWrapper.style.color = '#f59e0b';
-                actionNotice.textContent = 'Seluruh jurnal yang dipilih akan diminta untuk direvisi.';
-                detailedNotice.textContent = 'Siswa yang bersangkutan dapat mengubah dan mengirimkan ulang laporan kegiatan.';
-                catatanGroup.style.display = 'block';
-                catatanLabel.querySelector('span:first-child').textContent = 'Catatan / Instruksi Revisi';
-                catatanBadge.className = 'badge bg-warning-light text-warning fw-semibold';
-                catatanBadge.textContent = 'Wajib Diisi';
-                catatanInput.placeholder = 'Tuliskan poin-poin yang perlu diperbaiki oleh siswa...';
-                catatanInput.required = true;
-                submitBtn.className = 'btn btn-sm btn-warning text-white px-3.5 py-1.5 font-heading fw-semibold';
-                submitBtn.style.backgroundColor = '#f59e0b';
-                submitBtn.style.borderColor = '#f59e0b';
-                submitBtn.textContent = 'Minta Revisi (' + checkedIds.length + ')';
-            } else if (status === 'ditolak') {
-                modalTitle.textContent = 'Tolak Jurnal Sekaligus';
-                modalSubtitle.textContent = 'Menolak laporan jurnal yang dipilih';
-                iconWrapper.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
-                iconWrapper.style.color = '#ef4444';
-                actionNotice.textContent = 'Seluruh jurnal yang dipilih akan ditolak.';
-                detailedNotice.textContent = 'Siswa tidak dapat mengubah jurnal yang berstatus ditolak kecuali dibatalkan oleh guru.';
-                catatanGroup.style.display = 'block';
-                catatanLabel.querySelector('span:first-child').textContent = 'Alasan Penolakan';
-                catatanBadge.className = 'badge bg-danger-light text-danger fw-semibold';
-                catatanBadge.textContent = 'Wajib Diisi';
-                catatanInput.placeholder = 'Tuliskan alasan penolakan jurnal ini...';
-                catatanInput.required = true;
-                submitBtn.className = 'btn btn-sm btn-danger px-3.5 py-1.5 font-heading fw-semibold';
-                submitBtn.style.backgroundColor = '';
-                submitBtn.style.borderColor = '';
-                submitBtn.textContent = 'Tolak Jurnal (' + checkedIds.length + ')';
-            } else if (status === 'pending') {
-                modalTitle.textContent = 'Kembalikan ke Status Menunggu';
-                modalSubtitle.textContent = 'Reset status verifikasi jurnal menjadi Pending';
-                iconWrapper.style.backgroundColor = 'rgba(100, 116, 139, 0.1)';
-                iconWrapper.style.color = '#64748b';
-                actionNotice.textContent = 'Status verifikasi akan dikembalikan ke Menunggu (Pending).';
-                detailedNotice.textContent = 'Catatan verifikasi sebelumnya akan dihapus dan jurnal kembali berstatus belum diverifikasi.';
+            const cfg = {
+                disetujui: {
+                    title:   'Setujui Jurnal Sekaligus',
+                    sub:     'Menyetujui semua jurnal yang telah dipilih',
+                    iconBg:  'rgba(16, 185, 129, 0.12)',
+                    iconClr: '#10b981',
+                    notice:  'Seluruh jurnal yang dipilih akan disetujui.',
+                    detail:  'Siswa akan melihat status jurnal mereka telah disetujui oleh Guru Pembimbing.',
+                    labelTxt:'Catatan / Apresiasi Guru',
+                    badgeCls:'badge bg-secondary-light text-secondary fw-normal',
+                    badgeTxt:'Opsional',
+                    ph:      'Tulis pesan apresiasi atau umpan balik positif (opsional)...',
+                    req:     false,
+                    btnCls:  'btn btn-sm btn-success px-4 py-1.5 font-heading fw-semibold',
+                    btnTxt:  `Ya, Setujui Semua (${checkedIds.length})`,
+                },
+                revisi: {
+                    title:   'Minta Revisi Jurnal Sekaligus',
+                    sub:     'Menginstruksikan perbaikan pada jurnal yang dipilih',
+                    iconBg:  'rgba(245, 158, 11, 0.12)',
+                    iconClr: '#f59e0b',
+                    notice:  'Seluruh jurnal yang dipilih akan diminta untuk direvisi.',
+                    detail:  'Siswa yang bersangkutan dapat mengubah dan mengirimkan ulang laporan kegiatan.',
+                    labelTxt:'Catatan / Instruksi Revisi',
+                    badgeCls:'badge bg-warning-light text-warning fw-semibold',
+                    badgeTxt:'Wajib Diisi',
+                    ph:      'Tuliskan poin-poin yang perlu diperbaiki oleh siswa...',
+                    req:     true,
+                    btnCls:  'btn btn-sm btn-warning text-white px-4 py-1.5 font-heading fw-semibold',
+                    btnTxt:  `Minta Revisi (${checkedIds.length})`,
+                    btnStyle:'background-color:#f59e0b;border-color:#f59e0b;',
+                },
+                ditolak: {
+                    title:   'Tolak Jurnal Sekaligus',
+                    sub:     'Menolak laporan jurnal yang dipilih',
+                    iconBg:  'rgba(239, 68, 68, 0.12)',
+                    iconClr: '#ef4444',
+                    notice:  'Seluruh jurnal yang dipilih akan ditolak.',
+                    detail:  'Siswa tidak dapat mengubah jurnal berstatus ditolak kecuali dibatalkan oleh guru.',
+                    labelTxt:'Alasan Penolakan',
+                    badgeCls:'badge bg-danger-light text-danger fw-semibold',
+                    badgeTxt:'Wajib Diisi',
+                    ph:      'Tuliskan alasan penolakan jurnal ini...',
+                    req:     true,
+                    btnCls:  'btn btn-sm btn-danger px-4 py-1.5 font-heading fw-semibold',
+                    btnTxt:  `Tolak Jurnal (${checkedIds.length})`,
+                },
+                pending: {
+                    title:   'Kembalikan ke Status Menunggu',
+                    sub:     'Reset status verifikasi jurnal menjadi Pending',
+                    iconBg:  'rgba(100, 116, 139, 0.1)',
+                    iconClr: '#64748b',
+                    notice:  'Status verifikasi akan dikembalikan ke Menunggu (Pending).',
+                    detail:  'Catatan verifikasi sebelumnya akan dihapus dan jurnal kembali berstatus belum diverifikasi.',
+                    labelTxt:'',
+                    badgeCls:'',
+                    badgeTxt:'',
+                    ph:      '',
+                    req:     false,
+                    hideCatatan: true,
+                    btnCls:  'btn btn-sm btn-secondary px-4 py-1.5 font-heading fw-semibold',
+                    btnTxt:  `Kembalikan ke Pending (${checkedIds.length})`,
+                },
+            };
+
+            const c = cfg[status];
+            if (!c) return;
+
+            modalTitle.textContent              = c.title;
+            modalSubtitle.textContent           = c.sub;
+            iconWrapper.style.backgroundColor   = c.iconBg;
+            iconWrapper.style.color             = c.iconClr;
+            actionNotice.textContent            = c.notice;
+            detailedNotice.textContent          = c.detail;
+            submitBtn.className                 = c.btnCls;
+            submitBtn.style.cssText             = c.btnStyle || '';
+            submitBtn.textContent               = c.btnTxt;
+            catatanInput.required               = c.req;
+
+            if (c.hideCatatan) {
                 catatanGroup.style.display = 'none';
-                catatanInput.required = false;
-                submitBtn.className = 'btn btn-sm btn-secondary px-3.5 py-1.5 font-heading fw-semibold';
-                submitBtn.style.backgroundColor = '';
-                submitBtn.style.borderColor = '';
-                submitBtn.textContent = 'Kembalikan ke Pending (' + checkedIds.length + ')';
+            } else {
+                catatanGroup.style.display = 'block';
+                catatanLabel.querySelector('span:first-child').textContent = c.labelTxt;
+                catatanBadge.className    = c.badgeCls;
+                catatanBadge.textContent  = c.badgeTxt;
+                catatanInput.placeholder  = c.ph;
             }
 
             const modal = new bootstrap.Modal(document.getElementById('bulkVerifyModal'));
