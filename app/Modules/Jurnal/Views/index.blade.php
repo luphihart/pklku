@@ -166,15 +166,14 @@
         border: 1px solid var(--border-color, #e2e8f0);
         border-radius: 10px;
         padding: 10px 14px;
-        animation: slideDownFade 0.22s cubic-bezier(0.34, 1.2, 0.64, 1) both;
-        overflow: hidden;
+        animation: bulkBarFadeIn 0.2s ease both;
     }
     [data-bs-theme="dark"] #bulkActionBar {
         background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%);
     }
-    @keyframes slideDownFade {
-        from { opacity: 0; transform: translateY(-8px); max-height: 0; }
-        to   { opacity: 1; transform: translateY(0);   max-height: 100px; }
+    @keyframes bulkBarFadeIn {
+        from { opacity: 0; transform: translateY(-6px); }
+        to   { opacity: 1; transform: translateY(0); }
     }
     .bulk-action-btn {
         display: inline-flex;
@@ -218,13 +217,9 @@
         color: #fff;
         line-height: 1;
     }
-    /* Mobile bulk bar */
+    /* Mobile bulk bar — NO overflow/max-height clipping */
     #bulkActionBarMob {
-        border-radius: 10px;
-        border: 1.5px solid var(--border-color, #e2e8f0);
-        background-color: var(--bg-canvas, #f8fafc);
-        padding: 10px 12px;
-        animation: slideDownFade 0.22s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+        animation: bulkBarFadeIn 0.2s ease both;
     }
 </style>
 
