@@ -313,7 +313,12 @@
             <table class="table table-hover align-middle mb-0" style="min-width: 1000px; color: var(--text-primary); font-size: 13px;">
                 <thead class="table-light">
                     <tr class="font-heading" style="font-size: 13px; font-weight: 600;">
-                        <th class="ps-4" style="width: 180px; min-width: 165px;">Tanggal</th>
+                        @if(auth()->user()->role === 'guru' || auth()->user()->role === 'admin')
+                            <th class="ps-3 text-center" style="width: 44px;">
+                                <input type="checkbox" class="form-check-input" id="selectAllJournals" title="Pilih Semua di Halaman Ini" style="cursor: pointer; width: 1.15em; height: 1.15em;">
+                            </th>
+                        @endif
+                        <th class="{{ (auth()->user()->role === 'guru' || auth()->user()->role === 'admin') ? 'ps-2' : 'ps-4' }}" style="width: 175px; min-width: 160px;">Tanggal</th>
                         <th style="width: 190px;">Siswa & Kelas</th>
                         <th style="width: 180px;">DUDI Tempat PKL</th>
                         <th style="min-width: 270px;">Isi Laporan Aktivitas</th>
@@ -325,8 +330,15 @@
                 <tbody>
                     @forelse($journals as $j)
                         <tr>
-                            <td class="ps-4 fw-semibold text-nowrap" style="font-size: 13px;">
-                                {{ $j->tanggal ? \Carbon\Carbon::parse($j->tanggal)->locale('id')->translatedFormat('l, j F Y') : '-' }}
+                            @if(auth()->user()->role === 'guru' || auth()->user()->role === 'admin')
+                                <td class="ps-3 text-center">
+                                    <input type="checkbox" class="form-check-input journal-item-checkbox" value="{{ $j->id }}" id="chk_{{ $j->id }}" data-student="{{ $j->penempatanPkl?->murid?->nama }}" data-status="{{ $j->status_verifikasi }}" style="cursor: pointer; width: 1.15em; height: 1.15em;">
+                                </td>
+                            @endif
+                            <td class="{{ (auth()->user()->role === 'guru' || auth()->user()->role === 'admin') ? 'ps-2' : 'ps-4' }} fw-semibold text-nowrap" style="font-size: 13px;">
+                                <label for="chk_{{ $j->id }}" style="cursor: pointer; margin: 0; font-weight: inherit;">
+                                    {{ $j->tanggal ? \Carbon\Carbon::parse($j->tanggal)->locale('id')->translatedFormat('l, j F Y') : '-' }}
+                                </label>
                             </td>
                             <td>
                                 <div class="fw-bold text-dark dark-text-light font-heading" style="font-size: 13px; line-height: 1.3;">{{ $j->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus' }}</div>
@@ -441,7 +453,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-4">
+                            <td colspan="{{ (auth()->user()->role === 'guru' || auth()->user()->role === 'admin') ? '8' : '7' }}" class="text-center py-4">
                                 <div class="empty-state py-4">
                                     <div class="empty-state-icon">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -461,16 +473,35 @@
 
     <!-- Mobile Card Feed View (Visible on smartphone / tablet < lg) -->
     <div class="d-md-none mb-4">
+        @if((auth()->user()->role === 'guru' || auth()->user()->role === 'admin') && $journals->count() > 0)
+            <div class="d-flex align-items-center justify-content-between p-2.5 mb-2.5 rounded-3 bg-light border" style="background-color: var(--bg-card) !important; border-color: var(--border-color) !important;">
+                <div class="form-check m-0 d-flex align-items-center gap-2">
+                    <input type="checkbox" class="form-check-input m-0" id="selectAllJournalsMob" style="cursor: pointer; width: 1.15em; height: 1.15em;">
+                    <label class="form-check-label small fw-semibold font-heading text-dark" for="selectAllJournalsMob" style="cursor: pointer; font-size: 12px;">
+                        Pilih Semua di Halaman Ini
+                    </label>
+                </div>
+                <span class="text-muted small font-heading" id="selectedCountMobText" style="font-size: 11px;">0 dipilih</span>
+            </div>
+        @endif
+
         @forelse($journals as $j)
             <div class="card-premium mb-3 p-3 position-relative" style="background-color: var(--bg-card); border-left: 4px solid {{ $j->status_verifikasi === 'disetujui' ? '#10b981' : ($j->status_verifikasi === 'revisi' ? '#f59e0b' : ($j->status_verifikasi === 'ditolak' ? '#ef4444' : '#64748b')) }} !important;">
                 <!-- Header: Siswa & Status -->
                 <div class="d-flex justify-content-between align-items-start gap-2 mb-2 pb-2 border-bottom" style="border-bottom-color: var(--border-color) !important;">
-                    <div>
-                        <div class="fw-bold text-dark font-heading" style="font-size: 14px;">
-                            {{ $j->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus' }}
-                        </div>
-                        <div class="text-muted small" style="font-size: 12px; margin-top: 2px;">
-                            {{ $j->penempatanPkl?->murid?->kelas?->nama ?? '-' }}
+                    <div class="d-flex align-items-start gap-2">
+                        @if(auth()->user()->role === 'guru' || auth()->user()->role === 'admin')
+                            <div class="form-check m-0 pt-0.5">
+                                <input type="checkbox" class="form-check-input journal-item-checkbox" value="{{ $j->id }}" id="chk_mob_{{ $j->id }}" data-student="{{ $j->penempatanPkl?->murid?->nama }}" data-status="{{ $j->status_verifikasi }}" style="cursor: pointer; width: 1.15em; height: 1.15em;">
+                            </div>
+                        @endif
+                        <div>
+                            <label for="chk_mob_{{ $j->id }}" class="fw-bold text-dark font-heading m-0 d-block" style="font-size: 14px; cursor: pointer; line-height: 1.3;">
+                                {{ $j->penempatanPkl?->murid?->nama ?? 'Siswa Terhapus' }}
+                            </label>
+                            <div class="text-muted small" style="font-size: 12px; margin-top: 2px;">
+                                {{ $j->penempatanPkl?->murid?->kelas?->nama ?? '-' }}
+                            </div>
                         </div>
                     </div>
                     <div>
@@ -698,6 +729,121 @@
         {{ $journals->withQueryString()->links() }}
     </div>
     @endif
+
+    @if(auth()->user()->role === 'guru' || auth()->user()->role === 'admin')
+        <!-- Floating Bulk Action Toolbar (Muncul ketika ada jurnal yang dicentang) -->
+        <div id="bulkActionBar" class="position-fixed bottom-0 start-50 translate-middle-x mb-4 p-2.5 rounded-4 shadow-lg border d-none" style="z-index: 1040; background-color: var(--bg-card); border-color: var(--border-color) !important; min-width: 320px; max-width: 95vw; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.15) !important;">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2.5">
+                <!-- Info Terpilih -->
+                <div class="d-flex align-items-center gap-2 ps-2">
+                    <span class="badge bg-primary text-white font-heading fw-bold px-2.5 py-1.5" id="bulkSelectedCount" style="font-size: 12px; border-radius: 6px;">0</span>
+                    <span class="fw-semibold text-dark font-heading" style="font-size: 13px;">Jurnal Dipilih</span>
+                </div>
+
+                <!-- Tombol Aksi Massal -->
+                <div class="d-flex flex-wrap align-items-center gap-1.5">
+                    <!-- 1. Setujui Sekaligus -->
+                    <button type="button" class="btn btn-sm btn-success font-heading fw-semibold d-inline-flex align-items-center gap-1 px-2.5 py-1.5" onclick="openBulkVerifyModal('disetujui')" style="font-size: 12px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span>Setujui</span>
+                    </button>
+
+                    <!-- 2. Minta Revisi -->
+                    <button type="button" class="btn btn-sm btn-warning font-heading fw-semibold d-inline-flex align-items-center gap-1 px-2.5 py-1.5 text-white" onclick="openBulkVerifyModal('revisi')" style="background-color: #f59e0b; border-color: #f59e0b; font-size: 12px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                        <span>Revisi</span>
+                    </button>
+
+                    <!-- 3. Tolak -->
+                    <button type="button" class="btn btn-sm btn-danger font-heading fw-semibold d-inline-flex align-items-center gap-1 px-2.5 py-1.5" onclick="openBulkVerifyModal('ditolak')" style="font-size: 12px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        <span>Tolak</span>
+                    </button>
+
+                    <!-- 4. Kembalikan ke Menunggu -->
+                    <button type="button" class="btn btn-sm btn-outline-secondary font-heading fw-semibold d-inline-flex align-items-center gap-1 px-2.5 py-1.5" onclick="openBulkVerifyModal('pending')" style="font-size: 12px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                        </svg>
+                        <span>Menunggu</span>
+                    </button>
+
+                    <!-- Batal / Reset Pilihan -->
+                    <button type="button" class="btn btn-sm btn-light border text-muted px-2 py-1.5 ms-1" onclick="deselectAllJournals()" title="Batal Pilih Semua">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Verifikasi Massal Terpadu -->
+        <div class="modal fade text-start" id="bulkVerifyModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-md modal-dialog-centered">
+                <div class="modal-content" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 12px;">
+                    <div class="modal-header border-bottom py-3 px-4" style="border-bottom-color: var(--border-color) !important;">
+                        <div class="d-flex align-items-center gap-2">
+                            <div id="bulkModalIconWrapper" class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 34px; height: 34px; background-color: rgba(16, 185, 129, 0.1); color: #10b981;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h5 class="modal-title font-heading fw-bold m-0 text-dark" id="bulkModalTitle" style="font-size: 15px;">Verifikasi Sekaligus</h5>
+                                <small class="text-muted d-block" id="bulkModalSubtitle" style="font-size: 12px;">Penerapan keputusan pada jurnal terpilih</small>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <form action="{{ route('jurnal.bulk_verify') }}" method="POST" id="bulkVerifyForm">
+                        @csrf
+                        <input type="hidden" name="status" id="bulkStatusInput" value="disetujui">
+                        <div id="bulkJournalIdsContainer"></div>
+
+                        <div class="modal-body p-4">
+                            <!-- Info Box -->
+                            <div class="p-3 rounded border mb-3" id="bulkInfoBox" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-primary text-white font-heading fw-bold px-2 py-1" id="bulkModalItemCount" style="font-size: 12px;">0</span>
+                                    <span class="fw-semibold text-dark font-heading" id="bulkModalActionNotice" style="font-size: 13px;">
+                                        Jurnal kegiatan akan diproses.
+                                    </span>
+                                </div>
+                                <div class="text-muted small mt-1" id="bulkModalDetailedNotice" style="font-size: 11.5px;">
+                                    Tindakan ini akan memperbarui status seluruh jurnal terpilih secara bersamaan.
+                                </div>
+                            </div>
+
+                            <!-- Catatan Field -->
+                            <div class="mb-2" id="bulkCatatanGroup">
+                                <label for="bulkCatatanVerifikasi" class="form-label small fw-semibold d-flex justify-content-between align-items-center mb-1" id="bulkCatatanLabel">
+                                    <span class="text-secondary">Catatan / Komentar Guru</span>
+                                    <span class="badge bg-secondary-light text-secondary fw-normal" id="bulkCatatanBadge" style="font-size: 10.5px;">Opsional</span>
+                                </label>
+                                <textarea name="catatan_verifikasi" id="bulkCatatanVerifikasi" class="form-control form-control-sm" rows="3" placeholder="Tulis instruksi revisi, apresiasi, atau alasan penolakan..."></textarea>
+                                <div class="form-text text-muted small mt-1" id="bulkCatatanHelp" style="font-size: 11px;">Catatan ini akan dikirimkan dan tampil pada riwayat jurnal seluruh siswa yang dipilih.</div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer border-top py-3 px-4" style="border-top-color: var(--border-color) !important;">
+                            <button type="button" class="btn btn-sm btn-secondary px-3" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-sm btn-success px-3.5 py-1.5 font-heading fw-semibold" id="bulkModalSubmitBtn" data-loading-text="Memproses...">
+                                Simpan Keputusan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
 @endsection
 
@@ -727,5 +873,194 @@
             }
         }
     }
+
+    // Logika Seleksi dan Verifikasi Massal (Bulk Verification)
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectAllDesktop = document.getElementById('selectAllJournals');
+        const selectAllMobile = document.getElementById('selectAllJournalsMob');
+        const bulkActionBar = document.getElementById('bulkActionBar');
+        const bulkCountBadge = document.getElementById('bulkSelectedCount');
+        const selectedCountMobText = document.getElementById('selectedCountMobText');
+
+        function getCheckboxes() {
+            return Array.from(document.querySelectorAll('.journal-item-checkbox'));
+        }
+
+        function getCheckedIds() {
+            const checked = [];
+            getCheckboxes().forEach(chk => {
+                if (chk.checked && !checked.includes(chk.value)) {
+                    checked.push(chk.value);
+                }
+            });
+            return checked;
+        }
+
+        function updateSelectionUI() {
+            const checkedIds = getCheckedIds();
+            const count = checkedIds.length;
+
+            if (bulkCountBadge) bulkCountBadge.textContent = count;
+            if (selectedCountMobText) selectedCountMobText.textContent = count + ' dipilih';
+
+            if (count > 0) {
+                if (bulkActionBar) bulkActionBar.classList.remove('d-none');
+            } else {
+                if (bulkActionBar) bulkActionBar.classList.add('d-none');
+            }
+
+            // Sync status select-all
+            const allBoxes = getCheckboxes();
+            const uniqueTotal = Array.from(new Set(allBoxes.map(c => c.value))).length;
+            const isAll = uniqueTotal > 0 && count === uniqueTotal;
+
+            if (selectAllDesktop) selectAllDesktop.checked = isAll;
+            if (selectAllMobile) selectAllMobile.checked = isAll;
+        }
+
+        function toggleSelectAll(checked) {
+            getCheckboxes().forEach(chk => {
+                chk.checked = checked;
+            });
+            updateSelectionUI();
+        }
+
+        if (selectAllDesktop) {
+            selectAllDesktop.addEventListener('change', function () {
+                toggleSelectAll(this.checked);
+            });
+        }
+
+        if (selectAllMobile) {
+            selectAllMobile.addEventListener('change', function () {
+                toggleSelectAll(this.checked);
+            });
+        }
+
+        document.addEventListener('change', function (e) {
+            if (e.target && e.target.classList.contains('journal-item-checkbox')) {
+                const val = e.target.value;
+                const isChecked = e.target.checked;
+                // Sinkronkan checkbox dengan ID yang sama di desktop dan mobile
+                document.querySelectorAll(`.journal-item-checkbox[value="${val}"]`).forEach(c => {
+                    c.checked = isChecked;
+                });
+                updateSelectionUI();
+            }
+        });
+
+        window.deselectAllJournals = function () {
+            toggleSelectAll(false);
+        };
+
+        window.openBulkVerifyModal = function (status) {
+            const checkedIds = getCheckedIds();
+            if (checkedIds.length === 0) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire('Perhatian', 'Pilih minimal satu jurnal untuk diverifikasi.', 'warning');
+                } else {
+                    alert('Pilih minimal satu jurnal untuk diverifikasi.');
+                }
+                return;
+            }
+
+            // Masukkan ID yang dicentang ke form modal
+            const container = document.getElementById('bulkJournalIdsContainer');
+            container.innerHTML = '';
+            checkedIds.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'journal_ids[]';
+                input.value = id;
+                container.appendChild(input);
+            });
+
+            document.getElementById('bulkStatusInput').value = status;
+            document.getElementById('bulkModalItemCount').textContent = checkedIds.length + ' Jurnal';
+
+            const modalTitle = document.getElementById('bulkModalTitle');
+            const modalSubtitle = document.getElementById('bulkModalSubtitle');
+            const iconWrapper = document.getElementById('bulkModalIconWrapper');
+            const actionNotice = document.getElementById('bulkModalActionNotice');
+            const detailedNotice = document.getElementById('bulkModalDetailedNotice');
+            const catatanGroup = document.getElementById('bulkCatatanGroup');
+            const catatanLabel = document.getElementById('bulkCatatanLabel');
+            const catatanBadge = document.getElementById('bulkCatatanBadge');
+            const catatanInput = document.getElementById('bulkCatatanVerifikasi');
+            const submitBtn = document.getElementById('bulkModalSubmitBtn');
+
+            catatanInput.value = '';
+
+            // Pengaturan dinamis berdasarkan 4 opsi aksi
+            if (status === 'disetujui') {
+                modalTitle.textContent = 'Setujui Jurnal Sekaligus';
+                modalSubtitle.textContent = 'Menyetujui semua jurnal yang telah dipilih';
+                iconWrapper.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
+                iconWrapper.style.color = '#10b981';
+                actionNotice.textContent = 'Seluruh jurnal yang dipilih akan disetujui.';
+                detailedNotice.textContent = 'Siswa akan melihat status jurnal mereka telah disetujui oleh Guru Pembimbing.';
+                catatanGroup.style.display = 'block';
+                catatanLabel.querySelector('span:first-child').textContent = 'Catatan / Apresiasi Guru';
+                catatanBadge.className = 'badge bg-secondary-light text-secondary fw-normal';
+                catatanBadge.textContent = 'Opsional';
+                catatanInput.placeholder = 'Tulis pesan apresiasi atau umpan balik positif (opsional)...';
+                catatanInput.required = false;
+                submitBtn.className = 'btn btn-sm btn-success px-3.5 py-1.5 font-heading fw-semibold';
+                submitBtn.style.backgroundColor = '';
+                submitBtn.style.borderColor = '';
+                submitBtn.textContent = 'Ya, Setujui Semua (' + checkedIds.length + ')';
+            } else if (status === 'revisi') {
+                modalTitle.textContent = 'Minta Revisi Jurnal Sekaligus';
+                modalSubtitle.textContent = 'Menginstruksikan perbaikan pada jurnal yang dipilih';
+                iconWrapper.style.backgroundColor = 'rgba(245, 158, 11, 0.1)';
+                iconWrapper.style.color = '#f59e0b';
+                actionNotice.textContent = 'Seluruh jurnal yang dipilih akan diminta untuk direvisi.';
+                detailedNotice.textContent = 'Siswa yang bersangkutan dapat mengubah dan mengirimkan ulang laporan kegiatan.';
+                catatanGroup.style.display = 'block';
+                catatanLabel.querySelector('span:first-child').textContent = 'Catatan / Instruksi Revisi';
+                catatanBadge.className = 'badge bg-warning-light text-warning fw-semibold';
+                catatanBadge.textContent = 'Wajib Diisi';
+                catatanInput.placeholder = 'Tuliskan poin-poin yang perlu diperbaiki oleh siswa...';
+                catatanInput.required = true;
+                submitBtn.className = 'btn btn-sm btn-warning text-white px-3.5 py-1.5 font-heading fw-semibold';
+                submitBtn.style.backgroundColor = '#f59e0b';
+                submitBtn.style.borderColor = '#f59e0b';
+                submitBtn.textContent = 'Minta Revisi (' + checkedIds.length + ')';
+            } else if (status === 'ditolak') {
+                modalTitle.textContent = 'Tolak Jurnal Sekaligus';
+                modalSubtitle.textContent = 'Menolak laporan jurnal yang dipilih';
+                iconWrapper.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                iconWrapper.style.color = '#ef4444';
+                actionNotice.textContent = 'Seluruh jurnal yang dipilih akan ditolak.';
+                detailedNotice.textContent = 'Siswa tidak dapat mengubah jurnal yang berstatus ditolak kecuali dibatalkan oleh guru.';
+                catatanGroup.style.display = 'block';
+                catatanLabel.querySelector('span:first-child').textContent = 'Alasan Penolakan';
+                catatanBadge.className = 'badge bg-danger-light text-danger fw-semibold';
+                catatanBadge.textContent = 'Wajib Diisi';
+                catatanInput.placeholder = 'Tuliskan alasan penolakan jurnal ini...';
+                catatanInput.required = true;
+                submitBtn.className = 'btn btn-sm btn-danger px-3.5 py-1.5 font-heading fw-semibold';
+                submitBtn.style.backgroundColor = '';
+                submitBtn.style.borderColor = '';
+                submitBtn.textContent = 'Tolak Jurnal (' + checkedIds.length + ')';
+            } else if (status === 'pending') {
+                modalTitle.textContent = 'Kembalikan ke Status Menunggu';
+                modalSubtitle.textContent = 'Reset status verifikasi jurnal menjadi Pending';
+                iconWrapper.style.backgroundColor = 'rgba(100, 116, 139, 0.1)';
+                iconWrapper.style.color = '#64748b';
+                actionNotice.textContent = 'Status verifikasi akan dikembalikan ke Menunggu (Pending).';
+                detailedNotice.textContent = 'Catatan verifikasi sebelumnya akan dihapus dan jurnal kembali berstatus belum diverifikasi.';
+                catatanGroup.style.display = 'none';
+                catatanInput.required = false;
+                submitBtn.className = 'btn btn-sm btn-secondary px-3.5 py-1.5 font-heading fw-semibold';
+                submitBtn.style.backgroundColor = '';
+                submitBtn.style.borderColor = '';
+                submitBtn.textContent = 'Kembalikan ke Pending (' + checkedIds.length + ')';
+            }
+
+            const modal = new bootstrap.Modal(document.getElementById('bulkVerifyModal'));
+            modal.show();
+        };
+    });
 </script>
 @endsection

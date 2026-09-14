@@ -204,6 +204,58 @@ class JurnalController extends Controller
     }
 
     /**
+     * Bulk verify / review multiple journals.
+     */
+    public function bulkVerify(Request $request)
+    {
+        if (!in_array(auth()->user()->role, ['guru', 'admin'])) {
+            abort(403, 'Hanya Guru Pembimbing atau Admin yang dapat memverifikasi jurnal.');
+        }
+
+        $request->validate([
+            'journal_ids' => 'required|array|min:1',
+            'journal_ids.*' => 'integer|exists:jurnal,id',
+            'status' => 'required|in:disetujui,ditolak,revisi,pending',
+            'catatan_verifikasi' => 'required_if:status,revisi,ditolak|nullable|string|max:1000',
+        ], [
+            'journal_ids.required' => 'Pilih minimal satu jurnal untuk diverifikasi.',
+            'journal_ids.min' => 'Pilih minimal satu jurnal untuk diverifikasi.',
+            'status.required' => 'Pilih status keputusan verifikasi.',
+            'status.in' => 'Pilihan status keputusan tidak valid.',
+            'catatan_verifikasi.required_if' => 'Catatan verifikasi wajib diisi untuk status Revisi atau Ditolak.',
+        ]);
+
+        $guruId = auth()->user()->role === 'guru' ? auth()->user()->guru?->id : null;
+
+        $count = $this->service->bulkVerifyEntries(
+            $request->journal_ids,
+            $guruId,
+            $request->status,
+            $request->catatan_verifikasi
+        );
+
+        $statusLabels = [
+            'disetujui' => 'Disetujui',
+            'revisi' => 'Perlu Revisi',
+            'ditolak' => 'Ditolak',
+            'pending' => 'Menunggu (Pending)',
+        ];
+        $statusLabel = $statusLabels[$request->status] ?? $request->status;
+
+        $msg = "Berhasil memproses {$count} jurnal kegiatan (Status: {$statusLabel}).";
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $msg,
+                'count' => $count,
+            ]);
+        }
+
+        return redirect()->route('jurnal.index')->with('success', $msg);
+    }
+
+    /**
      * Delete journal.
      */
     public function destroy(int $id)

@@ -153,4 +153,17 @@ class JournalRepository implements JournalRepositoryInterface
         $journal->update($data);
         return $journal;
     }
+
+    public function bulkUpdateStatus(array $journalIds, ?int $guruId, array $data): int
+    {
+        $query = Jurnal::whereIn('id', $journalIds);
+
+        if ($guruId) {
+            $query->whereHas('penempatanPkl', function ($q) use ($guruId) {
+                $q->where('guru_id', $guruId);
+            });
+        }
+
+        return $query->update($data);
+    }
 }

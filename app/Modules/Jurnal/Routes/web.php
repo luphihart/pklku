@@ -8,6 +8,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/jurnal', [JurnalController::class, 'store'])->name('jurnal.store');
     Route::get('/jurnal/{id}/edit', [JurnalController::class, 'edit'])->name('jurnal.edit');
     Route::put('/jurnal/{id}', [JurnalController::class, 'update'])->name('jurnal.update');
+    Route::post('/jurnal/bulk-verify', [JurnalController::class, 'bulkVerify'])->name('jurnal.bulk_verify');
     Route::post('/jurnal/{id}/verify', [JurnalController::class, 'verify'])->name('jurnal.verify');
     Route::post('/jurnal/{id}/cancel-verify', [JurnalController::class, 'cancelVerify'])->name('jurnal.cancel_verify');
     Route::delete('/jurnal/{id}', [JurnalController::class, 'destroy'])->name('jurnal.destroy');

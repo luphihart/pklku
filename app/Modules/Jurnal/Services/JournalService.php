@@ -116,6 +116,37 @@ class JournalService
         return $updated;
     }
 
+    /**
+     * Bulk verify / review multiple journal entries.
+     */
+    public function bulkVerifyEntries(array $journalIds, ?int $guruId, string $status, ?string $catatan = null): int
+    {
+        if (empty($journalIds)) {
+            return 0;
+        }
+
+        if ($status === 'pending') {
+            $updateData = [
+                'status_verifikasi' => 'pending',
+                'catatan_verifikasi' => null,
+                'verified_by' => null,
+            ];
+            $affected = $this->repo->bulkUpdateStatus($journalIds, $guruId, $updateData);
+            $this->logActivity("Mengembalikan status verifikasi massal {$affected} jurnal ke Menunggu (Pending)");
+            return $affected;
+        }
+
+        $updateData = [
+            'status_verifikasi' => $status,
+            'catatan_verifikasi' => $catatan,
+            'verified_by' => $guruId,
+        ];
+
+        $affected = $this->repo->bulkUpdateStatus($journalIds, $guruId, $updateData);
+        $this->logActivity("Memverifikasi massal {$affected} jurnal dengan status: {$status}");
+        return $affected;
+    }
+
     private function logActivity(string $aktivitas, ?int $userId = null): void
     {
         $uId = $userId ?? \Illuminate\Support\Facades\Auth::id();

@@ -10,4 +10,5 @@ interface JournalRepositoryInterface
     public function findById(int $id);
     public function createJournal(array $data);
     public function updateJournal(int $id, array $data);
+    public function bulkUpdateStatus(array $journalIds, ?int $guruId, array $data): int;
 }
