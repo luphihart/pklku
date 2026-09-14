@@ -394,19 +394,19 @@
 
                     {{-- Kanan: Tombol aksi --}}
                     <div class="d-flex align-items-center gap-1.5 flex-wrap">
-                        <button type="button" class="bulk-action-btn btn-approve font-heading" onclick="openBulkVerifyModal('disetujui')">
+                        <button type="button" class="bulk-action-btn btn-approve font-heading" data-bs-toggle="modal" data-bs-target="#bulkVerifyModal" data-bulk-status="disetujui" onclick="openBulkVerifyModal('disetujui', event)">
                             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                             Setujui
                         </button>
-                        <button type="button" class="bulk-action-btn btn-revisi font-heading" onclick="openBulkVerifyModal('revisi')">
+                        <button type="button" class="bulk-action-btn btn-revisi font-heading" data-bs-toggle="modal" data-bs-target="#bulkVerifyModal" data-bulk-status="revisi" onclick="openBulkVerifyModal('revisi', event)">
                             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                             Revisi
                         </button>
-                        <button type="button" class="bulk-action-btn btn-tolak font-heading" onclick="openBulkVerifyModal('ditolak')">
+                        <button type="button" class="bulk-action-btn btn-tolak font-heading" data-bs-toggle="modal" data-bs-target="#bulkVerifyModal" data-bulk-status="ditolak" onclick="openBulkVerifyModal('ditolak', event)">
                             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
                             Tolak
                         </button>
-                        <button type="button" class="bulk-action-btn btn-pending font-heading" onclick="openBulkVerifyModal('pending')">
+                        <button type="button" class="bulk-action-btn btn-pending font-heading" data-bs-toggle="modal" data-bs-target="#bulkVerifyModal" data-bulk-status="pending" onclick="openBulkVerifyModal('pending', event)">
                             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
                             Pending
                         </button>
@@ -611,19 +611,19 @@
                 </div>
                 {{-- Baris 2: Tombol Aksi 2x2 Grid --}}
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                    <button type="button" class="bulk-action-btn btn-approve font-heading justify-content-center" onclick="openBulkVerifyModal('disetujui')" style="border-radius: 8px; padding: 9px 12px; font-size: 13px;">
+                    <button type="button" class="bulk-action-btn btn-approve font-heading justify-content-center" data-bs-toggle="modal" data-bs-target="#bulkVerifyModal" data-bulk-status="disetujui" onclick="openBulkVerifyModal('disetujui', event)" style="border-radius: 8px; padding: 9px 12px; font-size: 13px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                         Setujui
                     </button>
-                    <button type="button" class="bulk-action-btn btn-revisi font-heading justify-content-center" onclick="openBulkVerifyModal('revisi')" style="border-radius: 8px; padding: 9px 12px; font-size: 13px;">
+                    <button type="button" class="bulk-action-btn btn-revisi font-heading justify-content-center" data-bs-toggle="modal" data-bs-target="#bulkVerifyModal" data-bulk-status="revisi" onclick="openBulkVerifyModal('revisi', event)" style="border-radius: 8px; padding: 9px 12px; font-size: 13px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                         Revisi
                     </button>
-                    <button type="button" class="bulk-action-btn btn-tolak font-heading justify-content-center" onclick="openBulkVerifyModal('ditolak')" style="border-radius: 8px; padding: 9px 12px; font-size: 13px;">
+                    <button type="button" class="bulk-action-btn btn-tolak font-heading justify-content-center" data-bs-toggle="modal" data-bs-target="#bulkVerifyModal" data-bulk-status="ditolak" onclick="openBulkVerifyModal('ditolak', event)" style="border-radius: 8px; padding: 9px 12px; font-size: 13px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
                         Tolak
                     </button>
-                    <button type="button" class="bulk-action-btn btn-pending font-heading justify-content-center" onclick="openBulkVerifyModal('pending')" style="border-radius: 8px; padding: 9px 12px; font-size: 13px;">
+                    <button type="button" class="bulk-action-btn btn-pending font-heading justify-content-center" data-bs-toggle="modal" data-bs-target="#bulkVerifyModal" data-bulk-status="pending" onclick="openBulkVerifyModal('pending', event)" style="border-radius: 8px; padding: 9px 12px; font-size: 13px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
                         Pending
                     </button>
@@ -893,7 +893,7 @@
                                 <small class="text-muted d-block" id="bulkModalSubtitle" style="font-size: 12px;">Penerapan keputusan pada jurnal terpilih</small>
                             </div>
                         </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeBulkModal()"></button>
                     </div>
 
                     <form action="{{ route('jurnal.bulk_verify') }}" method="POST" id="bulkVerifyForm">
@@ -927,7 +927,7 @@
                         </div>
 
                         <div class="modal-footer border-top py-3 px-4" style="border-top-color: var(--border-color) !important;">
-                            <button type="button" class="btn btn-sm btn-light border font-heading px-3" data-bs-dismiss="modal" style="border-color: var(--border-color) !important;">Batal</button>
+                            <button type="button" class="btn btn-sm btn-light border font-heading px-3" data-bs-dismiss="modal" onclick="closeBulkModal()" style="border-color: var(--border-color) !important;">Batal</button>
                             <button type="submit" class="btn btn-sm btn-success px-4 py-1.5 font-heading fw-semibold" id="bulkModalSubmitBtn" data-loading-text="Memproses...">
                                 Simpan Keputusan
                             </button>
@@ -968,8 +968,248 @@
     }
 
     // =====================================================
-    // Bulk Verification — Inline Action Bar (Non-Floating)
+    // Bulk Verification — Helpers & Safe Modal Management
     // =====================================================
+    window.getBulkCheckedIds = function () {
+        const checked = [];
+        document.querySelectorAll('.journal-item-checkbox').forEach(chk => {
+            if (chk.checked && !checked.includes(chk.value)) {
+                checked.push(chk.value);
+            }
+        });
+        return checked;
+    };
+
+    window.closeBulkModal = function () {
+        const modalEl = document.getElementById('bulkVerifyModal');
+        if (!modalEl) return;
+
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            try {
+                const inst = (typeof bootstrap.Modal.getInstance === 'function')
+                    ? bootstrap.Modal.getInstance(modalEl)
+                    : null;
+                if (inst) inst.hide();
+            } catch(e) {}
+        }
+
+        if (typeof window.$ !== 'undefined' && typeof window.$.fn.modal !== 'undefined') {
+            try {
+                window.$(modalEl).modal('hide');
+            } catch(e) {}
+        }
+
+        modalEl.classList.remove('show');
+        modalEl.style.display = 'none';
+        modalEl.setAttribute('aria-hidden', 'true');
+        modalEl.removeAttribute('aria-modal');
+
+        const bd = document.getElementById('bulkModalBackdrop');
+        if (bd) bd.remove();
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('padding-right');
+    };
+
+    window.openBulkVerifyModal = function (status, event) {
+        const checkedIds = window.getBulkCheckedIds();
+        if (checkedIds.length === 0) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            if (typeof Swal !== 'undefined') {
+                Swal.fire('Perhatian', 'Pilih minimal satu jurnal untuk diverifikasi.', 'warning');
+            } else {
+                alert('Pilih minimal satu jurnal untuk diverifikasi.');
+            }
+            return false;
+        }
+
+        // Masukkan ID yang dicentang ke dalam form hidden inputs
+        const container = document.getElementById('bulkJournalIdsContainer');
+        if (container) {
+            container.innerHTML = '';
+            checkedIds.forEach(id => {
+                const input = document.createElement('input');
+                input.type  = 'hidden';
+                input.name  = 'journal_ids[]';
+                input.value = id;
+                container.appendChild(input);
+            });
+        }
+
+        const statusInput = document.getElementById('bulkStatusInput');
+        if (statusInput) statusInput.value = status;
+
+        const countBadge = document.getElementById('bulkModalItemCount');
+        if (countBadge) countBadge.textContent = checkedIds.length;
+
+        const modalTitle      = document.getElementById('bulkModalTitle');
+        const modalSubtitle   = document.getElementById('bulkModalSubtitle');
+        const iconWrapper     = document.getElementById('bulkModalIconWrapper');
+        const actionNotice    = document.getElementById('bulkModalActionNotice');
+        const detailedNotice  = document.getElementById('bulkModalDetailedNotice');
+        const catatanGroup    = document.getElementById('bulkCatatanGroup');
+        const catatanLabel    = document.getElementById('bulkCatatanLabel');
+        const catatanBadge    = document.getElementById('bulkCatatanBadge');
+        const catatanInput    = document.getElementById('bulkCatatanVerifikasi');
+        const submitBtn       = document.getElementById('bulkModalSubmitBtn');
+
+        if (catatanInput) catatanInput.value = '';
+
+        const cfg = {
+            disetujui: {
+                title:   'Setujui Jurnal Sekaligus',
+                sub:     'Menyetujui semua jurnal yang telah dipilih',
+                iconBg:  'rgba(16, 185, 129, 0.12)',
+                iconClr: '#10b981',
+                notice:  'Seluruh jurnal yang dipilih akan disetujui.',
+                detail:  'Siswa akan melihat status jurnal mereka telah disetujui oleh Guru Pembimbing.',
+                labelTxt:'Catatan / Apresiasi Guru',
+                badgeCls:'badge bg-secondary-light text-secondary fw-normal',
+                badgeTxt:'Opsional',
+                ph:      'Tulis pesan apresiasi atau umpan balik positif (opsional)...',
+                req:     false,
+                btnCls:  'btn btn-sm btn-success px-4 py-1.5 font-heading fw-semibold',
+                btnTxt:  `Ya, Setujui Semua (${checkedIds.length})`,
+            },
+            revisi: {
+                title:   'Minta Revisi Jurnal Sekaligus',
+                sub:     'Menginstruksikan perbaikan pada jurnal yang dipilih',
+                iconBg:  'rgba(245, 158, 11, 0.12)',
+                iconClr: '#f59e0b',
+                notice:  'Seluruh jurnal yang dipilih akan diminta untuk direvisi.',
+                detail:  'Siswa yang bersangkutan dapat mengubah dan mengirimkan ulang laporan kegiatan.',
+                labelTxt:'Catatan / Instruksi Revisi',
+                badgeCls:'badge bg-warning-light text-warning fw-semibold',
+                badgeTxt:'Wajib Diisi',
+                ph:      'Tuliskan poin-poin yang perlu diperbaiki oleh siswa...',
+                req:     true,
+                btnCls:  'btn btn-sm btn-warning text-white px-4 py-1.5 font-heading fw-semibold',
+                btnTxt:  `Minta Revisi (${checkedIds.length})`,
+                btnStyle:'background-color:#f59e0b;border-color:#f59e0b;',
+            },
+            ditolak: {
+                title:   'Tolak Jurnal Sekaligus',
+                sub:     'Menolak laporan jurnal yang dipilih',
+                iconBg:  'rgba(239, 68, 68, 0.12)',
+                iconClr: '#ef4444',
+                notice:  'Seluruh jurnal yang dipilih akan ditolak.',
+                detail:  'Siswa tidak dapat mengubah jurnal berstatus ditolak kecuali dibatalkan oleh guru.',
+                labelTxt:'Alasan Penolakan',
+                badgeCls:'badge bg-danger-light text-danger fw-semibold',
+                badgeTxt:'Wajib Diisi',
+                ph:      'Tuliskan alasan penolakan jurnal ini...',
+                req:     true,
+                btnCls:  'btn btn-sm btn-danger px-4 py-1.5 font-heading fw-semibold',
+                btnTxt:  `Tolak Jurnal (${checkedIds.length})`,
+            },
+            pending: {
+                title:   'Kembalikan ke Status Menunggu',
+                sub:     'Reset status verifikasi jurnal menjadi Pending',
+                iconBg:  'rgba(100, 116, 139, 0.1)',
+                iconClr: '#64748b',
+                notice:  'Status verifikasi akan dikembalikan ke Menunggu (Pending).',
+                detail:  'Catatan verifikasi sebelumnya akan dihapus dan jurnal kembali berstatus belum diverifikasi.',
+                labelTxt:'',
+                badgeCls:'',
+                badgeTxt:'',
+                ph:      '',
+                req:     false,
+                hideCatatan: true,
+                btnCls:  'btn btn-sm btn-secondary px-4 py-1.5 font-heading fw-semibold',
+                btnTxt:  `Kembalikan ke Pending (${checkedIds.length})`,
+            },
+        };
+
+        const c = cfg[status];
+        if (c) {
+            if (modalTitle)     modalTitle.textContent            = c.title;
+            if (modalSubtitle)  modalSubtitle.textContent         = c.sub;
+            if (iconWrapper) {
+                iconWrapper.style.backgroundColor = c.iconBg;
+                iconWrapper.style.color           = c.iconClr;
+            }
+            if (actionNotice)   actionNotice.textContent          = c.notice;
+            if (detailedNotice) detailedNotice.textContent        = c.detail;
+            if (submitBtn) {
+                submitBtn.className     = c.btnCls;
+                submitBtn.style.cssText = c.btnStyle || '';
+                submitBtn.textContent   = c.btnTxt;
+            }
+            if (catatanInput) catatanInput.required = c.req;
+
+            if (catatanGroup) {
+                if (c.hideCatatan) {
+                    catatanGroup.style.display = 'none';
+                } else {
+                    catatanGroup.style.display = 'block';
+                    if (catatanLabel) {
+                        const span = catatanLabel.querySelector('span');
+                        if (span) span.textContent = c.labelTxt;
+                    }
+                    if (catatanBadge) {
+                        catatanBadge.className   = c.badgeCls;
+                        catatanBadge.textContent = c.badgeTxt;
+                    }
+                    if (catatanInput) catatanInput.placeholder = c.ph;
+                }
+            }
+        }
+
+        // Tampilkan modal secara aman
+        const modalEl = document.getElementById('bulkVerifyModal');
+        if (!modalEl) return;
+
+        let shown = false;
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            try {
+                const inst = (typeof bootstrap.Modal.getOrCreateInstance === 'function')
+                    ? bootstrap.Modal.getOrCreateInstance(modalEl)
+                    : new bootstrap.Modal(modalEl);
+                inst.show();
+                shown = true;
+            } catch(e) {
+                console.warn("Bootstrap show error:", e);
+            }
+        }
+
+        if (!shown && typeof window.$ !== 'undefined' && typeof window.$.fn.modal !== 'undefined') {
+            try {
+                window.$(modalEl).modal('show');
+                shown = true;
+            } catch(e) {}
+        }
+
+        // Fallback jika belum muncul
+        setTimeout(() => {
+            if (!modalEl.classList.contains('show')) {
+                modalEl.classList.add('show');
+                modalEl.style.display = 'block';
+                modalEl.removeAttribute('aria-hidden');
+                modalEl.setAttribute('aria-modal', 'true');
+                document.body.classList.add('modal-open');
+
+                if (!document.getElementById('bulkModalBackdrop')) {
+                    const bd = document.createElement('div');
+                    bd.id = 'bulkModalBackdrop';
+                    bd.className = 'modal-backdrop fade show';
+                    bd.onclick = window.closeBulkModal;
+                    document.body.appendChild(bd);
+                }
+            }
+        }, 80);
+    };
+
+    window.deselectAllJournals = function () {
+        document.querySelectorAll('.journal-item-checkbox').forEach(chk => { chk.checked = false; });
+        if (typeof window.updateSelectionUI === 'function') {
+            window.updateSelectionUI();
+        }
+    };
+
     document.addEventListener('DOMContentLoaded', function () {
         const selectAllDesktop  = document.getElementById('selectAllJournals');
         const selectAllMobile   = document.getElementById('selectAllJournalsMob');
@@ -985,22 +1225,8 @@
         const bulkCountBadgeMob = document.getElementById('bulkSelectedCountMob');
         const selectedCountMobText = document.getElementById('selectedCountMobText');
 
-        function getCheckboxes() {
-            return Array.from(document.querySelectorAll('.journal-item-checkbox'));
-        }
-
-        function getCheckedIds() {
-            const checked = [];
-            getCheckboxes().forEach(chk => {
-                if (chk.checked && !checked.includes(chk.value)) {
-                    checked.push(chk.value);
-                }
-            });
-            return checked;
-        }
-
-        function updateSelectionUI() {
-            const checkedIds = getCheckedIds();
+        window.updateSelectionUI = function () {
+            const checkedIds = window.getBulkCheckedIds();
             const count = checkedIds.length;
 
             // Update counters
@@ -1030,19 +1256,18 @@
                 }
             }
 
-
             // Sync select-all state
-            const allBoxes   = getCheckboxes();
+            const allBoxes   = Array.from(document.querySelectorAll('.journal-item-checkbox'));
             const uniqueTotal = Array.from(new Set(allBoxes.map(c => c.value))).length;
             const isAll = uniqueTotal > 0 && count === uniqueTotal;
 
             if (selectAllDesktop) selectAllDesktop.checked = isAll;
             if (selectAllMobile)  selectAllMobile.checked  = isAll;
-        }
+        };
 
         function toggleSelectAll(checked) {
-            getCheckboxes().forEach(chk => { chk.checked = checked; });
-            updateSelectionUI();
+            document.querySelectorAll('.journal-item-checkbox').forEach(chk => { chk.checked = checked; });
+            window.updateSelectionUI();
         }
 
         if (selectAllDesktop) {
@@ -1065,144 +1290,25 @@
                 document.querySelectorAll(`.journal-item-checkbox[value="${val}"]`).forEach(c => {
                     c.checked = isChecked;
                 });
-                updateSelectionUI();
+                window.updateSelectionUI();
             }
         });
 
-        window.deselectAllJournals = function () {
-            toggleSelectAll(false);
-        };
-
-        window.openBulkVerifyModal = function (status) {
-            const checkedIds = getCheckedIds();
-            if (checkedIds.length === 0) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire('Perhatian', 'Pilih minimal satu jurnal untuk diverifikasi.', 'warning');
-                } else {
-                    alert('Pilih minimal satu jurnal untuk diverifikasi.');
+        // Event listener saat modal dipicu via data-bs-toggle
+        const bulkModalEl = document.getElementById('bulkVerifyModal');
+        if (bulkModalEl) {
+            bulkModalEl.addEventListener('show.bs.modal', function (e) {
+                const btn = e.relatedTarget;
+                if (btn && btn.getAttribute('data-bulk-status')) {
+                    window.openBulkVerifyModal(btn.getAttribute('data-bulk-status'));
                 }
-                return;
-            }
-
-            // Masukkan ID yang dicentang ke dalam form hidden inputs
-            const container = document.getElementById('bulkJournalIdsContainer');
-            container.innerHTML = '';
-            checkedIds.forEach(id => {
-                const input = document.createElement('input');
-                input.type  = 'hidden';
-                input.name  = 'journal_ids[]';
-                input.value = id;
-                container.appendChild(input);
             });
-
-            document.getElementById('bulkStatusInput').value       = status;
-            document.getElementById('bulkModalItemCount').textContent = checkedIds.length;
-
-            const modalTitle      = document.getElementById('bulkModalTitle');
-            const modalSubtitle   = document.getElementById('bulkModalSubtitle');
-            const iconWrapper     = document.getElementById('bulkModalIconWrapper');
-            const actionNotice    = document.getElementById('bulkModalActionNotice');
-            const detailedNotice  = document.getElementById('bulkModalDetailedNotice');
-            const catatanGroup    = document.getElementById('bulkCatatanGroup');
-            const catatanLabel    = document.getElementById('bulkCatatanLabel');
-            const catatanBadge    = document.getElementById('bulkCatatanBadge');
-            const catatanInput    = document.getElementById('bulkCatatanVerifikasi');
-            const submitBtn       = document.getElementById('bulkModalSubmitBtn');
-
-            catatanInput.value = '';
-
-            const cfg = {
-                disetujui: {
-                    title:   'Setujui Jurnal Sekaligus',
-                    sub:     'Menyetujui semua jurnal yang telah dipilih',
-                    iconBg:  'rgba(16, 185, 129, 0.12)',
-                    iconClr: '#10b981',
-                    notice:  'Seluruh jurnal yang dipilih akan disetujui.',
-                    detail:  'Siswa akan melihat status jurnal mereka telah disetujui oleh Guru Pembimbing.',
-                    labelTxt:'Catatan / Apresiasi Guru',
-                    badgeCls:'badge bg-secondary-light text-secondary fw-normal',
-                    badgeTxt:'Opsional',
-                    ph:      'Tulis pesan apresiasi atau umpan balik positif (opsional)...',
-                    req:     false,
-                    btnCls:  'btn btn-sm btn-success px-4 py-1.5 font-heading fw-semibold',
-                    btnTxt:  `Ya, Setujui Semua (${checkedIds.length})`,
-                },
-                revisi: {
-                    title:   'Minta Revisi Jurnal Sekaligus',
-                    sub:     'Menginstruksikan perbaikan pada jurnal yang dipilih',
-                    iconBg:  'rgba(245, 158, 11, 0.12)',
-                    iconClr: '#f59e0b',
-                    notice:  'Seluruh jurnal yang dipilih akan diminta untuk direvisi.',
-                    detail:  'Siswa yang bersangkutan dapat mengubah dan mengirimkan ulang laporan kegiatan.',
-                    labelTxt:'Catatan / Instruksi Revisi',
-                    badgeCls:'badge bg-warning-light text-warning fw-semibold',
-                    badgeTxt:'Wajib Diisi',
-                    ph:      'Tuliskan poin-poin yang perlu diperbaiki oleh siswa...',
-                    req:     true,
-                    btnCls:  'btn btn-sm btn-warning text-white px-4 py-1.5 font-heading fw-semibold',
-                    btnTxt:  `Minta Revisi (${checkedIds.length})`,
-                    btnStyle:'background-color:#f59e0b;border-color:#f59e0b;',
-                },
-                ditolak: {
-                    title:   'Tolak Jurnal Sekaligus',
-                    sub:     'Menolak laporan jurnal yang dipilih',
-                    iconBg:  'rgba(239, 68, 68, 0.12)',
-                    iconClr: '#ef4444',
-                    notice:  'Seluruh jurnal yang dipilih akan ditolak.',
-                    detail:  'Siswa tidak dapat mengubah jurnal berstatus ditolak kecuali dibatalkan oleh guru.',
-                    labelTxt:'Alasan Penolakan',
-                    badgeCls:'badge bg-danger-light text-danger fw-semibold',
-                    badgeTxt:'Wajib Diisi',
-                    ph:      'Tuliskan alasan penolakan jurnal ini...',
-                    req:     true,
-                    btnCls:  'btn btn-sm btn-danger px-4 py-1.5 font-heading fw-semibold',
-                    btnTxt:  `Tolak Jurnal (${checkedIds.length})`,
-                },
-                pending: {
-                    title:   'Kembalikan ke Status Menunggu',
-                    sub:     'Reset status verifikasi jurnal menjadi Pending',
-                    iconBg:  'rgba(100, 116, 139, 0.1)',
-                    iconClr: '#64748b',
-                    notice:  'Status verifikasi akan dikembalikan ke Menunggu (Pending).',
-                    detail:  'Catatan verifikasi sebelumnya akan dihapus dan jurnal kembali berstatus belum diverifikasi.',
-                    labelTxt:'',
-                    badgeCls:'',
-                    badgeTxt:'',
-                    ph:      '',
-                    req:     false,
-                    hideCatatan: true,
-                    btnCls:  'btn btn-sm btn-secondary px-4 py-1.5 font-heading fw-semibold',
-                    btnTxt:  `Kembalikan ke Pending (${checkedIds.length})`,
-                },
-            };
-
-            const c = cfg[status];
-            if (!c) return;
-
-            modalTitle.textContent              = c.title;
-            modalSubtitle.textContent           = c.sub;
-            iconWrapper.style.backgroundColor   = c.iconBg;
-            iconWrapper.style.color             = c.iconClr;
-            actionNotice.textContent            = c.notice;
-            detailedNotice.textContent          = c.detail;
-            submitBtn.className                 = c.btnCls;
-            submitBtn.style.cssText             = c.btnStyle || '';
-            submitBtn.textContent               = c.btnTxt;
-            catatanInput.required               = c.req;
-
-            if (c.hideCatatan) {
-                catatanGroup.style.display = 'none';
-            } else {
-                catatanGroup.style.display = 'block';
-                catatanLabel.querySelector('span:first-child').textContent = c.labelTxt;
-                catatanBadge.className    = c.badgeCls;
-                catatanBadge.textContent  = c.badgeTxt;
-                catatanInput.placeholder  = c.ph;
-            }
-
-            const modal = new bootstrap.Modal(document.getElementById('bulkVerifyModal'));
-            modal.show();
-        };
+            bulkModalEl.addEventListener('click', function (e) {
+                if (e.target === bulkModalEl) {
+                    window.closeBulkModal();
+                }
+            });
+        }
     });
 </script>
 @endsection
