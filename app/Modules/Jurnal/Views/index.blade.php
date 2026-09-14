@@ -591,48 +591,47 @@
     <div class="d-md-none mb-4">
         @if((auth()->user()->role === 'guru' || auth()->user()->role === 'admin') && $journals->count() > 0)
             {{-- Mobile Control Bar --}}
-            <div class="mb-3">
-                {{-- Default state: Pilih Semua --}}
-                <div class="d-flex align-items-center justify-content-between px-3 py-2 rounded-3 border" id="mobControlDefault" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
-                    <div class="form-check m-0 d-flex align-items-center gap-2">
-                        <input type="checkbox" class="form-check-input m-0" id="selectAllJournalsMob" style="cursor: pointer; width: 1.1em; height: 1.1em;">
-                        <label class="form-check-label fw-semibold font-heading text-dark" for="selectAllJournalsMob" style="cursor: pointer; font-size: 13px;">Pilih Semua</label>
-                    </div>
-                    <span class="text-muted font-heading" id="selectedCountMobText" style="font-size: 12px;">0 dipilih</span>
-                </div>
 
-                {{-- Bulk action state: muncul saat ada yang dicentang --}}
-                <div id="bulkActionBarMob" class="d-none mt-2">
-                    {{-- Baris 1: Jumlah & Batal --}}
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="bulk-sel-badge" id="bulkSelectedCountMob">0</span>
-                            <span class="fw-semibold font-heading text-dark" style="font-size: 13px;">jurnal dipilih</span>
-                        </div>
-                        <button type="button" class="btn btn-sm btn-light border text-muted font-heading d-flex align-items-center gap-1 py-1" onclick="deselectAllJournals()" style="font-size: 12px; border-color: var(--border-color) !important;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
-                            Batalkan
-                        </button>
+            {{-- Default state: Pilih Semua (tersembunyi saat ada yang dicentang via JS) --}}
+            <div class="d-flex align-items-center justify-content-between px-3 py-2 rounded-3 border mb-3" id="mobControlDefault" style="background-color: var(--bg-card); border-color: var(--border-color) !important;">
+                <div class="form-check m-0 d-flex align-items-center gap-2">
+                    <input type="checkbox" class="form-check-input m-0" id="selectAllJournalsMob" style="cursor: pointer; width: 1.1em; height: 1.1em;">
+                    <label class="form-check-label fw-semibold font-heading text-dark" for="selectAllJournalsMob" style="cursor: pointer; font-size: 13px;">Pilih Semua</label>
+                </div>
+                <span class="text-muted font-heading" id="selectedCountMobText" style="font-size: 12px;">0 dipilih</span>
+            </div>
+
+            {{-- Bulk Action Bar (tampil saat ada yang dicentang, menggantikan default bar) --}}
+            <div id="bulkActionBarMob" class="d-none mb-3" style="border-radius: 10px; border: 1.5px solid var(--border-color, #e2e8f0); background-color: var(--bg-canvas, #f8fafc); padding: 12px;">
+                {{-- Baris 1: Jumlah & Batal --}}
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="bulk-sel-badge" id="bulkSelectedCountMob">0</span>
+                        <span class="fw-semibold font-heading text-dark dark-text-light" style="font-size: 13px;">jurnal dipilih</span>
                     </div>
-                    {{-- Baris 2: Tombol Aksi --}}
-                    <div class="d-grid gap-2" style="grid-template-columns: 1fr 1fr; display: grid;">
-                        <button type="button" class="bulk-action-btn btn-approve font-heading justify-content-center" onclick="openBulkVerifyModal('disetujui')" style="border-radius: 8px; padding: 8px 12px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                            Setujui
-                        </button>
-                        <button type="button" class="bulk-action-btn btn-revisi font-heading justify-content-center" onclick="openBulkVerifyModal('revisi')" style="border-radius: 8px; padding: 8px 12px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                            Revisi
-                        </button>
-                        <button type="button" class="bulk-action-btn btn-tolak font-heading justify-content-center" onclick="openBulkVerifyModal('ditolak')" style="border-radius: 8px; padding: 8px 12px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
-                            Tolak
-                        </button>
-                        <button type="button" class="bulk-action-btn btn-pending font-heading justify-content-center" onclick="openBulkVerifyModal('pending')" style="border-radius: 8px; padding: 8px 12px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
-                            Pending
-                        </button>
-                    </div>
+                    <button type="button" class="btn btn-sm btn-light border text-muted font-heading d-flex align-items-center gap-1 py-1" onclick="deselectAllJournals()" style="font-size: 12px; border-color: var(--border-color) !important;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                        Batalkan
+                    </button>
+                </div>
+                {{-- Baris 2: Tombol Aksi 2x2 Grid --}}
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <button type="button" class="bulk-action-btn btn-approve font-heading justify-content-center" onclick="openBulkVerifyModal('disetujui')" style="border-radius: 8px; padding: 9px 12px; font-size: 13px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        Setujui
+                    </button>
+                    <button type="button" class="bulk-action-btn btn-revisi font-heading justify-content-center" onclick="openBulkVerifyModal('revisi')" style="border-radius: 8px; padding: 9px 12px; font-size: 13px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        Revisi
+                    </button>
+                    <button type="button" class="bulk-action-btn btn-tolak font-heading justify-content-center" onclick="openBulkVerifyModal('ditolak')" style="border-radius: 8px; padding: 9px 12px; font-size: 13px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                        Tolak
+                    </button>
+                    <button type="button" class="bulk-action-btn btn-pending font-heading justify-content-center" onclick="openBulkVerifyModal('pending')" style="border-radius: 8px; padding: 9px 12px; font-size: 13px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                        Pending
+                    </button>
                 </div>
             </div>
         @endif
@@ -1025,14 +1024,17 @@
                 }
             }
 
-            // Mobile: toggle between default control and bulk bar
+            // Mobile: swap antara default control bar dan bulk action bar
             if (bulkActionBarMob && mobControlDefault) {
                 if (count > 0) {
+                    mobControlDefault.classList.add('d-none');
                     bulkActionBarMob.classList.remove('d-none');
                 } else {
                     bulkActionBarMob.classList.add('d-none');
+                    mobControlDefault.classList.remove('d-none');
                 }
             }
+
 
             // Sync select-all state
             const allBoxes   = getCheckboxes();
