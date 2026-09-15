@@ -49,22 +49,19 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="foto" class="form-label font-heading fw-semibold text-secondary" style="font-size: 13px;">Bukti Kegiatan (Wajib, Foto/PDF)</label>
-                            <input type="file" name="foto" id="foto" class="form-control form-control-sm" accept="image/*, application/pdf" @change="handleFileSelect($event)" required>
-                            <small class="text-muted d-block mt-1" style="font-size: 11px;">Format: JPG, PNG, atau PDF (Maks. 2MB)</small>
+                            <label for="foto" class="form-label font-heading fw-semibold text-secondary" style="font-size: 13px;">Bukti Kegiatan (Wajib, Foto)</label>
+                            <input type="file" name="foto" id="foto" class="form-control form-control-sm" accept="image/jpeg,image/png,image/webp,image/jpg" @change="handleFileSelect($event)" required>
+                            <small class="text-muted d-block mt-1" style="font-size: 11px;">Format: JPG, JPEG, PNG, atau WEBP (Maks. 5MB, otomatis dikompresi)</small>
                             
                             <!-- Live File Preview -->
                             <div class="mt-2" x-show="filePreview" style="display: none;">
                                 <div class="p-2 border rounded d-flex align-items-center gap-2" style="background-color: var(--bg-canvas); border-color: var(--border-color) !important;">
-                                    <template x-if="!isPdf && filePreview">
+                                    <template x-if="filePreview">
                                         <img :src="filePreview" alt="Pratinjau Foto" class="rounded border" width="48" height="48" style="object-fit: cover;">
-                                    </template>
-                                    <template x-if="isPdf">
-                                        <div class="p-2 bg-danger-light text-danger rounded font-heading fw-bold" style="font-size: 12px;">PDF</div>
                                     </template>
                                     <div class="text-truncate" style="font-size: 12px;">
                                         <span class="fw-semibold text-dark d-block text-truncate" x-text="fileName"></span>
-                                        <span class="text-success" style="font-size: 11px;">Siap diunggah</span>
+                                        <span class="text-success" style="font-size: 11px;">Foto siap diunggah</span>
                                     </div>
                                 </div>
                             </div>
@@ -357,34 +354,41 @@
                     this.rawBlob = null;
                     return;
                 }
+
+                if (!file.type.startsWith('image/')) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Format Tidak Didukung',
+                            text: 'Bukti kegiatan jurnal wajib berupa file gambar (JPG, JPEG, PNG, atau WEBP).',
+                            confirmButtonColor: 'var(--accent-primary)'
+                        });
+                    } else {
+                        alert('Bukti kegiatan jurnal wajib berupa file gambar (JPG, JPEG, PNG, atau WEBP).');
+                    }
+                    e.target.value = '';
+                    this.filePreview = null;
+                    this.fileName = '';
+                    this.rawBlob = null;
+                    return;
+                }
+
                 this.fileName = file.name;
+                this.isPdf = false;
                 
                 // Immediately read file into memory to prevent Android Chrome ERR_UPLOAD_FILE_CHANGED
-                if (file.type.startsWith('image/')) {
-                    this.isPdf = false;
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                        this.filePreview = ev.target.result;
-                    };
-                    reader.readAsDataURL(file);
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    this.filePreview = ev.target.result;
+                };
+                reader.readAsDataURL(file);
 
-                    // Read ArrayBuffer for clean Blob
-                    const blobReader = new FileReader();
-                    blobReader.onload = (ev) => {
-                        this.rawBlob = new Blob([ev.target.result], { type: file.type || 'image/jpeg' });
-                    };
-                    blobReader.readAsArrayBuffer(file);
-                } else if (file.type === 'application/pdf') {
-                    this.isPdf = true;
-                    this.filePreview = 'pdf';
-                    const blobReader = new FileReader();
-                    blobReader.onload = (ev) => {
-                        this.rawBlob = new Blob([ev.target.result], { type: 'application/pdf' });
-                    };
-                    blobReader.readAsArrayBuffer(file);
-                } else {
-                    this.rawBlob = file;
-                }
+                // Read ArrayBuffer for clean Blob
+                const blobReader = new FileReader();
+                blobReader.onload = (ev) => {
+                    this.rawBlob = new Blob([ev.target.result], { type: file.type || 'image/jpeg' });
+                };
+                blobReader.readAsArrayBuffer(file);
             },
             async submitForm(e) {
                 e.preventDefault();

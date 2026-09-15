@@ -95,9 +95,9 @@
                 @endif
 
                 <div class="mb-4">
-                    <label for="foto" class="form-label small fw-semibold">Ganti Bukti Kegiatan (Foto/PDF) {{ !$journal->foto_kegiatan ? '(Wajib)' : '(Opsional)' }}</label>
-                    <input type="file" name="foto" id="foto" class="form-control @error('foto') is-invalid @enderror" accept="image/*, application/pdf" {{ !$journal->foto_kegiatan ? 'required' : '' }}>
-                    <small class="text-muted" style="font-size: 10px;">Format: JPG, JPEG, PNG, atau PDF (Maks. 2MB)</small>
+                    <label for="foto" class="form-label small fw-semibold">Ganti Bukti Kegiatan (Foto) {{ !$journal->foto_kegiatan ? '(Wajib)' : '(Opsional)' }}</label>
+                    <input type="file" name="foto" id="foto" class="form-control @error('foto') is-invalid @enderror" accept="image/jpeg,image/png,image/webp,image/jpg" {{ !$journal->foto_kegiatan ? 'required' : '' }}>
+                    <small class="text-muted" style="font-size: 10px;">Format: JPG, JPEG, PNG, atau WEBP (Maks. 5MB, otomatis dikompresi)</small>
                     @error('foto')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror

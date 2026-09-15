@@ -29,8 +29,11 @@ class JournalService
             if (!file_exists($dirPath)) {
                 mkdir($dirPath, 0755, true);
             }
-            $filename = 'jurnal_' . $placementId . '_' . time() . '.' . $fotoFile->getClientOriginalExtension();
-            $fotoFile->move($dirPath, $filename);
+            $ext = strtolower($fotoFile->getClientOriginalExtension()) ?: 'jpg';
+            if ($ext === 'jpeg') $ext = 'jpg';
+            $filename = 'jurnal_' . $placementId . '_' . time() . '.' . $ext;
+            $outputPath = $dirPath . '/' . $filename;
+            $this->processUploadedImage($fotoFile, $outputPath);
         }
 
         $journal = $this->repo->createJournal([
@@ -72,14 +75,102 @@ class JournalService
                 @unlink($dirPath . '/' . $journal->foto_kegiatan);
             }
 
-            $filename = 'jurnal_' . $journal->penempatan_pkl_id . '_' . time() . '.' . $fotoFile->getClientOriginalExtension();
-            $fotoFile->move($dirPath, $filename);
+            $ext = strtolower($fotoFile->getClientOriginalExtension()) ?: 'jpg';
+            if ($ext === 'jpeg') $ext = 'jpg';
+            $filename = 'jurnal_' . $journal->penempatan_pkl_id . '_' . time() . '.' . $ext;
+            $outputPath = $dirPath . '/' . $filename;
+            $this->processUploadedImage($fotoFile, $outputPath);
             $updateData['foto_kegiatan'] = $filename;
         }
 
         $updated = $this->repo->updateJournal($id, $updateData);
         $this->logActivity("Mengubah jurnal kegiatan harian, tanggal: " . ($updateData['tanggal'] ?? $journal->tanggal));
         return $updated;
+    }
+
+    /**
+     * Helper to process, resize, and compress uploaded journal photos.
+     */
+    private function processUploadedImage($file, string $outputPath): void
+    {
+        $tempFile = $file->getRealPath();
+
+        try {
+            if (class_exists(\Intervention\Image\ImageManager::class)) {
+                $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+                $image = $manager->read($tempFile);
+                $image->scale(width: 800);
+                $ext = strtolower(pathinfo($outputPath, PATHINFO_EXTENSION));
+                if (in_array($ext, ['png', 'webp'])) {
+                    $image->save($outputPath);
+                } else {
+                    $image->toJpeg(75)->save($outputPath);
+                }
+            } else {
+                $this->compressImageNative($tempFile, $outputPath, 800, 75);
+            }
+        } catch (\Throwable $e) {
+            // ultimate fallback: save directly
+            $file->move(dirname($outputPath), basename($outputPath));
+        }
+    }
+
+    private function compressImageNative(string $sourcePath, string $destPath, int $maxWidth, int $quality): void
+    {
+        $imgInfo = @getimagesize($sourcePath);
+        if (!$imgInfo) {
+            copy($sourcePath, $destPath);
+            return;
+        }
+
+        list($origWidth, $origHeight, $type) = $imgInfo;
+
+        $width = $origWidth;
+        $height = $origHeight;
+
+        if ($origWidth > $maxWidth && $origWidth > 0) {
+            $width = $maxWidth;
+            $height = (int)($origHeight * ($maxWidth / $origWidth));
+        }
+
+        $srcImg = null;
+        switch ($type) {
+            case IMAGETYPE_JPEG: $srcImg = @imagecreatefromjpeg($sourcePath); break;
+            case IMAGETYPE_PNG: $srcImg = @imagecreatefrompng($sourcePath); break;
+            case IMAGETYPE_WEBP: $srcImg = function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($sourcePath) : null; break;
+            default: $srcImg = @imagecreatefromjpeg($sourcePath); break;
+        }
+
+        if (!$srcImg) {
+            copy($sourcePath, $destPath);
+            return;
+        }
+
+        $destImg = imagecreatetruecolor($width, $height);
+        if (!$destImg) {
+            imagedestroy($srcImg);
+            copy($sourcePath, $destPath);
+            return;
+        }
+
+        // Handle transparency for PNG / WEBP
+        if ($type == IMAGETYPE_PNG || $type == IMAGETYPE_WEBP) {
+            imagealphablending($destImg, false);
+            imagesavealpha($destImg, true);
+        }
+
+        imagecopyresampled($destImg, $srcImg, 0, 0, 0, 0, $width, $height, $origWidth, $origHeight);
+
+        if ($type == IMAGETYPE_PNG) {
+            imagepng($destImg, $destPath, 8);
+        } elseif ($type == IMAGETYPE_WEBP && function_exists('imagewebp')) {
+            imagewebp($destImg, $destPath, $quality);
+        } else {
+            imagejpeg($destImg, $destPath, $quality);
+        }
+
+        imagedestroy($srcImg);
+        imagedestroy($destImg);
     }
 
     /**

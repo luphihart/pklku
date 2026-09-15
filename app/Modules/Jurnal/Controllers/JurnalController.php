@@ -69,12 +69,12 @@ class JurnalController extends Controller
             'penempatan_pkl_id' => 'required|exists:penempatan_pkl,id',
             'tanggal' => 'required|date',
             'deskripsi_aktivitas' => 'required|string',
-            'foto' => 'required|file|mimes:jpeg,png,jpg,pdf|max:2048',
+            'foto' => 'required|file|mimes:jpeg,png,jpg,webp|max:5120',
         ], [
             'deskripsi_aktivitas.required' => 'Deskripsi aktivitas wajib diisi.',
             'foto.required' => 'Bukti kegiatan wajib dilampirkan.',
-            'foto.mimes' => 'Format bukti kegiatan harus JPG, JPEG, PNG, atau PDF.',
-            'foto.max' => 'Ukuran bukti kegiatan maksimal 2MB.',
+            'foto.mimes' => 'Format bukti kegiatan harus berupa gambar (JPG, JPEG, PNG, atau WEBP).',
+            'foto.max' => 'Ukuran bukti kegiatan maksimal 5MB.',
         ]);
 
         $this->service->saveEntry(
@@ -135,9 +135,9 @@ class JurnalController extends Controller
         ];
 
         if (!$journal->foto_kegiatan) {
-            $rules['foto'] = 'required|file|mimes:jpeg,png,jpg,pdf|max:2048';
+            $rules['foto'] = 'required|file|mimes:jpeg,png,jpg,webp|max:5120';
         } else {
-            $rules['foto'] = 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048';
+            $rules['foto'] = 'nullable|file|mimes:jpeg,png,jpg,webp|max:5120';
         }
 
         $request->validate($rules, [
@@ -145,8 +145,8 @@ class JurnalController extends Controller
             'tanggal.date' => 'Format tanggal kegiatan tidak valid.',
             'deskripsi_aktivitas.required' => 'Deskripsi aktivitas wajib diisi.',
             'foto.required' => 'Bukti kegiatan wajib dilampirkan.',
-            'foto.mimes' => 'Format bukti kegiatan harus JPG, JPEG, PNG, atau PDF.',
-            'foto.max' => 'Ukuran bukti kegiatan maksimal 2MB.',
+            'foto.mimes' => 'Format bukti kegiatan harus berupa gambar (JPG, JPEG, PNG, atau WEBP).',
+            'foto.max' => 'Ukuran bukti kegiatan maksimal 5MB.',
         ]);
 
         try {
