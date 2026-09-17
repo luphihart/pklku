@@ -115,7 +115,7 @@
                             </td>
                             <td class="text-center pe-4">
                                 <div class="d-flex gap-1 justify-content-center">
-                                    <button class="btn btn-sm btn-outline-warning btn-action btn-edit-dudi"
+                                    <button type="button" class="btn btn-sm btn-outline-warning btn-action btn-edit-dudi"
                                         data-id="{{ $dudi->id }}"
                                         data-nama="{{ $dudi->nama }}"
                                         data-alamat="{{ $dudi->alamat }}"
@@ -342,43 +342,68 @@
 </div>
 @endsection
 
-@push('scripts')
+@section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const editModal = document.getElementById('editDudiModal');
     if (!editModal) return;
 
-    editModal.addEventListener('show.bs.modal', function (event) {
-        const btn = event.relatedTarget;
-        if (!btn || !btn.classList.contains('btn-edit-dudi')) return;
+    function populateEditModal(btn) {
+        if (!btn) return;
 
-        const id       = btn.dataset.id;
-        const nama     = btn.dataset.nama;
-        const alamat   = btn.dataset.alamat;
-        const lat      = btn.dataset.latitude;
-        const lng      = btn.dataset.longitude;
-        const radius   = btn.dataset.radius;
-        const picNama  = btn.dataset.picNama;
-        const picPhone = btn.dataset.picPhone;
-        const hariKerja = (btn.dataset.hariKerja || '').split(',').map(h => h.trim());
+        const id        = btn.getAttribute('data-id') || btn.dataset.id;
+        const nama      = btn.getAttribute('data-nama') || btn.dataset.nama || '';
+        const alamat    = btn.getAttribute('data-alamat') || btn.dataset.alamat || '';
+        const lat       = btn.getAttribute('data-latitude') || btn.dataset.latitude || '';
+        const lng       = btn.getAttribute('data-longitude') || btn.dataset.longitude || '';
+        const radius    = btn.getAttribute('data-radius') || btn.dataset.radius || '';
+        const picNama   = btn.getAttribute('data-pic-nama') || btn.dataset.picNama || '';
+        const picPhone  = btn.getAttribute('data-pic-phone') || btn.dataset.picPhone || '';
+        const rawHari   = btn.getAttribute('data-hari-kerja') || btn.dataset.hariKerja || '';
+        const hariKerja = rawHari.split(',').map(h => h.trim());
 
         // Update form action to point to correct route
-        document.getElementById('editDudiForm').action = `/master/dudi/${id}`;
+        const form = document.getElementById('editDudiForm');
+        if (form && id) {
+            form.action = '{{ url("/master/dudi") }}/' + id;
+        }
 
-        // Populate fields
-        document.getElementById('edit_nama').value     = nama     || '';
-        document.getElementById('edit_alamat').value   = alamat   || '';
-        document.getElementById('edit_latitude').value = lat      || '';
-        document.getElementById('edit_longitude').value = lng     || '';
-        document.getElementById('edit_radius').value   = radius   || '';
-        document.getElementById('edit_pic_nama').value = picNama  || '';
-        document.getElementById('edit_pic_phone').value = picPhone || '';
+        // Populate fields safely
+        const setVal = (fieldId, val) => {
+            const el = document.getElementById(fieldId);
+            if (el) el.value = val;
+        };
+
+        setVal('edit_nama', nama);
+        setVal('edit_alamat', alamat);
+        setVal('edit_latitude', lat);
+        setVal('edit_longitude', lng);
+        setVal('edit_radius', radius);
+        setVal('edit_pic_nama', picNama);
+        setVal('edit_pic_phone', picPhone);
 
         // Reset and set hari kerja checkboxes
         document.querySelectorAll('.edit-hari-check').forEach(function (cb) {
             cb.checked = hariKerja.includes(cb.value);
         });
+    }
+
+    // Trigger when modal is shown via Bootstrap API / data-bs-toggle
+    editModal.addEventListener('show.bs.modal', function (event) {
+        const trigger = event.relatedTarget;
+        const btn = trigger ? (trigger.classList.contains('btn-edit-dudi') ? trigger : trigger.closest('.btn-edit-dudi')) : null;
+        if (btn) {
+            populateEditModal(btn);
+        }
+    });
+
+    // Also trigger on click delegation to ensure data is populated immediately
+    document.addEventListener('click', function (event) {
+        const btn = event.target.closest('.btn-edit-dudi');
+        if (btn) {
+            populateEditModal(btn);
+        }
     });
 });
 </script>
-@endpush
+@endsection

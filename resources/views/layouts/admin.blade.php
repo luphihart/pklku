@@ -60,6 +60,7 @@
         }
     </style>
     @yield('styles')
+    @stack('styles')
 </head>
 <body x-data="{ 
     sidebarOpen: window.innerWidth > 768,
@@ -548,5 +549,6 @@
     </script>
 
     @yield('scripts')
+    @stack('scripts')
 </body>
 </html>

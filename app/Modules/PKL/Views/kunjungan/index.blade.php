@@ -484,7 +484,9 @@
 @endforeach
 
 
-@push('scripts')
+@endsection
+
+@section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const savedPangkat = localStorage.getItem('sppd_saved_pangkat');
@@ -508,5 +510,4 @@
         });
     });
 </script>
-@endpush
 @endsection
