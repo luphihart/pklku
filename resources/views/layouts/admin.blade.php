@@ -116,6 +116,31 @@
                     </a>
                 </li>
 
+                @if(auth()->user()->role === 'industri')
+                {{-- ── Menu khusus Pembimbing Industri ─────────────────── --}}
+                <li class="sidebar-header-text px-4 pt-3 pb-1 text-uppercase font-heading" style="font-size: 11px; font-weight: 700; color: var(--text-secondary);">
+                    <span>Pemantauan Murid</span>
+                </li>
+                <li class="{{ Request::is('presensi') ? 'active' : '' }}">
+                    <a href="{{ route('presensi.index') }}">
+                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        Presensi Murid
+                    </a>
+                </li>
+                <li class="{{ Request::is('jurnal*') ? 'active' : '' }}">
+                    <a href="{{ route('jurnal.index') }}">
+                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        Jurnal Kegiatan
+                    </a>
+                </li>
+                @else
+                {{-- ── Menu Admin / Guru / Murid ────────────────────────── --}}
+
                 @if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
                 <!-- Master Data Collapsible Section -->
                 <li class="sidebar-header-text d-flex justify-content-between align-items-center px-4 pt-3 pb-1 text-uppercase font-heading" style="font-size: 11px; font-weight: 700; color: var(--text-secondary); cursor: pointer; user-select: none;" @click="masterOpen = !masterOpen">
@@ -144,7 +169,7 @@
                 </li>
                 <li x-show="masterOpen" class="{{ Request::is('master/kelas*') ? 'active' : '' }}">
                     <a href="{{ route('kelas.index') }}">
-                        <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg class="me-2" xmlns="http://www.w3.org/2020/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                         </svg>
                         Kelas
@@ -313,6 +338,7 @@
                         Audit Log & Backup
                     </a>
                 </li>
+                @endif
                 @endif
             </ul>
         </nav>

@@ -84,6 +84,47 @@ class DashboardService
                 });
             }
             unset($dItem);
+        } elseif ($user->role === 'industri') {
+            // Pembimbing Industri: hanya data murid aktif di DUDInya
+            $pembimbing = $user->pembimbingIndustri;
+            $dudiId = $pembimbing?->dudi_id;
+            $todayLeaves = collect();
+
+            if ($dudiId) {
+                $placements = \App\Modules\PKL\Models\PenempatanPkl::select(['id', 'murid_id', 'dudi_id', 'guru_id', 'status'])
+                    ->with([
+                        'murid:id,nama,nis,kelas_id',
+                        'murid.kelas:id,nama',
+                        'dudi:id,nama,alamat,latitude,longitude,pic_nama,pic_phone',
+                        'guru:id,nama'
+                    ])
+                    ->where('status', 'aktif')
+                    ->where('dudi_id', $dudiId)
+                    ->get();
+
+                $placementIds = $placements->pluck('id');
+                $today = now()->toDateString();
+                $todayPresensi = \App\Modules\Presensi\Models\Presensi::whereIn('penempatan_pkl_id', $placementIds)
+                    ->where('tanggal', $today)
+                    ->select(['id', 'penempatan_pkl_id', 'tanggal', 'jam_masuk', 'jam_pulang', 'status_masuk', 'lat_masuk', 'lng_masuk', 'lat_pulang', 'lng_pulang'])
+                    ->get()
+                    ->keyBy('penempatan_pkl_id');
+
+                $todayLeaves = \App\Modules\Presensi\Models\IzinSakit::whereIn('penempatan_pkl_id', $placementIds)
+                    ->where('status_approval', 'disetujui')
+                    ->where('tanggal_mulai', '<=', $today)
+                    ->where('tanggal_selesai', '>=', $today)
+                    ->select(['id', 'penempatan_pkl_id', 'tipe', 'alasan'])
+                    ->get()
+                    ->keyBy('penempatan_pkl_id');
+
+                if ($placements->count() > 0 && $placements->first()?->dudi) {
+                    $dudi = $placements->first()->dudi;
+                    $dudiList[$dudi->id] = ['dudi' => $dudi, 'placements' => $placements->all()];
+                }
+            } else {
+                $todayPresensi = collect();
+            }
         } else {
             $todayLeaves = collect();
         }

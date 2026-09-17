@@ -75,4 +75,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(\App\Modules\Pengumuman\Models\PengumumanPenerima::class, 'user_id');
     }
+
+    public function pembimbingIndustri()
+    {
+        return $this->hasOne(\App\Modules\MasterData\Models\PembimbingIndustri::class, 'user_id');
+    }
 }

@@ -558,6 +558,8 @@
                                                 </svg>
                                             </button>
                                         </form>
+                                    @else
+                                        <span class="text-muted small">—</span>
                                     @endif
                                 </div>
                             </td>

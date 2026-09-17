@@ -13,10 +13,16 @@ class PembimbingIndustri extends Model
 
     protected $fillable = [
         'dudi_id',
+        'user_id',
         'nama',
         'phone',
         'email',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'user_id');
+    }
 
     public function dudi()
     {
@@ -28,3 +34,4 @@ class PembimbingIndustri extends Model
         return $this->hasMany(\App\Modules\PKL\Models\PenempatanPkl::class, 'pembimbing_industri_id');
     }
 }
+

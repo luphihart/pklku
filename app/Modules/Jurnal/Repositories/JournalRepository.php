@@ -166,4 +166,74 @@ class JournalRepository implements JournalRepositoryInterface
 
         return $query->update($data);
     }
+
+    public function getIndustriJournals(?int $dudiId, $filters = [], int $perPage = 15)
+    {
+        $query = Jurnal::with(['penempatanPkl.murid.kelas', 'penempatanPkl.dudi']);
+
+        if ($dudiId) {
+            $query->whereHas('penempatanPkl', function($q) use ($dudiId) {
+                $q->where('dudi_id', $dudiId);
+            });
+        } else {
+            $query->whereRaw('1 = 0');
+        }
+
+        $filters = is_array($filters) ? $filters : [];
+
+        if (!empty($filters['status'])) {
+            $query->where('status_verifikasi', $filters['status']);
+        }
+
+        $search = trim($filters['search'] ?? ($filters['nama'] ?? ''));
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('deskripsi_aktivitas', 'like', "%{$search}%")
+                  ->orWhereHas('penempatanPkl.murid', function($m) use ($search) {
+                      $m->where('nama', 'like', "%{$search}%")
+                        ->orWhere('nis', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if (!empty($filters['tanggal_mulai'])) {
+            $query->whereDate('tanggal', '>=', $filters['tanggal_mulai']);
+        }
+        if (!empty($filters['tanggal_selesai'])) {
+            $query->whereDate('tanggal', '<=', $filters['tanggal_selesai']);
+        }
+        if (!empty($filters['tanggal'])) {
+            $query->whereDate('tanggal', $filters['tanggal']);
+        }
+
+        return $query->orderBy('tanggal', 'desc')->paginate($perPage);
+    }
+
+    public function getIndustriStatusCounts(?int $dudiId, $filters = [])
+    {
+        try {
+            $query = Jurnal::query();
+            if ($dudiId) {
+                $query->whereHas('penempatanPkl', function($q) use ($dudiId) {
+                    $q->where('dudi_id', $dudiId);
+                });
+            } else {
+                $query->whereRaw('1 = 0');
+            }
+            $rawCounts = (clone $query)
+                ->selectRaw('status_verifikasi, count(*) as total')
+                ->groupBy('status_verifikasi')
+                ->pluck('total', 'status_verifikasi')
+                ->toArray();
+            return [
+                'all'       => (clone $query)->count(),
+                'pending'   => $rawCounts['pending'] ?? 0,
+                'disetujui' => $rawCounts['disetujui'] ?? 0,
+                'revisi'    => $rawCounts['revisi'] ?? 0,
+                'ditolak'   => $rawCounts['ditolak'] ?? 0,
+            ];
+        } catch (\Throwable $e) {
+            return ['all' => 0, 'pending' => 0, 'disetujui' => 0, 'revisi' => 0, 'ditolak' => 0];
+        }
+    }
 }

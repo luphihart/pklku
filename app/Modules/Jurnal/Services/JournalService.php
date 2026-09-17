@@ -17,6 +17,8 @@ class JournalService
     public function getTeacherReviews(?int $guruId, $statusOrFilters = null, int $perPage = 15) { return $this->repo->getTeacherJournals($guruId, $statusOrFilters, $perPage); }
     public function getStatusCounts(?int $guruId, $filters = []) { return $this->repo->getStatusCounts($guruId, $filters); }
     public function getDetail(int $id) { return $this->repo->findById($id); }
+    public function getIndustriReviews(?int $dudiId, $filters = [], int $perPage = 15) { return $this->repo->getIndustriJournals($dudiId, $filters, $perPage); }
+    public function getIndustriStatusCounts(?int $dudiId, $filters = []) { return $this->repo->getIndustriStatusCounts($dudiId, $filters); }
 
     /**
      * Submit new daily journal entry.

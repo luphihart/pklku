@@ -6,6 +6,7 @@ use App\Modules\MasterData\Controllers\GuruController;
 use App\Modules\MasterData\Controllers\DudiController;
 use App\Modules\MasterData\Controllers\TahunAjaranController;
 use App\Modules\MasterData\Controllers\ImportController;
+use App\Modules\MasterData\Controllers\PembimbingIndustriController;
 
 Route::middleware(['web', 'auth', 'role:admin'])->group(function () {
     // Bulk Delete Routes
@@ -52,4 +53,11 @@ Route::middleware(['web', 'auth', 'role:admin'])->group(function () {
     // Import/Export Excel Routes
     Route::get('/import/template/{type}', [ImportController::class, 'downloadTemplate'])->name('import.template');
     Route::post('/import/{type}', [ImportController::class, 'import'])->name('import.store');
+
+    // Pembimbing Industri (DUDI Account) Routes
+    Route::post('/master/dudi/{dudi_id}/pembimbing', [PembimbingIndustriController::class, 'store'])->name('pembimbing-industri.store');
+    Route::put('/master/dudi/{dudi_id}/pembimbing/{id}', [PembimbingIndustriController::class, 'update'])->name('pembimbing-industri.update');
+    Route::post('/master/dudi/{dudi_id}/pembimbing/{id}/reset-password', [PembimbingIndustriController::class, 'resetPassword'])->name('pembimbing-industri.reset_password');
+    Route::delete('/master/dudi/{dudi_id}/pembimbing/{id}', [PembimbingIndustriController::class, 'destroy'])->name('pembimbing-industri.destroy');
 });
+

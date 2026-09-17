@@ -47,7 +47,7 @@ class PresensiController extends Controller
             return view('presensi::murid.index', compact('placement', 'history', 'today', 'todayLeave', 'weeklyOffQuota', 'weeklyOffUsed'));
         }
 
-        // Sisi Guru / Admin: List all attendance
+        // Sisi Guru / Admin / Industri: List all attendance
         $query = Presensi::with(['penempatanPkl.murid.kelas', 'penempatanPkl.dudi']);
         
         $guruId = $role === 'guru' ? (auth()->user()->guru?->id ?: -1) : null;
@@ -55,6 +55,16 @@ class PresensiController extends Controller
             $query->whereHas('penempatanPkl', function($q) use ($guruId) {
                 $q->where('guru_id', $guruId);
             });
+        } elseif ($role === 'industri') {
+            // Pembimbing DUDI: hanya murid di DUDInya
+            $dudiId = auth()->user()->pembimbingIndustri?->dudi_id;
+            if ($dudiId) {
+                $query->whereHas('penempatanPkl', function($q) use ($dudiId) {
+                    $q->where('dudi_id', $dudiId)->where('status', 'aktif');
+                });
+            } else {
+                $query->whereRaw('1 = 0'); // no data if not linked
+            }
         }
 
         // Filters
@@ -78,6 +88,7 @@ class PresensiController extends Controller
                     $sub->where('nama', 'like', "%{$search}%")
                         ->orWhere('nis', 'like', "%{$search}%");
                 });
+
             });
         }
 
@@ -86,6 +97,13 @@ class PresensiController extends Controller
         $placementQuery = PenempatanPkl::with(['murid.kelas', 'dudi'])->where('status', 'aktif');
         if ($role === 'guru') {
             $placementQuery->where('guru_id', $guruId);
+        } elseif ($role === 'industri') {
+            $dudiIdForPlacements = auth()->user()->pembimbingIndustri?->dudi_id;
+            if ($dudiIdForPlacements) {
+                $placementQuery->where('dudi_id', $dudiIdForPlacements);
+            } else {
+                $placementQuery->whereRaw('1 = 0');
+            }
         }
         $activePlacements = $placementQuery->get();
 

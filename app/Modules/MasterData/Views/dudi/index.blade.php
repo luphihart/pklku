@@ -115,6 +115,15 @@
                             </td>
                             <td class="text-center pe-4">
                                 <div class="d-flex gap-1 justify-content-center">
+                                    <button type="button" class="btn btn-sm btn-outline-info btn-action btn-kelola-pembimbing"
+                                        data-dudi-id="{{ $dudi->id }}"
+                                        data-dudi-nama="{{ $dudi->nama }}"
+                                        data-bs-toggle="modal" data-bs-target="#kelolaPembimbingModal"
+                                        title="Kelola Akun Pembimbing Industri" aria-label="Kelola Pembimbing DUDI {{ $dudi->nama }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                        </svg>
+                                    </button>
                                     <button type="button" class="btn btn-sm btn-outline-warning btn-action btn-edit-dudi"
                                         data-id="{{ $dudi->id }}"
                                         data-nama="{{ $dudi->nama }}"
@@ -167,6 +176,62 @@
             {{ $dudis->withQueryString()->links() }}
         </div>
         @endif
+    </div>
+</div>
+
+<!-- Modal: Kelola Pembimbing Industri -->
+<div class="modal fade text-start" id="kelolaPembimbingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color);">
+            <div class="modal-header border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                <div>
+                    <h5 class="modal-title font-heading fw-bold m-0" id="kelolaPembimbingTitle" style="font-size: 15px;">Kelola Akun Pembimbing Industri</h5>
+                    <small class="text-muted" id="kelolaPembimbingSubtitle" style="font-size: 12px;">DUDI: —</small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                {{-- Daftar Pembimbing Existing --}}
+                <div id="pembimbingList" class="p-3 border-bottom" style="border-bottom-color: var(--border-color) !important;">
+                    <h6 class="fw-bold font-heading mb-2 text-dark dark-text-light" style="font-size: 13px;">Pembimbing Terdaftar</h6>
+                    <div id="pembimbingListContent">
+                        <p class="text-muted small mb-0">Memuat data...</p>
+                    </div>
+                </div>
+
+                {{-- Form Tambah Pembimbing Baru --}}
+                <div class="p-3">
+                    <h6 class="fw-bold font-heading mb-3 text-dark dark-text-light" style="font-size: 13px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="me-1"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        Tambah Pembimbing Baru
+                    </h6>
+                    <form id="addPembimbingForm" method="POST" action="">
+                        @csrf
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold">Nama Lengkap</label>
+                                <input type="text" name="nama" class="form-control form-control-sm" placeholder="Budi Santoso" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold">Email (untuk Login)</label>
+                                <input type="email" name="email" class="form-control form-control-sm" placeholder="budi@perusahaan.com" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold">No. HP / WA</label>
+                                <input type="text" name="phone" class="form-control form-control-sm" placeholder="08123456789">
+                            </div>
+                        </div>
+                        <div class="mt-3 d-flex align-items-center gap-2">
+                            <button type="submit" class="btn btn-sm btn-primary font-heading">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="me-1"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                Buat Akun Pembimbing
+                            </button>
+                            <small class="text-muted">Password default: <code>dudi123</code></small>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -405,5 +470,84 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+// ── Kelola Pembimbing Modal ────────────────────────────────────────────────────
+(function () {
+    // Daftar pembimbing per DUDI (dikirim dari server via PHP)
+    const pembimbingData = @json(
+        \App\Modules\MasterData\Models\PembimbingIndustri::with('user')
+            ->whereNull('deleted_at')
+            ->get()
+            ->groupBy('dudi_id')
+            ->map(fn($items) => $items->map(fn($p) => [
+                'id'    => $p->id,
+                'nama'  => $p->nama,
+                'email' => $p->email,
+                'phone' => $p->phone,
+                'dudi_id' => $p->dudi_id,
+                'has_user' => $p->user_id ? true : false,
+            ]))
+    );
+
+    const kelolaPembimbingModal = document.getElementById('kelolaPembimbingModal');
+    if (!kelolaPembimbingModal) return;
+
+    kelolaPembimbingModal.addEventListener('show.bs.modal', function (event) {
+        const trigger = event.relatedTarget;
+        const btn = trigger ? trigger.closest('.btn-kelola-pembimbing') : null;
+        if (!btn) return;
+
+        const dudiId   = btn.getAttribute('data-dudi-id');
+        const dudiNama = btn.getAttribute('data-dudi-nama');
+
+        // Update heading
+        document.getElementById('kelolaPembimbingSubtitle').textContent = 'DUDI: ' + dudiNama;
+
+        // Set form action URL for add
+        document.getElementById('addPembimbingForm').action = '/master/dudi/' + dudiId + '/pembimbing';
+
+        // Render list of existing pembimbing
+        const listContainer = document.getElementById('pembimbingListContent');
+        const list = pembimbingData[dudiId] || [];
+
+        if (list.length === 0) {
+            listContainer.innerHTML = '<p class="text-muted small mb-0 fst-italic">Belum ada pembimbing terdaftar untuk DUDI ini.</p>';
+        } else {
+            let html = '<div class="list-group list-group-flush">';
+            list.forEach(function (p) {
+                html += `
+                    <div class="list-group-item px-0 py-2" style="background: transparent; border-color: var(--border-color);">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fw-semibold" style="font-size: 13px;">${p.nama}</div>
+                                <small class="text-muted">${p.email || '—'} ${p.phone ? '· ' + p.phone : ''}</small>
+                                ${p.has_user
+                                    ? '<span class="badge bg-success-light text-success ms-1" style="font-size: 10px;">Akun Aktif</span>'
+                                    : '<span class="badge bg-warning-light text-warning ms-1" style="font-size: 10px;">Belum Ada Akun</span>'
+                                }
+                            </div>
+                            <div class="d-flex gap-1">
+                                <form method="POST" action="/master/dudi/${p.dudi_id}/pembimbing/${p.id}/reset-password" onsubmit="return confirm('Reset password ${p.nama.replace(/'/g, "\\'")} ke dudi123?')">
+                                    @csrf
+                                    <button type="submit" class="btn btn-xs btn-outline-secondary" style="padding: 2px 8px; font-size: 11px;" title="Reset Password">
+                                        🔑 Reset PW
+                                    </button>
+                                </form>
+                                <form method="POST" action="/master/dudi/${p.dudi_id}/pembimbing/${p.id}" onsubmit="return confirm('Hapus akun pembimbing ${p.nama.replace(/'/g, "\\'")}?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-xs btn-outline-danger" style="padding: 2px 8px; font-size: 11px;" title="Hapus">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+            html += '</div>';
+            listContainer.innerHTML = html;
+        }
+    });
+})();
 </script>
 @endsection

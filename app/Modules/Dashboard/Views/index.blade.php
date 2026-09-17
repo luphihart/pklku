@@ -52,6 +52,12 @@
         } elseif ($role === 'guru') {
             $birthdayMessages = $guruBirthdayMessages;
             $titleGreeting = "Selamat Ulang Tahun, Bapak/Ibu " . auth()->user()->name . "! 🎂";
+        } elseif ($role === 'industri') {
+            $birthdayMessages = [
+                "Selamat ulang tahun, Bapak/Ibu Pembimbing DUDI! Semoga sukses selalu, kemitraan berjalan lancar, dan terus menginspirasi generasi muda!",
+                "Happy birthday! Semoga bisnis makin maju, berkah berlimpah, dan bimbingan murid PKL membawa manfaat nyata bagi industri!",
+            ];
+            $titleGreeting = "Selamat Ulang Tahun, Bapak/Ibu " . auth()->user()->name . " (Pembimbing DUDI)! 🎂";
         } else {
             $birthdayMessages = $adminBirthdayMessages;
             $titleGreeting = "Selamat Ulang Tahun, " . auth()->user()->name . " (Admin)! 🎂";
@@ -222,6 +228,71 @@
                 </div>
             </div>
         @endif
+    @elseif(auth()->user()->role === 'industri')
+        @php
+            $myDudi = auth()->user()->pembimbingIndustri?->dudi;
+            $totalMuridDudi = $placements->count();
+            $hadirHariIni = $todayPresensi->count();
+            $izinHariIni = $todayLeaves->count();
+        @endphp
+        <div class="row mb-4">
+            <!-- Count 1: Mitra DUDI Anda -->
+            <div class="col-6 col-md-3 mb-3">
+                <div class="card-premium d-flex align-items-center justify-content-between h-100">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Mitra DUDI</span>
+                        <h5 class="fw-bold m-0 mt-1 text-dark dark-text-light font-heading text-truncate" style="max-width: 150px;" title="{{ $myDudi?->nama ?? 'Perusahaan' }}">{{ $myDudi?->nama ?? 'Perusahaan' }}</h5>
+                    </div>
+                    <div class="p-3 rounded bg-light d-none d-sm-block" style="color: var(--accent-primary); background-color: rgba(79, 70, 229, 0.1) !important;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <!-- Count 2: Murid PKL Aktif -->
+            <div class="col-6 col-md-3 mb-3">
+                <div class="card-premium d-flex align-items-center justify-content-between h-100">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Murid PKL Aktif</span>
+                        <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light font-heading">{{ $totalMuridDudi }}</h3>
+                    </div>
+                    <div class="p-3 rounded bg-light d-none d-sm-block" style="color: var(--warning); background-color: rgba(245, 158, 11, 0.1) !important;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <!-- Count 3: Hadir Hari Ini -->
+            <div class="col-6 col-md-3 mb-3">
+                <div class="card-premium d-flex align-items-center justify-content-between h-100">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Hadir Hari Ini</span>
+                        <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light font-heading">{{ $hadirHariIni }}</h3>
+                    </div>
+                    <div class="p-3 rounded bg-light d-none d-sm-block" style="color: var(--success); background-color: rgba(16, 185, 129, 0.1) !important;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <!-- Count 4: Izin / Sakit -->
+            <div class="col-6 col-md-3 mb-3">
+                <div class="card-premium d-flex align-items-center justify-content-between h-100">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Izin / Sakit</span>
+                        <h3 class="fw-bold m-0 mt-1 text-dark dark-text-light font-heading">{{ $izinHariIni }}</h3>
+                    </div>
+                    <div class="p-3 rounded bg-light d-none d-sm-block" style="color: var(--danger); background-color: rgba(225, 29, 72, 0.1) !important;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
     @endif
 
     <!-- Attendance Stats Today (Admin/Guru) -->
@@ -546,7 +617,7 @@
     </div>
     @endif
 
-    @if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
+    @if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru' || auth()->user()->role === 'industri')
     <!-- Active Location Map (Peta Lokasi Aktif) -->
     <div class="row mt-2">
         <!-- Leaflet Map Column -->
@@ -561,7 +632,7 @@
         <div class="col-lg-4 mb-4">
             <div class="card-premium">
                 <h5 class="fw-bold font-heading mb-3 text-dark">
-                    {{ auth()->user()->role === 'guru' ? 'Daftar DUDI Bimbingan Anda' : 'Daftar Mitra DUDI Aktif' }}
+                    {{ auth()->user()->role === 'industri' ? 'Daftar Siswa di ' . (auth()->user()->pembimbingIndustri?->dudi?->nama ?? 'Perusahaan') : (auth()->user()->role === 'guru' ? 'Daftar DUDI Bimbingan Anda' : 'Daftar Mitra DUDI Aktif') }}
                 </h5>
                 
                 <div class="pe-2" style="max-height: 400px; overflow-y: auto;">
@@ -691,7 +762,7 @@
 </div>
 @endsection
 
-@if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru')
+@if(auth()->user()->role === 'admin' || auth()->user()->role === 'guru' || auth()->user()->role === 'industri')
 @section('styles')
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>

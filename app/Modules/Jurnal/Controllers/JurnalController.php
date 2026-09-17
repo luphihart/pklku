@@ -33,6 +33,24 @@ class JurnalController extends Controller
             return view('jurnal::murid_index', compact('placement', 'journals'));
         }
 
+        if ($role === 'industri') {
+            // Pembimbing DUDI: tampilkan jurnal semua murid di DUDInya
+            $dudiId = auth()->user()->pembimbingIndustri?->dudi_id;
+            $filters = $request->only(['status', 'kelas_id', 'search', 'nama', 'tanggal_mulai', 'tanggal_selesai', 'tanggal']);
+            if (!empty($filters['nama']) && empty($filters['search'])) {
+                $filters['search'] = $filters['nama'];
+            }
+            $journals = $this->service->getIndustriReviews($dudiId, $filters);
+            $journals->withQueryString();
+            try {
+                $statusCounts = $this->service->getIndustriStatusCounts($dudiId, $filters);
+            } catch (\Throwable $e) {
+                $statusCounts = ['all' => $journals->total(), 'pending' => 0, 'disetujui' => 0, 'revisi' => 0, 'ditolak' => 0];
+            }
+            $kelasList = \App\Modules\MasterData\Models\Kelas::orderBy('nama')->get();
+            return view('jurnal::index', compact('journals', 'filters', 'kelasList', 'statusCounts'));
+        }
+
         // Guru / Admin: List bimbingan journals
         $filters = $request->only(['status', 'kelas_id', 'search', 'nama', 'tanggal_mulai', 'tanggal_selesai', 'tanggal']);
         if (!empty($filters['nama']) && empty($filters['search'])) {
