@@ -239,11 +239,13 @@
             <!-- Count 1: Mitra DUDI Anda -->
             <div class="col-6 col-md-3 mb-3">
                 <div class="card-premium d-flex align-items-center justify-content-between h-100">
-                    <div>
+                    <div class="pe-2 min-w-0">
                         <span class="text-muted small text-uppercase fw-semibold font-heading" style="font-size: 11px;">Mitra DUDI</span>
-                        <h5 class="fw-bold m-0 mt-1 text-dark dark-text-light font-heading text-truncate" style="max-width: 150px;" title="{{ $myDudi?->nama ?? 'Perusahaan' }}">{{ $myDudi?->nama ?? 'Perusahaan' }}</h5>
+                        <h6 class="fw-bold m-0 mt-1 text-dark dark-text-light font-heading" style="font-size: 14px; line-height: 1.35; word-break: break-word;" title="{{ $myDudi?->nama ?? 'Perusahaan' }}">
+                            {{ $myDudi?->nama ?? 'Perusahaan' }}
+                        </h6>
                     </div>
-                    <div class="p-3 rounded bg-light d-none d-sm-block" style="color: var(--accent-primary); background-color: rgba(79, 70, 229, 0.1) !important;">
+                    <div class="p-3 rounded bg-light d-none d-sm-block flex-shrink-0" style="color: var(--accent-primary); background-color: rgba(79, 70, 229, 0.1) !important;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                         </svg>
