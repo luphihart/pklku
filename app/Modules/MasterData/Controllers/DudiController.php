@@ -43,7 +43,28 @@ class DudiController extends Controller
     {
         $filters = $request->only('search', 'sort', 'sort_by', 'order');
         $dudis = $this->service->listDudi($filters);
-        return view('masterdata::dudi.index', compact('dudis'));
+
+        try {
+            $pembimbingData = \App\Modules\MasterData\Models\PembimbingIndustri::with('user')
+                ->get()
+                ->groupBy('dudi_id')
+                ->map(function ($items) {
+                    return $items->map(function ($p) {
+                        return [
+                            'id'       => $p->id,
+                            'nama'     => $p->nama,
+                            'email'    => $p->email,
+                            'phone'    => $p->phone,
+                            'dudi_id'  => $p->dudi_id,
+                            'has_user' => !empty($p->user_id),
+                        ];
+                    });
+                });
+        } catch (\Throwable $e) {
+            $pembimbingData = collect();
+        }
+
+        return view('masterdata::dudi.index', compact('dudis', 'pembimbingData'));
     }
 
     public function export(Request $request)

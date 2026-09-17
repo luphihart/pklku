@@ -235,6 +235,12 @@
     </div>
 </div>
 
+{{-- Hidden Form for Pembimbing Reset Password & Delete Actions --}}
+<form id="pembimbingActionForm" method="POST" style="display: none;">
+    @csrf
+    <input type="hidden" name="_method" id="pembimbingActionMethod" value="POST">
+</form>
+
 <!-- Modal: Edit DUDI (Shared Single Modal) -->
 <div class="modal fade text-start" id="editDudiModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -473,21 +479,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // ── Kelola Pembimbing Modal ────────────────────────────────────────────────────
 (function () {
-    // Daftar pembimbing per DUDI (dikirim dari server via PHP)
-    const pembimbingData = @json(
-        \App\Modules\MasterData\Models\PembimbingIndustri::with('user')
-            ->whereNull('deleted_at')
-            ->get()
-            ->groupBy('dudi_id')
-            ->map(fn($items) => $items->map(fn($p) => [
-                'id'    => $p->id,
-                'nama'  => $p->nama,
-                'email' => $p->email,
-                'phone' => $p->phone,
-                'dudi_id' => $p->dudi_id,
-                'has_user' => $p->user_id ? true : false,
-            ]))
-    );
+    // Data pembimbing yang dikirim aman dari controller
+    const pembimbingData = @json($pembimbingData ?? []);
 
     const kelolaPembimbingModal = document.getElementById('kelolaPembimbingModal');
     if (!kelolaPembimbingModal) return;
@@ -515,6 +508,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             let html = '<div class="list-group list-group-flush">';
             list.forEach(function (p) {
+                const safeName = (p.nama || '').replace(/'/g, "\\'");
                 html += `
                     <div class="list-group-item px-0 py-2" style="background: transparent; border-color: var(--border-color);">
                         <div class="d-flex justify-content-between align-items-start">
@@ -527,19 +521,12 @@ document.addEventListener('DOMContentLoaded', function () {
                                 }
                             </div>
                             <div class="d-flex gap-1">
-                                <form method="POST" action="/master/dudi/${p.dudi_id}/pembimbing/${p.id}/reset-password" onsubmit="return confirm('Reset password ${p.nama.replace(/'/g, "\\'")} ke dudi123?')">
-                                    @csrf
-                                    <button type="submit" class="btn btn-xs btn-outline-secondary" style="padding: 2px 8px; font-size: 11px;" title="Reset Password">
-                                        🔑 Reset PW
-                                    </button>
-                                </form>
-                                <form method="POST" action="/master/dudi/${p.dudi_id}/pembimbing/${p.id}" onsubmit="return confirm('Hapus akun pembimbing ${p.nama.replace(/'/g, "\\'")}?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-xs btn-outline-danger" style="padding: 2px 8px; font-size: 11px;" title="Hapus">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                    </button>
-                                </form>
+                                <button type="button" class="btn btn-xs btn-outline-secondary" style="padding: 2px 8px; font-size: 11px;" title="Reset Password" onclick="window.handlePembimbingReset(${p.dudi_id}, ${p.id}, '${safeName}')">
+                                    🔑 Reset PW
+                                </button>
+                                <button type="button" class="btn btn-xs btn-outline-danger" style="padding: 2px 8px; font-size: 11px;" title="Hapus" onclick="window.handlePembimbingDelete(${p.dudi_id}, ${p.id}, '${safeName}')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
                             </div>
                         </div>
                     </div>`;
@@ -549,5 +536,21 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 })();
+
+window.handlePembimbingReset = function(dudiId, id, nama) {
+    if (!confirm('Reset password pembimbing "' + nama + '" ke dudi123?')) return;
+    const form = document.getElementById('pembimbingActionForm');
+    form.action = '/master/dudi/' + dudiId + '/pembimbing/' + id + '/reset-password';
+    document.getElementById('pembimbingActionMethod').value = 'POST';
+    form.submit();
+};
+
+window.handlePembimbingDelete = function(dudiId, id, nama) {
+    if (!confirm('Hapus akun pembimbing "' + nama + '"?')) return;
+    const form = document.getElementById('pembimbingActionForm');
+    form.action = '/master/dudi/' + dudiId + '/pembimbing/' + id;
+    document.getElementById('pembimbingActionMethod').value = 'DELETE';
+    form.submit();
+};
 </script>
 @endsection
