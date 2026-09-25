@@ -5,6 +5,7 @@ namespace App\Modules\Laporan\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\PKL\Models\PenempatanPkl;
 use App\Modules\Setting\Models\Setting;
+use App\Modules\MasterData\Models\Kelas;
 use App\Modules\Laporan\Exports\AttendanceExport;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
@@ -45,7 +46,22 @@ class LaporanController extends Controller
         $allPlacements = (clone $query)->whereIn('status', ['aktif', 'selesai'])->orderBy('status', 'asc')->get();
         $placements = $query->orderBy('status', 'asc')->paginate(15)->withQueryString();
 
-        return view('laporan::index', compact('placements', 'allPlacements'));
+        if ($role === 'guru') {
+            $guruId = auth()->user()->guru?->id;
+            $kelasList = Kelas::with('jurusan')
+                ->whereHas('murid.penempatanAktif', function($q) use ($guruId) {
+                    $q->where('guru_id', $guruId);
+                })
+                ->orderBy('nama')
+                ->get();
+            if ($kelasList->isEmpty()) {
+                $kelasList = Kelas::with('jurusan')->orderBy('nama')->get();
+            }
+        } else {
+            $kelasList = Kelas::with('jurusan')->orderBy('nama')->get();
+        }
+
+        return view('laporan::index', compact('placements', 'allPlacements', 'kelasList'));
     }
 
     /**
@@ -84,6 +100,7 @@ class LaporanController extends Controller
     {
         $request->validate([
             'filter_type' => 'required|in:harian,mingguan,bulanan,kustom',
+            'kelas_id' => 'nullable|exists:kelas,id',
             'tanggal' => 'required_if:filter_type,harian|nullable|date',
             'minggu' => 'required_if:filter_type,mingguan|nullable|string',
             'bulan' => 'required_if:filter_type,bulanan|nullable|string',
@@ -92,7 +109,15 @@ class LaporanController extends Controller
             'tanggal_selesai' => 'required_if:filter_type,kustom|nullable|date|after_or_equal:tanggal_mulai',
         ]);
 
-        return Excel::download(new AttendanceExport($request->all()), 'rekap_presensi_' . time() . '.xlsx');
+        $kelasNama = '';
+        if ($request->filled('kelas_id')) {
+            $kelas = Kelas::find($request->kelas_id);
+            if ($kelas) {
+                $kelasNama = '_' . strtolower(preg_replace('/[^a-zA-Z0-9]/', '_', $kelas->nama));
+            }
+        }
+
+        return Excel::download(new AttendanceExport($request->all()), 'rekap_presensi' . $kelasNama . '_' . time() . '.xlsx');
     }
 
     /**
@@ -102,6 +127,7 @@ class LaporanController extends Controller
     {
         $request->validate([
             'filter_type' => 'required|in:harian,mingguan,bulanan,kustom',
+            'kelas_id' => 'nullable|exists:kelas,id',
             'tanggal' => 'required_if:filter_type,harian|nullable|date',
             'minggu' => 'required_if:filter_type,mingguan|nullable|string',
             'bulan' => 'required_if:filter_type,bulanan|nullable|string',
@@ -156,6 +182,15 @@ class LaporanController extends Controller
                 break;
         }
 
+        $kelasNama = '';
+        if ($request->filled('kelas_id')) {
+            $kelas = Kelas::find($request->kelas_id);
+            if ($kelas) {
+                $label .= ' — Kelas: ' . $kelas->nama;
+                $kelasNama = '_' . strtolower(preg_replace('/[^a-zA-Z0-9]/', '_', $kelas->nama));
+            }
+        }
+
         // Generate dates in range
         $dates = [];
         $current = \Carbon\Carbon::parse($startDate);
@@ -176,6 +211,13 @@ class LaporanController extends Controller
 
         if ($role === 'guru') {
             $placementsQuery->where('guru_id', auth()->user()->guru?->id);
+        }
+
+        if ($request->filled('kelas_id')) {
+            $kelasId = $request->kelas_id;
+            $placementsQuery->whereHas('murid', function($q) use ($kelasId) {
+                $q->where('kelas_id', $kelasId);
+            });
         }
 
         $placements = $placementsQuery->get();
@@ -246,7 +288,7 @@ class LaporanController extends Controller
             'leavesByPlacementAndDate', 'holidayMap', 'label', 'branding'
         ))->setPaper('a4', $filterType === 'harian' ? 'portrait' : 'landscape');
 
-        return $pdf->download('rekap_presensi_' . time() . '.pdf');
+        return $pdf->download('rekap_presensi' . $kelasNama . '_' . time() . '.pdf');
     }
 
     /**

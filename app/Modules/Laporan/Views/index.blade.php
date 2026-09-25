@@ -52,6 +52,21 @@
                 <p class="small text-secondary mb-3">Cetak rekap log kehadiran seluruh siswa aktif sesuai rentang waktu yang dipilih.</p>
                 
                 <form x-ref="presensiForm" method="GET">
+                    <!-- Filter Kelas -->
+                    <div class="mb-3">
+                        <label for="presensi_kelas_id" class="form-label small fw-semibold">Filter Kelas</label>
+                        <select name="kelas_id" id="presensi_kelas_id" class="form-select form-select-sm">
+                            <option value="">-- Semua Kelas (Seluruh Siswa) --</option>
+                            @if(isset($kelasList))
+                                @foreach($kelasList as $kelas)
+                                    <option value="{{ $kelas->id }}">
+                                        {{ $kelas->nama }} {{ $kelas->jurusan ? '(' . $kelas->jurusan->singkatan . ')' : '' }}
+                                    </option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+
                     <div class="mb-3">
                         <label for="presensi_filter_type" class="form-label small fw-semibold">Tipe Rekapitulasi</label>
                         <select name="filter_type" id="presensi_filter_type" class="form-select form-select-sm" x-model="type">

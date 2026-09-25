@@ -87,6 +87,18 @@ class AttendanceExport implements FromView, ShouldAutoSize
             $placementsQuery->where('guru_id', auth()->user()->guru?->id);
         }
 
+        if (!empty($this->filters['kelas_id'])) {
+            $kelasId = $this->filters['kelas_id'];
+            $placementsQuery->whereHas('murid', function($q) use ($kelasId) {
+                $q->where('kelas_id', $kelasId);
+            });
+
+            $kelas = \App\Modules\MasterData\Models\Kelas::find($kelasId);
+            if ($kelas) {
+                $label .= ' — Kelas: ' . $kelas->nama;
+            }
+        }
+
         $placements = $placementsQuery->get();
         $placementIds = $placements->pluck('id')->toArray();
 
