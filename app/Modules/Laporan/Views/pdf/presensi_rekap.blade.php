@@ -237,8 +237,8 @@
                     <th style="width: 6%;">Telat</th>
                     <th style="width: 6%;">Izin</th>
                     <th style="width: 6%;">Sakit</th>
-                    <th style="width: 6%;">Alpa</th>
                     <th style="width: 5%;">Off</th>
+                    <th style="width: 6%;">Alpa</th>
                     <th style="width: 7%;">% Hadir</th>
                 </tr>
             </thead>
@@ -333,8 +333,8 @@
                         <td class="text-center badge-terlambat">{{ $telatCount }}</td>
                         <td class="text-center badge-izin">{{ $izinCount }}</td>
                         <td class="text-center badge-sakit">{{ $sakitCount }}</td>
-                        <td class="text-center badge-alpha">{{ $alpaCount }}</td>
                         <td class="text-center" style="color: #0284c7; font-weight: bold;">{{ $liburShiftCount }}</td>
+                        <td class="text-center badge-alpha">{{ $alpaCount }}</td>
                         <td class="text-center fw-bold">{{ $persen }}%</td>
                     </tr>
                 @empty
