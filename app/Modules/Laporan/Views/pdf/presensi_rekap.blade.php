@@ -228,17 +228,18 @@
         <table class="table-data">
             <thead>
                 <tr>
-                    <th style="width: 4%;">No</th>
-                    <th style="width: 22%;">Nama Siswa</th>
-                    <th style="width: 10%;">NIS</th>
-                    <th style="width: 12%;">Kelas</th>
-                    <th style="width: 18%;">Tempat DUDI</th>
+                    <th style="width: 3.5%;">No</th>
+                    <th style="width: 20%;">Nama Siswa</th>
+                    <th style="width: 8.5%;">NIS</th>
+                    <th style="width: 10%;">Kelas</th>
+                    <th style="width: 16%;">Tempat DUDI</th>
                     <th style="width: 6%;">Hadir</th>
                     <th style="width: 6%;">Telat</th>
                     <th style="width: 6%;">Izin</th>
                     <th style="width: 6%;">Sakit</th>
-                    <th style="width: 6%;">Off</th>
-                    <th style="width: 8%;">% Hadir</th>
+                    <th style="width: 6%;">Alpa</th>
+                    <th style="width: 5%;">Off</th>
+                    <th style="width: 7%;">% Hadir</th>
                 </tr>
             </thead>
             <tbody>
@@ -248,6 +249,7 @@
                         $telatCount = 0;
                         $izinCount = 0;
                         $sakitCount = 0;
+                        $alpaCount = 0;
                         $liburShiftCount = 0;
                         $hariKerjaEfektif = 0;
                         $todayStr = now()->toDateString();
@@ -256,7 +258,7 @@
                             $presensi = $presensiData[$p->id][$d] ?? null;
                             $leave = $leavesByPlacementAndDate[$p->id][$d] ?? null;
 
-                            // Catat log kehadiran fisik & izin jika ada
+                            // Catat log kehadiran fisik / shift off jika ada datanya
                             if ($presensi) {
                                 if ($presensi->status_masuk === 'libur_shift') {
                                     $liburShiftCount++;
@@ -264,12 +266,6 @@
                                     $hadirCount++;
                                 } elseif ($presensi->status_masuk === 'terlambat') {
                                     $telatCount++;
-                                }
-                            } elseif ($leave) {
-                                if (strtolower($leave) === 'izin') {
-                                    $izinCount++;
-                                } else {
-                                    $sakitCount++;
                                 }
                             }
 
@@ -296,14 +292,36 @@
                             $isLiburShift = ($presensi && $presensi->status_masuk === 'libur_shift');
 
                             // Hari kerja efektif adalah hari di mana murid diwajibkan hadir
-                            if (!$isHoliday && !$isPlacementOff && !$isLiburShift) {
+                            $isHariKerja = (!$isHoliday && !$isPlacementOff && !$isLiburShift);
+
+                            if ($isHariKerja) {
                                 $hariKerjaEfektif++;
+
+                                if ($leave) {
+                                    if (strtolower($leave) === 'izin') {
+                                        $izinCount++;
+                                    } else {
+                                        $sakitCount++;
+                                    }
+                                } elseif (!$presensi || $presensi->status_masuk === 'alpha') {
+                                    $alpaCount++;
+                                }
+                            } else {
+                                // Jika izin/sakit tercatat di luar hari kerja reguler
+                                if ($leave && !$presensi) {
+                                    if (strtolower($leave) === 'izin') {
+                                        $izinCount++;
+                                    } else {
+                                        $sakitCount++;
+                                    }
+                                }
                             }
                         }
 
-                        $totalMasuk = $hadirCount + $telatCount;
-                        $pembagi = max($hariKerjaEfektif, $totalMasuk);
-                        $persen = $pembagi > 0 ? round(($totalMasuk / $pembagi) * 100, 1) : 0;
+                        // Kehadiran yang diakui sah: Hadir fisik (Tepat Waktu + Telat) + Izin resmi + Sakit resmi
+                        $kehadiranSah = $hadirCount + $telatCount + $izinCount + $sakitCount;
+                        $pembagi = max($hariKerjaEfektif, $kehadiranSah + $alpaCount);
+                        $persen = $pembagi > 0 ? round(($kehadiranSah / $pembagi) * 100, 1) : 0;
                     @endphp
                     <tr>
                         <td class="text-center">{{ $index + 1 }}</td>
@@ -315,19 +333,20 @@
                         <td class="text-center badge-terlambat">{{ $telatCount }}</td>
                         <td class="text-center badge-izin">{{ $izinCount }}</td>
                         <td class="text-center badge-sakit">{{ $sakitCount }}</td>
+                        <td class="text-center badge-alpha">{{ $alpaCount }}</td>
                         <td class="text-center" style="color: #0284c7; font-weight: bold;">{{ $liburShiftCount }}</td>
                         <td class="text-center fw-bold">{{ $persen }}%</td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="11" class="text-center" style="padding: 15px;">Tidak ada data penempatan PKL aktif.</td>
+                        <td colspan="12" class="text-center" style="padding: 15px;">Tidak ada data penempatan PKL aktif.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
 
         <div style="font-size: 8px; color: #555; margin-top: -10px; margin-bottom: 12px; font-style: italic;">
-            * Catatan: % Hadir dihitung dari total kehadiran (Hadir + Terlambat) dibagi jumlah hari kerja efektif siswa (tidak termasuk libur operasional DUDI/akhir pekan, hari libur nasional, dan tanggal yang belum berjalan).
+            * Catatan: % Hadir dihitung dari kehadiran sah (Hadir + Terlambat + Izin/Sakit resmi) dibagi total hari kerja efektif siswa. Hanya Alpa (tidak presensi tanpa keterangan) yang mengurangi persentase kehadiran.
         </div>
     @endif
 
