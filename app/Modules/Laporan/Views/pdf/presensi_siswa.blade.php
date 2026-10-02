@@ -151,6 +151,11 @@
     </div>
 
     <div class="title">Rekapitulasi Kehadiran Siswa</div>
+    @if(isset($startDate) && isset($endDate))
+        <div style="text-align: center; font-size: 10px; margin-top: -8px; margin-bottom: 12px; color: #555; font-weight: bold;">
+            Periode: {{ \Carbon\Carbon::parse($startDate)->translatedFormat('d F Y') }} s/d {{ \Carbon\Carbon::parse($endDate)->translatedFormat('d F Y') }}
+        </div>
+    @endif
 
     <table class="student-info">
         <tr>

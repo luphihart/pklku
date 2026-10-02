@@ -498,6 +498,16 @@ class LaporanController extends Controller
             }
         }
 
+        if ($request->filled('bulan')) {
+            $month = $request->bulan;
+            $year = $request->tahun ?? date('Y');
+            $startDate = \Carbon\Carbon::create($year, $month, 1)->startOfMonth();
+            $endDate = \Carbon\Carbon::create($year, $month, 1)->endOfMonth();
+            if ($endDate->greaterThan($today)) {
+                $endDate = $today->copy();
+            }
+        }
+
         if ($request->filled('tanggal_mulai')) {
             $startDate = \Carbon\Carbon::parse($request->tanggal_mulai);
         }
@@ -507,9 +517,6 @@ class LaporanController extends Controller
 
         $attendanceRecords = collect();
         $currDate = $startDate->copy();
-
-        // Penempatan rolling shift atau penempatan dengan hari libur none
-        $isRollingShift = ($placement->tipe_shift === 'rolling' || $placement->hari_libur === 'none');
 
         while ($currDate->lessThanOrEqualTo($endDate)) {
             $dateStr = $currDate->toDateString();
@@ -550,9 +557,9 @@ class LaporanController extends Controller
                 ]);
             } else {
                 // Tidak ada presensi dan tidak ada izin/sakit
-                // Periksa hari libur nasional dan hari libur penempatan (kecuali rolling shift)
-                $isHoliday = \App\Modules\MasterData\Models\HariLibur::getHoliday($dateStr);
-                $isPlacementHoliday = !$isRollingShift && $placement->isPlacementHoliday($dateStr);
+                // Periksa hari libur nasional dan hari libur penempatan
+                $isHoliday = \App\Modules\MasterData\Models\HariLibur::isHoliday($dateStr);
+                $isPlacementHoliday = $placement->isPlacementHoliday($dateStr);
 
                 if (!$isHoliday && !$isPlacementHoliday) {
                     $attendanceRecords->push((object)[
@@ -583,7 +590,7 @@ class LaporanController extends Controller
         $branding = $this->getBranding();
         $nama = $placement->murid?->nama ?? 'siswa';
 
-        $pdf = Pdf::loadView('laporan::pdf.presensi_siswa', compact('placement', 'presensis', 'summary', 'branding'));
+        $pdf = Pdf::loadView('laporan::pdf.presensi_siswa', compact('placement', 'presensis', 'summary', 'branding', 'startDate', 'endDate'));
         return $pdf->download('laporan_presensi_' . strtolower(str_replace(' ', '_', $nama)) . '.pdf');
     }
 
