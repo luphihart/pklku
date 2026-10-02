@@ -77,12 +77,18 @@
                         <td style="border: 1px solid #000; text-align: center;">-</td>
                         <td style="border: 1px solid #000; text-align: center;">-</td>
                         <td style="border: 1px solid #000; text-align: center;">{{ $holiday }}</td>
+                    @elseif($p->isPlacementHoliday($targetDate))
+                        <td style="border: 1px solid #000; text-align: center;">-</td>
+                        <td style="border: 1px solid #000; text-align: center;">-</td>
+                        <td style="border: 1px solid #000; text-align: center;">-</td>
+                        <td style="border: 1px solid #000; text-align: center;">-</td>
+                        <td style="border: 1px solid #000; text-align: center;">Libur DUDI</td>
                     @else
                         <td style="border: 1px solid #000; text-align: center;">-</td>
                         <td style="border: 1px solid #000; text-align: center;">-</td>
                         <td style="border: 1px solid #000; text-align: center;">-</td>
                         <td style="border: 1px solid #000; text-align: center;">-</td>
-                        <td style="border: 1px solid #000; text-align: center;">Alpha</td>
+                        <td style="border: 1px solid #000; text-align: center;">{{ $targetDate > now()->toDateString() ? '-' : 'Alpha' }}</td>
                     @endif
                 </tr>
             @empty
@@ -161,9 +167,12 @@
                         @elseif($holiday)
                             <td style="border: 1px solid #000; text-align: center;">-</td>
                             <td style="border: 1px solid #000; text-align: center;">{{ $holiday }}</td>
+                        @elseif($p->isPlacementHoliday($date))
+                            <td style="border: 1px solid #000; text-align: center;">-</td>
+                            <td style="border: 1px solid #000; text-align: center; color: #555;">Libur</td>
                         @else
                             <td style="border: 1px solid #000; text-align: center;">-</td>
-                            <td style="border: 1px solid #000; text-align: center;">-</td>
+                            <td style="border: 1px solid #000; text-align: center;">{{ $date > now()->toDateString() ? '-' : 'Alpha' }}</td>
                         @endif
                     @endforeach
                 </tr>

@@ -201,11 +201,14 @@ class LaporanController extends Controller
         }
 
         $role = auth()->user()->role;
-        $placementsQuery = PenempatanPkl::select(['id', 'murid_id', 'dudi_id', 'guru_id', 'status'])
+        $placementsQuery = PenempatanPkl::select([
+                'id', 'murid_id', 'dudi_id', 'guru_id', 'status',
+                'hari_libur', 'tanggal_mulai', 'tanggal_selesai'
+            ])
             ->with([
                 'murid:id,nama,nis,kelas_id',
                 'murid.kelas:id,nama',
-                'dudi:id,nama'
+                'dudi:id,nama,hari_kerja'
             ])
             ->where('status', 'aktif');
 

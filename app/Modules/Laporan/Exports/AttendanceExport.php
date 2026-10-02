@@ -75,11 +75,14 @@ class AttendanceExport implements FromView, ShouldAutoSize
 
         // Load active placements based on logged-in user role
         $role = auth()->user()->role;
-        $placementsQuery = \App\Modules\PKL\Models\PenempatanPkl::select(['id', 'murid_id', 'dudi_id', 'guru_id', 'status'])
+        $placementsQuery = \App\Modules\PKL\Models\PenempatanPkl::select([
+                'id', 'murid_id', 'dudi_id', 'guru_id', 'status',
+                'hari_libur', 'tanggal_mulai', 'tanggal_selesai'
+            ])
             ->with([
                 'murid:id,nama,nis,kelas_id',
                 'murid.kelas:id,nama',
-                'dudi:id,nama'
+                'dudi:id,nama,hari_kerja'
             ])
             ->where('status', 'aktif');
 
